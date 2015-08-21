@@ -8,13 +8,16 @@
 }
 
 export class Node {
+    id: number;
     name: string;
     pos: Vec2;
     edges: Edge[];
 
-    constructor(src: NodeSource) {
-        this.name = src.name;
-        this.pos = new Vec2(src.x, src.y);
+    private static identity: number = 1;
+    constructor(src: string, x: number, y: number) {
+        this.id = Node.identity++;
+        this.name = src;
+        this.pos = new Vec2(x, y);
         this.edges = [];
     }
 }
@@ -32,8 +35,8 @@ export enum EdgeType {
 
 export class Edge {
     type: EdgeType;
-    constructor(public node: Node, src: EdgeSource) {
-        this.type = src.type;
+    constructor(public node: Node, type: EdgeType) {
+        this.type = type;
     }
 }
 
@@ -52,22 +55,36 @@ export class WorldSource {
     edges: EdgeSource[];
 }
 
+export interface WorldListener { (): void; }
+
 export class World {
-    nodes: Node[];
-    nodesByName: Map<string, Node>;
+    nodes: Node[] = [];
+    nodesByName: Map<string, Node> = {};
+    activeNode: Node;
+
+    listeners: WorldListener[] = [];
 
     load(data: WorldSource) {
-        this.nodes = data.nodes.map(s => new Node(s));
+        this.nodes = data.nodes.map(s => new Node(s.name, s.x, s.y));
+        if (this.activeNode != null)
+            this.nodes.push(this.activeNode);
+
         // index by name
         this.nodesByName = {};
         this.nodes.forEach(n => this.nodesByName[n.name.toLowerCase()] = n);
+
         // process edges
         data.edges.forEach(e => {
             var src = this.nodes[e.src],
                 dest = this.nodes[e.dest];
-            src.edges.push(new Edge(dest, e));
-            dest.edges.push(new Edge(src, e));
+            src.edges.push(new Edge(dest, e.type));
+            dest.edges.push(new Edge(src, e.type));
         });
+
+        this.onchange();
+    }
+    sortnodes() {
+        this.nodes.sort((a, b) => a.id - b.id);
     }
 
     findNode(name: string): Node {
@@ -75,5 +92,24 @@ export class World {
     }
     findPath(loc: Node, dest: Node) {
         return "Path between " + loc.name + " and " + dest.name;
+    }
+
+    click(x: number, y: number) {
+        if (this.activeNode != null) {
+            this.activeNode.pos = new Vec2(x, y);
+        } else {
+            this.activeNode = new Node("You", x, y);
+            this.nodes.push(this.activeNode);
+            this.sortnodes();
+        }
+
+        this.onchange();
+    }
+
+    onchange() {
+        this.listeners.forEach(fn => fn());
+    }
+    addListener(listener: WorldListener) {
+        this.listeners.push(listener);
     }
 }

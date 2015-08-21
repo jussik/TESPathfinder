@@ -1,6 +1,11 @@
 ﻿<div id="search">
-    <input placeholder="Location" #loc (input) />
-    &rarr;
-    <input placeholder="Destination" #dest (input) />
-    <button (click)="search(loc.value, dest.value)">Go</button>
+    <div>
+        <input placeholder="Location" #loc (input) />
+        &rarr;
+        <input placeholder="Destination" #dest (input) />
+        <button (click)="search(loc.value, dest.value)">Go</button>
+    </div>
+    <div>
+        X:{{cursor.x}} Y:{{cursor.y}}
+    </div>
 </div>

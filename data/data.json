@@ -1,0 +1,31 @@
+﻿{
+    "nodes": [
+        { "name": "Balmora Mages Guild", "x": 567, "y": 1272 },
+        { "name": "Caldera Mages Guild", "x": 614, "y": 1088 },
+        { "name": "Vivec Mages Guild", "x": 849, "y": 1628 },
+        { "name": "Ald-Ruhn Mages Guild", "x": 606, "y": 904 },
+        { "name": "Sadrith Mora Mages Guild", "x": 1494, "y": 1041 }
+    ],
+    "edges": [
+        { "src": 0, "dest": 1, "type": 4 },
+        { "src": 0, "dest": 2, "type": 4 },
+        { "src": 0, "dest": 3, "type": 4 },
+        { "src": 0, "dest": 4, "type": 4 },
+        { "src": 1, "dest": 0, "type": 4 },
+        { "src": 1, "dest": 2, "type": 4 },
+        { "src": 1, "dest": 3, "type": 4 },
+        { "src": 1, "dest": 4, "type": 4 },
+        { "src": 2, "dest": 0, "type": 4 },
+        { "src": 2, "dest": 1, "type": 4 },
+        { "src": 2, "dest": 3, "type": 4 },
+        { "src": 2, "dest": 4, "type": 4 },
+        { "src": 3, "dest": 0, "type": 4 },
+        { "src": 3, "dest": 1, "type": 4 },
+        { "src": 3, "dest": 2, "type": 4 },
+        { "src": 3, "dest": 4, "type": 4 },
+        { "src": 4, "dest": 0, "type": 4 },
+        { "src": 4, "dest": 1, "type": 4 },
+        { "src": 4, "dest": 2, "type": 4 },
+        { "src": 4, "dest": 3, "type": 4 }
+    ]
+}
