@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\data.json" />
+    <Content Include="README.md" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
