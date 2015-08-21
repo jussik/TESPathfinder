@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="img\map.jpg" />
     <Content Include="index.html" />
     <Content Include="search.html" />
     <Content Include="web.config">
