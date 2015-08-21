@@ -1,5 +1,5 @@
 ﻿import {Component, View, Inject, ElementRef} from 'angular2/angular2';
-import {Vec2, Node, World} from 'world';
+import {Vec2, Node, Edge, World} from 'world';
 
 class MapNode {
     id: number;
@@ -9,10 +9,12 @@ class MapNode {
 
     constructor(private node: Node, private parentElement: HTMLElement) {
         this.id = node.id;
+
         this.element = document.createElement("div");
-        this.element.className = "map-node";
+        this.element.classList.add("map-node", "map-" + node.type);
         this.element.title = node.name;
         parentElement.appendChild(this.element);
+
         this.pos = new Vec2(node.pos.x, node.pos.y);
         this.element.style.left = this.pos.x + "px";
         this.element.style.top = this.pos.y + "px";
@@ -37,12 +39,39 @@ class MapNode {
     }
 }
 
+class MapEdge {
+    private element: HTMLElement;
+
+    constructor(private edge: Edge, private parentElement: HTMLElement) {
+        this.element = document.createElement("div");
+        this.element.classList.add("map-edge", "map-" + edge.srcNode.type);
+        this.element.title = edge.srcNode.name + " <-> " + edge.destNode.name;
+        parentElement.appendChild(this.element);
+        this.render();
+    }
+
+    render() {
+        var n1 = this.edge.srcNode.pos;
+        var n2 = this.edge.destNode.pos;
+        var length = Math.sqrt(((n2.x - n1.x) * (n2.x - n1.x)) + ((n2.y - n1.y) * (n2.y - n1.y)));
+        this.element.style.left = ((n1.x + n2.x) / 2) - (length / 2) + "px";
+        this.element.style.top = ((n1.y + n2.y) / 2) - 1 + "px";
+        this.element.style.width = length + "px";
+        this.element.style.transform = "rotate(" + Math.atan2(n1.y - n2.y, n1.x - n2.x) + "rad)";
+    }
+
+    remove() {
+        this.parentElement.removeChild(this.element);
+    }
+}
+
 enum Op { Update, Add, Remove, Done };
 
 @Component({ selector: 'map' })
 @View({ template: '<img id="map" src="img/map.jpg" (click)="mapClick($event)">' })
 export class MapComponent {
     private nodes: MapNode[] = [];
+    private edges: MapEdge[] = [];
 
     constructor(@Inject(World) private world: World, @Inject(ElementRef) private element: ElementRef) {
         world.addListener(() => this.render());
@@ -104,6 +133,10 @@ export class MapComponent {
             var elem = this.element.nativeElement;
             this.nodes = this.nodes.concat(newNodes.map(n => new MapNode(n, elem))).sort((a, b) => a.id - b.id);
         }
+
+        this.edges.forEach(e => e.remove());
+        var elem = this.element.nativeElement;
+        this.edges = this.world.edges.map(e => new MapEdge(e, elem));
     }
     private mapClick(ev: MouseEvent) {
         this.world.click(ev.pageX, ev.pageY);

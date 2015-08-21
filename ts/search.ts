@@ -1,4 +1,4 @@
-﻿import {Component, View, Inject} from 'angular2/angular2';
+﻿import {Component, View, Inject, NgIf} from 'angular2/angular2';
 import {Vec2, World} from 'world';
 
 @Component({ selector: 'search' })
@@ -7,10 +7,10 @@ export class SearchComponent {
     private cursor: Vec2;
 
     constructor( @Inject(World) private world: World) {
-        this.cursor = new Vec2(0, 0);
-        document.addEventListener("mousemove", ev => {
-            this.cursor.x = ev.pageX;
-            this.cursor.y = ev.pageY;
+        world.addListener(() => {
+            if (world.activeNode != null) {
+                this.cursor = world.activeNode.pos;
+            }
         });
     }
 
