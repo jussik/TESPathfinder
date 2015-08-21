@@ -4,7 +4,7 @@ import {Vec2, World} from 'world';
 @Component({ selector: 'search' })
 @View({ templateUrl: 'search.html' })
 export class SearchComponent {
-    cursor: Vec2;
+    private cursor: Vec2;
 
     constructor( @Inject(World) private world: World) {
         this.cursor = new Vec2(0, 0);
@@ -14,7 +14,7 @@ export class SearchComponent {
         });
     }
 
-    search(loc, dest) {
+    private search(loc, dest) {
         console.log("SEARCH", loc, dest);
         var locNode = this.world.findNode(loc);
         var destNode = this.world.findNode(dest);

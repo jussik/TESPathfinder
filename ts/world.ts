@@ -59,10 +59,10 @@ export interface WorldListener { (): void; }
 
 export class World {
     nodes: Node[] = [];
-    nodesByName: Map<string, Node> = {};
-    activeNode: Node;
 
-    listeners: WorldListener[] = [];
+    private listeners: WorldListener[] = [];
+    private activeNode: Node;
+    private nodesByName: Map<string, Node> = {};
 
     load(data: WorldSource) {
         this.nodes = data.nodes.map(s => new Node(s.name, s.x, s.y));
@@ -83,8 +83,9 @@ export class World {
 
         this.onchange();
     }
-    sortnodes() {
-        this.nodes.sort((a, b) => a.id - b.id);
+
+    addListener(listener: WorldListener) {
+        this.listeners.push(listener);
     }
 
     findNode(name: string): Node {
@@ -106,10 +107,10 @@ export class World {
         this.onchange();
     }
 
-    onchange() {
-        this.listeners.forEach(fn => fn());
+    private sortnodes() {
+        this.nodes.sort((a, b) => a.id - b.id);
     }
-    addListener(listener: WorldListener) {
-        this.listeners.push(listener);
+    private onchange() {
+        this.listeners.forEach(fn => fn());
     }
 }
