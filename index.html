@@ -10,6 +10,9 @@
 </head>
 <body>
     <app></app>
-    <script>System.import('app');</script>
+    <script>
+        System.config({ baseURL: '/js' });
+        System.import('app');
+    </script>
 </body>
 </html>
