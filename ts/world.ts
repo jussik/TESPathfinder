@@ -100,6 +100,10 @@
         path: Node[];
         features: Feature[];
 
+        static defaultTransportCost: number = 10;
+        static transportCost = { "mages-guild": 30 };
+        static spellCost: number = 5;
+
         private listeners: WorldListener[] = [];
         private nodesByName: {[key:string]: Node} = {};
 
@@ -136,12 +140,13 @@
             var array: any[] = data[type];
             var nodes: Node[] = array.map(n => new Node(n.name, n.x, n.y, type));
             this.nodes = this.nodes.concat(nodes);
+            var cost = World.transportCost[type] || World.defaultTransportCost;
             array.forEach((n, i1) => {
                 var n1 = nodes[i1];
                 if (n.edges) {
                     n.edges.forEach(i2 => {
                         var n2 = nodes[i2];
-                        var edge = new Edge(n1, n2, 10);
+                        var edge = new Edge(n1, n2, cost);
                         n1.edges.push(edge);
                         n2.edges.push(edge);
                         this.edges.push(edge);
@@ -149,7 +154,7 @@
                 }
                 if (n.oneWayEdges) {
                     n.oneWayEdges.forEach(i2 => {
-                        var edge = new Edge(n1, nodes[i2], 10);
+                        var edge = new Edge(n1, nodes[i2], cost);
                         n1.edges.push(edge);
                         this.edges.push(edge);
                     });
@@ -169,6 +174,7 @@
         findNode(name: string): Node {
             return this.nodesByName[name.toLowerCase()] || null;
         }
+
         findPath() {
             if (this.sourceNode == null || this.destNode == null) {
                 this.path = [];
@@ -207,7 +213,7 @@
                 var mn = new PathNode(this.markNode);
                 mn.edges = nodes.filter(n => n !== source).map(n =>
                     new PathEdge(n, mn.node.pos.distance(n.node.pos)));
-                source.edges.push(new PathEdge(mn, 1));
+                source.edges.push(new PathEdge(mn, World.spellCost));
                 nodes.push(mn);
             }
 
@@ -216,7 +222,7 @@
                 var cell = Cell.fromPosition(n.node.pos);
                 this.areas.forEach(a => {
                     if (a.containsCell(cell)) {
-                        n.edges.push(new PathEdge(nodeMap[a.target.id], 1));
+                        n.edges.push(new PathEdge(nodeMap[a.target.id], World.spellCost));
                     }
                 });
             });
