@@ -10,6 +10,20 @@
         distance(other: Vec2): number {
             return Math.sqrt(((other.x - this.x) * (other.x - this.x)) + ((other.y - this.y) * (other.y - this.y)));
         }
+
+        static fromCell(x: number, y: number): Vec2 {
+            return new Vec2(x * Cell.width + Cell.widthOffset, y * Cell.height + Cell.heightOffset);
+        }
+    }
+
+    export class Cell {
+        static width: number = 44.5;
+        static height: number = 44.6;
+        static widthOffset: number = 20;
+        static heightOffset: number = 35;
+        static fromPosition(pos: Vec2): Vec2 {
+            return new Vec2(Math.floor((pos.x - Cell.widthOffset) / Cell.width), Math.floor((pos.y - Cell.heightOffset) / Cell.height));
+        }
     }
 
     export class Node {
@@ -33,7 +47,21 @@
         constructor(public y: number, public x1: number, public x2: number) { }
     }
     export class Area {
-        constructor(public target: Node, public rows: CellRow[]) { }
+        private minY: number;
+        private maxY: number;
+
+        constructor(public target: Node, public rows: CellRow[]) {
+            this.minY = rows[0].y;
+            this.maxY = rows[rows.length - 1].y;
+        }
+
+        public containsCell(pos: Vec2) {
+            if (pos.y >= this.minY && pos.y <= this.maxY) {
+                var row = this.rows[pos.y - this.minY];
+                return pos.x >= row.x1 && pos.x <= row.x2;
+            }
+            return false;
+        }
     }
 
     export interface WorldListener { (WorldUpdate): void; }
@@ -182,6 +210,16 @@
                 source.edges.push(new PathEdge(mn, 1));
                 nodes.push(mn);
             }
+
+            // intervention
+            nodes.forEach(n => {
+                var cell = Cell.fromPosition(n.node.pos);
+                this.areas.forEach(a => {
+                    if (a.containsCell(cell)) {
+                        n.edges.push(new PathEdge(nodeMap[a.target.id], 1));
+                    }
+                });
+            });
 
             var q: PathNode[] = nodes.slice();
 

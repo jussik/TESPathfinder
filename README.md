@@ -4,7 +4,7 @@ A web application for finding the quickest way to travel around Vvardenfell in _
 
 ## Todo
 
-1. Intervention spells used in path finding
+1. Intervention spells with intermediate walking
 1. Propylon chambers
 1. Enable/disable features, show/hide map elements
 1. Text seach

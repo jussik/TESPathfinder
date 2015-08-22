@@ -68,10 +68,7 @@ module tesp {
         }
 
         private drawCellEdge(x1: number, y1: number, x2: number, y2: number, type: string) {
-            return this.drawEdge(this.cell2vec(x1, y1), this.cell2vec(x2, y2), type, "map-area");
-        }
-        private cell2vec(x: number, y: number): Vec2 {
-            return new Vec2(x * 44.5 + 20, y * 44.6 + 35);
+            return this.drawEdge(Vec2.fromCell(x1, y1), Vec2.fromCell(x2, y2), type, "map-area");
         }
 
         private renderPath() {
@@ -119,14 +116,14 @@ module tesp {
                     var el = document.createElement('div');
                     el.classList.add("map-grid");
                     el.classList.add("map-grid-v");
-                    el.style.left = (i * 44.5 + 20) + "px";
+                    el.style.left = (i * Cell.width + Cell.widthOffset) + "px";
                     this.gridContainer.appendChild(el);
                 }
                 for (var i = 0; i < 42; i++) {
                     var el = document.createElement('div');
                     el.classList.add("map-grid");
                     el.classList.add("map-grid-h");
-                    el.style.top = (i * 44.6 + 35) + "px";
+                    el.style.top = (i * Cell.height + Cell.heightOffset) + "px";
                     this.gridContainer.appendChild(el);
                 }
             }
