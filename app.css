@@ -67,6 +67,7 @@
 .map-silt-strider { background: orange; }
 .map-boat { background: skyblue; }
 .map-holamayan { background: aquamarine; }
+.map-propylon { background: lime; }
 .map-gondola { background: olivedrab; }
 .map-divine { background: magenta; }
 .map-almsivi { background: yellow; }
@@ -77,6 +78,7 @@
 .hide-silt-strider .map-silt-strider { display: none; }
 .hide-boat .map-boat { display: none; }
 .hide-holamayan .map-holamayan { display: none; }
+.hide-propylon .map-propylon { display: none; }
 .hide-gondola .map-gondola { display: none; }
 .hide-divine .map-divine { display: none; }
 .hide-almsivi .map-almsivi { display: none; }

@@ -114,6 +114,7 @@
                 new Feature("Silt Striders", "silt-strider", true),
                 new Feature("Boats", "boat", true),
                 new Feature("Holamayan Boat", "holamayan", true),
+                new Feature("Propylon Chambers", "propylon", true),
                 new Feature("Vivec Gondolas", "gondola", true),
                 new Feature("Divine Intervention", "divine", true),
                 new Feature("Almsivi Intervention", "almsivi", true),

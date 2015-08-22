@@ -23,6 +23,9 @@ module tesp {
             world.addListener(reason => {
                 if (reason === WorldUpdate.PathUpdate)
                     this.updatePath();
+                else if (reason === WorldUpdate.MarkChange)
+                    element.querySelector('.search-mark').textContent = this.world.markNode != null
+                        ? `[${this.world.markNode.pos.x}-${this.world.markNode.pos.y}]` : "";
             });
 
             element.onclick = ev => {

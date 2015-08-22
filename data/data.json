@@ -172,6 +172,67 @@
       "edges": [ 0 ]
     }
   ],
+  "propylon": [
+    {
+      "name": "Falensarano",
+      "x": 1096,
+      "y": 905
+    },
+    {
+      "name": "Telasero",
+      "x": 1107,
+      "y": 1492,
+      "edges": [ 0 ]
+    },
+    {
+      "name": "Marandus",
+      "x": 895,
+      "y": 1315,
+      "edges": [ 1 ]
+    },
+    {
+      "name": "Hlormaren",
+      "x": 429,
+      "y": 1220,
+      "edges": [ 2 ]
+    },
+    {
+      "name": "Andasreth",
+      "x": 323,
+      "y": 938,
+      "edges": [ 3 ]
+    },
+    {
+      "name": "Berandas",
+      "x": 255,
+      "y": 778,
+      "edges": [ 4 ]
+    },
+    {
+      "name": "Falasmaryon",
+      "x": 631,
+      "y": 506,
+      "edges": [ 5 ]
+    },
+    {
+      "name": "Valenvaryon",
+      "x": 676,
+      "y": 359,
+      "edges": [ 6 ]
+    },
+    {
+      "name": "Rotheran",
+      "x": 983,
+      "y": 369,
+      "edges": [ 7 ]
+    },
+    {
+      "name": "Indoranyon",
+      "x": 1331,
+      "y": 770,
+      "edges": [ 0, 8 ]
+    }
+  ],
   "gondola": [
     {
       "name": "Arena Canton",
