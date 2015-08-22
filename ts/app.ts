@@ -11,7 +11,7 @@ module tesp {
                     var world = new World(data);
                     new MapComponent(world, document.getElementById("map"));
                     new SearchComponent(world, document.getElementById("search"));
-                    document.body.classList.remove("loading"); // remove "loading" class
+                    document.body.classList.remove("loading");
                 }));
         }
     }
