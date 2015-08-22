@@ -5,5 +5,13 @@
         <input placeholder="Destination" #dest (input)>
         <button (click)="search(loc.value, dest.value)">Go</button>
     </div>
-    <div>X:{{cursor?.x}} Y:{{cursor?.y}}</div>
+    <div>
+        From X:{{world.sourceNode?.pos?.x}} Y:{{world.sourceNode?.pos?.y}}
+        <button (click)="world.context = 'source'">Set</button>
+    </div>
+    <div>
+        To X:{{world.destNode?.pos?.x}} Y:{{world.destNode?.pos?.y}}
+        <button (click)="world.context = 'destination'">Set</button>
+    </div>
+    <div>Context: {{world.context}}</div>
 </div>

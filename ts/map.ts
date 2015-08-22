@@ -1,143 +1,82 @@
 ﻿import {Component, View, Inject, ElementRef} from 'angular2/angular2';
-import {Vec2, Node, Edge, World} from 'world';
-
-class MapNode {
-    id: number;
-
-    private pos: Vec2;
-    private element: HTMLElement;
-
-    constructor(private node: Node, private parentElement: HTMLElement) {
-        this.id = node.id;
-
-        this.element = document.createElement("div");
-        this.element.classList.add("map-node", "map-" + node.type);
-        this.element.title = node.name;
-        parentElement.appendChild(this.element);
-
-        this.pos = new Vec2(node.pos.x, node.pos.y);
-        this.element.style.left = this.pos.x + "px";
-        this.element.style.top = this.pos.y + "px";
-    }
-
-    update() {
-        var newX = this.node.pos.x;
-        if (newX !== this.pos.x) {
-            this.element.style.left = newX + "px";
-            this.pos.x = newX;
-        }
-
-        var newY = this.node.pos.y;
-        if (newY !== this.pos.x) {
-            this.element.style.top = newY + "px";
-            this.pos.y = newY;
-        }
-    }
-
-    remove() {
-        this.parentElement.removeChild(this.element);
-    }
-}
-
-class MapEdge {
-    private element: HTMLElement;
-
-    constructor(private edge: Edge, private parentElement: HTMLElement) {
-        this.element = document.createElement("div");
-        this.element.classList.add("map-edge", "map-" + edge.srcNode.type);
-        this.element.title = edge.srcNode.name + " <-> " + edge.destNode.name;
-        parentElement.appendChild(this.element);
-        this.render();
-    }
-
-    render() {
-        var n1 = this.edge.srcNode.pos;
-        var n2 = this.edge.destNode.pos;
-        var length = Math.sqrt(((n2.x - n1.x) * (n2.x - n1.x)) + ((n2.y - n1.y) * (n2.y - n1.y)));
-        this.element.style.left = ((n1.x + n2.x) / 2) - (length / 2) + "px";
-        this.element.style.top = ((n1.y + n2.y) / 2) - 1 + "px";
-        this.element.style.width = length + "px";
-        this.element.style.transform = "rotate(" + Math.atan2(n1.y - n2.y, n1.x - n2.x) + "rad)";
-    }
-
-    remove() {
-        this.parentElement.removeChild(this.element);
-    }
-}
-
-enum Op { Update, Add, Remove, Done };
+import {Vec2, Node, World, WorldUpdate} from 'world';
 
 @Component({ selector: 'map' })
 @View({ template: '<img id="map" src="img/map.jpg" (click)="mapClick($event)">' })
 export class MapComponent {
-    private nodes: MapNode[] = [];
-    private edges: MapEdge[] = [];
+    private element: HTMLElement;
+    private edgeContainer: HTMLElement;
+    private nodeContainer: HTMLElement;
+    private pathElem: HTMLElement;
 
-    constructor(@Inject(World) private world: World, @Inject(ElementRef) private element: ElementRef) {
-        world.addListener(() => this.render());
-        this.render();
+    constructor(@Inject(World) private world: World, @Inject(ElementRef) element: ElementRef) {
+        this.element = element.nativeElement;
+
+        world.addListener(reason => {
+            if (reason === WorldUpdate.Loaded)
+                this.renderNodes();
+            else if (reason === WorldUpdate.PathUpdated)
+                this.renderPath();
+        });
+
+        this.renderNodes();
+        this.renderPath();
     }
 
-    private render() {
-        var m = 0,
-            v = 0,
-            modelNodes: Node[] = this.world.nodes,
-            newNodes: Node[] = [];
+    private renderNodes() {
+        if (this.nodeContainer != null)
+            this.nodeContainer.parentElement.removeChild(this.nodeContainer);
+        this.nodeContainer = document.createElement("div");
+        this.element.appendChild(this.nodeContainer);
+        this.world.nodes.forEach(n =>
+            this.nodeContainer.appendChild(this.drawNode(n.pos, n.name, n.type)));
 
-        var model: Node,
-            view: MapNode,
-            op: Op;
-        do {
-            // iterate through view and model
-            // we only need one shared pass as both arrays are sorted by node id
-            model = modelNodes[m];
-            view = this.nodes[v];
-            if (model !== undefined) {
-                if (view !== undefined) {
-                    var d = model.id - view.id;
-                    if (d === 0) { // same node, just update coordinates
-                        op = Op.Update;
-                    } else if (d < 0) { // add new node from model
-                        op = Op.Add;
-                    } else { // remove obsolete view node
-                        op = Op.Remove;
-                    }
-                } else { // model only, add
-                    op = Op.Add;
-                }
-            } else if (view !== undefined) { // view only, remove
-                op = Op.Remove;
-            } else { // both null, we're done here
-                op = Op.Done;
-            }
+        if (this.edgeContainer != null)
+            this.edgeContainer.parentElement.removeChild(this.edgeContainer);
+        this.edgeContainer = document.createElement("div");
+        this.element.appendChild(this.edgeContainer);
+        this.world.edges.forEach(e =>
+            this.edgeContainer.appendChild(this.drawEdge(e.srcNode.pos, e.destNode.pos, e.srcNode.type)));
+    }
 
-            switch (op) {
-                case Op.Update:
-                    view.update();
-                    m++;
-                    v++;
-                    break;
-                case Op.Add:
-                    newNodes.push(model);
-                    m++;
-                    break;
-                case Op.Remove:
-                    this.nodes.splice(v, 1);
-                    view.remove();
-                    // no need to increment v as next element is shifted back
-                    break;
-            }
-        } while (op !== Op.Done);
+    private renderPath() {
+        if (this.pathElem != null)
+            this.pathElem.parentElement.removeChild(this.pathElem);
 
-        if (newNodes.length > 0) {
-            var elem = this.element.nativeElement;
-            this.nodes = this.nodes.concat(newNodes.map(n => new MapNode(n, elem))).sort((a, b) => a.id - b.id);
+        var path: Node[] = this.world.path;
+        if (path == null || path.length < 2)
+            return;
+
+        this.pathElem = document.createElement("div");
+        this.element.appendChild(this.pathElem);
+        var n1 = path[0]
+        for (var i = 1; i < path.length; i++) {
+            var n2 = path[i];
+            this.pathElem.appendChild(this.drawEdge(n1.pos, n2.pos, 'path'));
+            n1 = n2;
         }
-
-        this.edges.forEach(e => e.remove());
-        var elem = this.element.nativeElement;
-        this.edges = this.world.edges.map(e => new MapEdge(e, elem));
     }
+
+    drawNode(pos: Vec2, name: string, type: string): HTMLElement {
+        var element = document.createElement("div");
+        element.classList.add("map-node", "map-" + type);
+        element.title = name;
+        element.style.left = pos.x + "px";
+        element.style.top = pos.y + "px";
+        return element;
+    }
+
+    drawEdge(n1: Vec2, n2: Vec2, type: string): HTMLElement {
+        var element = document.createElement("div");
+        element.classList.add("map-edge", "map-" + type);
+        var length = n1.distance(n2);
+        element.style.left = ((n1.x + n2.x) / 2) - (length / 2) + "px";
+        element.style.top = ((n1.y + n2.y) / 2) - 1 + "px";
+        element.style.width = length + "px";
+        element.style.transform = "rotate(" + Math.atan2(n1.y - n2.y, n1.x - n2.x) + "rad)";
+        return element;
+    }
+
     private mapClick(ev: MouseEvent) {
         this.world.click(ev.pageX, ev.pageY);
     }

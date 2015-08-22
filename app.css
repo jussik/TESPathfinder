@@ -12,7 +12,7 @@
     position: fixed;
     left: 5px;
     top: 5px;
-    z-index: 3;
+    z-index: 10;
 
     padding: 10px;
     background: rgba(255, 255, 255, 0.75);
@@ -23,7 +23,7 @@
 
 .map-node {
     position: absolute;
-    z-index: 2;
+    z-index: 5;
 
     margin-left: -6px;
     margin-top: -6px;
@@ -43,5 +43,6 @@
 .map-from { background: purple; }
 .map-mages-guild { background: red; }
 .map-silt-strider { background: orange; }
+.map-path { background: white; z-index: 2; }
 
 
