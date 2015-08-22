@@ -11,7 +11,7 @@ class PathNode extends PathSegment {
 }
 class PathEdge extends PathSegment {
     constructor(n1: Node, n2: Node) {
-        super('edge', n1.type === n2.type ? n1.type : 'walk');
+        super('edge', n1.type === n2.type ? n1.type : (n2.type === 'mark' ? n2.type : 'walk'));
     }
 }
 
