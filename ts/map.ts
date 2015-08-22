@@ -7,12 +7,18 @@ module tesp {
         private areaContainer: HTMLElement;
         private pathContainer: HTMLElement;
         private gridContainer: HTMLElement;
+        private sourceElem: HTMLElement;
+        private destElem: HTMLElement;
         private markElem: HTMLElement;
 
         constructor(private world: World, private element: HTMLElement) {
             world.addListener(reason => {
                 if (reason === WorldUpdate.PathUpdate)
                     this.renderPath();
+                else if (reason === WorldUpdate.SourceChange)
+                    this.renderSource();
+                else if (reason === WorldUpdate.DestinationChange)
+                    this.renderDestination();
                 else if (reason === WorldUpdate.MarkChange)
                     this.renderMark();
                 else if (reason === WorldUpdate.FeatureChange)
@@ -95,19 +101,29 @@ module tesp {
         }
 
         private renderMark() {
-            var markNode = this.world.markNode;
-            if (markNode != null) {
-                var markPos = markNode.pos;
-                if (this.markElem) {
-                    this.markElem.style.left = markPos.x + 'px';
-                    this.markElem.style.top = markPos.y + 'px';
+            this.markElem = this.addOrUpdateNodeElem(this.world.markNode, this.markElem);
+        }
+        private renderSource() {
+            this.sourceElem = this.addOrUpdateNodeElem(this.world.sourceNode, this.sourceElem);
+        }
+        private renderDestination() {
+            this.destElem = this.addOrUpdateNodeElem(this.world.destNode, this.destElem);
+        }
+
+        private addOrUpdateNodeElem(node: Node, elem: HTMLElement): HTMLElement {
+            if (node != null) {
+                var pos = node.pos;
+                if (elem) {
+                    elem.style.left = pos.x + 'px';
+                    elem.style.top = pos.y + 'px';
                 } else {
-                    this.markElem = this.drawNode(markPos, markNode.name, markNode.type);
-                    this.element.appendChild(this.markElem);
+                    elem = this.drawNode(pos, node.name, node.type);
+                    this.element.appendChild(elem);
                 }
-            } else if (this.markElem) {
-                this.markElem.parentElement.removeChild(this.markElem);
-                this.markElem = null;
+                return elem;
+            } else if (elem) {
+                elem.parentElement.removeChild(elem);
+                return null;
             }
         }
 

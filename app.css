@@ -62,6 +62,7 @@
     height: 2px;
 }
 
+.map-source, .map-destination { background: white; }
 .map-mark { background: black; }
 .map-mages-guild { background: red; }
 .map-silt-strider { background: orange; }
