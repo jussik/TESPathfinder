@@ -1,11 +1,6 @@
 ﻿module tesp {
     export class Vec2 {
-        x: number;
-        y: number;
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
+        constructor(public x: number, public y: number) { }
 
         distance(other: Vec2): number {
             return Math.sqrt(((other.x - this.x) * (other.x - this.x)) + ((other.y - this.y) * (other.y - this.y)));
@@ -64,14 +59,14 @@
         }
     }
 
-    export interface WorldListener { (WorldUpdate): void; }
+    export interface WorldListener { (reason: WorldUpdate): void; }
     export enum WorldUpdate { ContextChange, SourceChange, DestinationChange, MarkChange, FeatureChange, PathUpdate }
 
     export class Feature {
         enabled: boolean;
         visible: boolean;
 
-        constructor(public name: string, public type: string, public affectsPath) {
+        constructor(public name: string, public type: string, public affectsPath: boolean) {
             this.enabled = true;
             this.visible = true;
         }
@@ -101,7 +96,7 @@
         features: Feature[];
 
         static defaultTransportCost: number = 10;
-        static transportCost = { "mages-guild": 30 };
+        static transportCost: { [key: string]: number } = { "mages-guild": 30 };
         static spellCost: number = 5;
 
         private listeners: WorldListener[] = [];
@@ -145,7 +140,7 @@
             array.forEach((n, i1) => {
                 var n1 = nodes[i1];
                 if (n.edges) {
-                    n.edges.forEach(i2 => {
+                    (<number[]>n.edges).forEach(i2 => {
                         var n2 = nodes[i2];
                         var edge = new Edge(n1, n2, cost);
                         n1.edges.push(edge);
@@ -154,7 +149,7 @@
                     });
                 }
                 if (n.oneWayEdges) {
-                    n.oneWayEdges.forEach(i2 => {
+                    (<number[]>n.oneWayEdges).forEach(i2 => {
                         var edge = new Edge(n1, nodes[i2], cost);
                         n1.edges.push(edge);
                         this.edges.push(edge);
@@ -162,7 +157,7 @@
                 }
                 if (n.cells) {
                     var y = n.top || 0;
-                    var rows = n.cells.map(c => new CellRow(y++, c[0], c[1]));
+                    var rows = (<number[][]>n.cells).map(c => new CellRow(y++, c[0], c[1]));
                     this.areas.push(new Area(n1, rows));
                 }
             });

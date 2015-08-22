@@ -57,8 +57,8 @@ module tesp {
         }
 
         private updatePath() {
-            var child;
-            while (child = this.pathContainer.firstElementChild) {
+            var child: Element;
+            while (child = <Element>this.pathContainer.firstElementChild) {
                 this.pathContainer.removeChild(child);
             }
 
@@ -80,7 +80,7 @@ module tesp {
             el.textContent = `${node.name} (${node.type})`;
             return el;
         }
-        static teleportTypes = { mark: true, divine: true, almsivi: true }
+        static teleportTypes: { [key: string]: boolean } = { mark: true, divine: true, almsivi: true };
         private drawPathEdge(n1: Node, n2: Node): HTMLElement {
             var el = document.createElement("div");
             el.textContent = n1.type === n2.type ? n1.type : (SearchComponent.teleportTypes[n2.type] ? n2.type : 'walk');
@@ -112,17 +112,6 @@ module tesp {
             input.onchange = ev => onchange(input.checked);
             input.checked = initial;
             return input;
-        }
-
-        private search(loc, dest) {
-            var locNode = this.world.findNode(loc);
-            var destNode = this.world.findNode(dest);
-            if (locNode !== null && destNode !== null) {
-                this.world.context = "source";
-                this.world.contextClick(locNode.pos.x, locNode.pos.y);
-                this.world.context = "destination";
-                this.world.contextClick(destNode.pos.x, destNode.pos.y);
-            }
         }
     }
 }
