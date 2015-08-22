@@ -8,7 +8,7 @@ Implemented in Typescript using Angular 2.
 
 Includes Visual Studio 2015 solution but works just as well without it. (TODO: add gulpfile)
 
-Compile ts/*.ts into js/ (e.g. with tsc, TODO: instructions), drop it on a server and you're ready to go.
+Compile ts/*.ts into js/ (e.g. with tsc, TODO: instructions), and run `jspm install`.
 
 ## Acknowledgements
 
