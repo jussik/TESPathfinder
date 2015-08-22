@@ -60,13 +60,6 @@ export class World {
             this.loadTransport(data, k);
         }
 
-        this.nodes.forEach(n => {
-            console.log(n.name);
-            n.edges.forEach(e => {
-                console.log("-> " + (n === e.srcNode ? e.destNode : e.srcNode).name);
-            });
-        })
-
         // index by name
         this.nodesByName = {};
         this.nodes.forEach(n => this.nodesByName[n.name.toLowerCase()] = n);
@@ -108,8 +101,11 @@ export class World {
         return this.nodesByName[name.toLowerCase()] || null;
     }
     findPath() {
-        if (this.sourceNode == null || this.destNode == null)
+        if (this.sourceNode == null || this.destNode == null) {
+            this.path = [];
+            this.onchange(WorldUpdate.PathUpdated);
             return;
+        }
 
         // create nodes
         var nodeMap: Map<number, PathNode> = {};
@@ -182,7 +178,7 @@ export class World {
         this.onchange(WorldUpdate.ContextChanged);
     }
 
-    click(x: number, y: number) {
+    contextClick(x: number, y: number) {
         if (!this.context)
             return;
 
@@ -206,6 +202,22 @@ export class World {
             } else {
                 this.markNode = new Node("Recall", x, y, "mark");
             }
+            this.onchange(WorldUpdate.MarkChange);
+        }
+
+        this.context = null;
+        this.findPath();
+    }
+
+    clearContext(context: string) {
+        if (context === 'source') {
+            this.sourceNode = null;
+            this.onchange(WorldUpdate.SourceChange);
+        } else if (context === 'destination') {
+            this.destNode = null;
+            this.onchange(WorldUpdate.DestinationChange);
+        } else if (context === 'mark') {
+            this.markNode = null;
             this.onchange(WorldUpdate.MarkChange);
         }
 

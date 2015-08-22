@@ -7,7 +7,8 @@ export class MapComponent {
     private element: HTMLElement;
     private edgeContainer: HTMLElement;
     private nodeContainer: HTMLElement;
-    private pathElem: HTMLElement;
+    private pathContainer: HTMLElement;
+    private markElem: HTMLElement;
 
     constructor(@Inject(World) private world: World, @Inject(ElementRef) element: ElementRef) {
         this.element = element.nativeElement;
@@ -17,10 +18,13 @@ export class MapComponent {
                 this.renderNodes();
             else if (reason === WorldUpdate.PathUpdated)
                 this.renderPath();
+            else if (reason === WorldUpdate.MarkChange)
+                this.renderMark();
         });
 
         this.renderNodes();
         this.renderPath();
+        this.renderMark();
     }
 
     private renderNodes() {
@@ -40,20 +44,39 @@ export class MapComponent {
     }
 
     private renderPath() {
-        if (this.pathElem != null)
-            this.pathElem.parentElement.removeChild(this.pathElem);
+        if (this.pathContainer != null)
+            this.pathContainer.parentElement.removeChild(this.pathContainer);
 
         var path: Node[] = this.world.path;
-        if (path == null || path.length < 2)
+        if (path == null || path.length < 2) {
+            this.pathContainer = null;
             return;
+        }
 
-        this.pathElem = document.createElement("div");
-        this.element.appendChild(this.pathElem);
+        this.pathContainer = document.createElement("div");
+        this.element.appendChild(this.pathContainer);
         var n1 = path[0]
         for (var i = 1; i < path.length; i++) {
             var n2 = path[i];
-            this.pathElem.appendChild(this.drawEdge(n1.pos, n2.pos, 'path'));
+            this.pathContainer.appendChild(this.drawEdge(n1.pos, n2.pos, 'path'));
             n1 = n2;
+        }
+    }
+
+    private renderMark() {
+        var markNode = this.world.markNode;
+        if (markNode != null) {
+            var markPos = markNode.pos;
+            if (this.markElem) {
+                this.markElem.style.left = markPos.x + 'px';
+                this.markElem.style.top = markPos.y + 'px';
+            } else {
+                this.markElem = this.drawNode(markPos, markNode.name, markNode.type);
+                this.element.appendChild(this.markElem);
+            }
+        } else if (this.markElem) {
+            this.markElem.parentElement.removeChild(this.markElem);
+            this.markElem = null;
         }
     }
 
@@ -78,6 +101,6 @@ export class MapComponent {
     }
 
     private mapClick(ev: MouseEvent) {
-        this.world.click(ev.pageX, ev.pageY);
+        this.world.contextClick(ev.pageX, ev.pageY);
     }
 }

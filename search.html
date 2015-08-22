@@ -8,14 +8,17 @@
     <div>
         From [{{world.sourceNode?.pos?.x}}-{{world.sourceNode?.pos?.y}}]
         <button (click)="world.context = 'source'">Set</button>
+        <button (click)="world.clearContext('source')">Unset</button>
     </div>
     <div>
         To [{{world.destNode?.pos?.x}}-{{world.destNode?.pos?.y}}]
         <button (click)="world.context = 'destination'">Set</button>
+        <button (click)="world.clearContext('destination')">Unset</button>
     </div>
     <div>
         Mark [{{world.markNode?.pos?.x}}-{{world.markNode?.pos?.y}}]
         <button (click)="world.context = 'mark'">Set</button>
+        <button (click)="world.clearContext('mark')">Unset</button>
     </div>
     <div>Context: {{world.context}}</div>
 </div>
