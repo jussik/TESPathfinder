@@ -1,30 +1,30 @@
 ﻿{
   "mages-guild": [
     {
-      "name": "Balmora Mages Guild",
+      "name": "Balmora",
       "x": 567,
       "y": 1272
     },
     {
-      "name": "Caldera Mages Guild",
+      "name": "Caldera",
       "x": 614,
       "y": 1088,
       "edges": [ 0 ]
     },
     {
-      "name": "Vivec Mages Guild",
+      "name": "Vivec",
       "x": 849,
       "y": 1628,
       "edges": [ 0, 1 ]
     },
     {
-      "name": "Ald'Ruhn Mages Guild",
+      "name": "Ald'Ruhn",
       "x": 606,
       "y": 904,
       "edges": [ 0, 1, 2 ]
     },
     {
-      "name": "Sadrith Mora Mages Guild",
+      "name": "Sadrith Mora",
       "x": 1494,
       "y": 1041,
       "edges": [ 0, 1, 2, 3 ]
@@ -32,54 +32,54 @@
   ],
   "silt-strider": [
     {
-      "name": "Seyda Neen Silt Strider",
+      "name": "Seyda Neen",
       "x": 638,
       "y": 1578
     },
     {
-      "name": "Balmora Silt Strider",
+      "name": "Balmora",
       "x": 569,
       "y": 1297,
       "edges": [ 0 ]
     },
     {
-      "name": "Vivec Silt Strider",
+      "name": "Vivec",
       "x": 864,
       "y": 1587,
       "edges": [ 0, 1 ]
     },
     {
-      "name": "Suran Silt Strider",
+      "name": "Suran",
       "x": 974,
       "y": 1452,
       "edges": [ 0, 1, 2 ]
     },
     {
-      "name": "Molag Mar Silt Strider",
+      "name": "Molag Mar",
       "x": 1246,
       "y": 1512,
       "edges": [ 2, 3 ]
     },
     {
-      "name": "Ald'Ruhn Silt Strider",
+      "name": "Ald'Ruhn",
       "x": 588,
       "y": 897,
       "edges": [ 1 ]
     },
     {
-      "name": "Gnisis Silt Strider",
+      "name": "Gnisis",
       "x": 214,
       "y": 711,
       "edges": [ 0, 5 ]
     },
     {
-      "name": "Khuul Silt Strider",
+      "name": "Khuul",
       "x": 323,
       "y": 460,
       "edges": [ 5, 6 ]
     },
     {
-      "name": "Maar Gan Silt Strider",
+      "name": "Maar Gan",
       "x": 564,
       "y": 652,
       "edges": [ 5, 6, 7 ]
@@ -87,73 +87,73 @@
   ],
   "boat": [
     {
-      "name": "Hla Oad Boat",
+      "name": "Hla Oad",
       "x": 421,
       "y": 1410
     },
     {
-      "name": "Gnaar Mok Boat",
+      "name": "Gnaar Mok",
       "x": 369,
       "y": 1049,
       "edges": [ 0 ]
     },
     {
-      "name": "Khuul Boat",
+      "name": "Khuul",
       "x": 310,
       "y": 420,
       "edges": [ 1 ]
     },
     {
-      "name": "Dagon Fel Boat",
+      "name": "Dagon Fel",
       "x": 1026,
       "y": 195,
       "edges": [ 2 ]
     },
     {
-      "name": "Tel Mora Boat",
+      "name": "Tel Mora",
       "x": 1269,
       "y": 560,
       "edges": [ 3 ]
     },
     {
-      "name": "Sadrith Mora Boat",
+      "name": "Sadrith Mora",
       "x": 1455,
       "y": 982,
       "edges": [ 3, 4 ]
     },
     {
-      "name": "Vos Boat",
+      "name": "Vos",
       "x": 1231,
       "y": 573,
       "edges": [ 4 ],
       "oneWayEdges": [ 5 ]
     },
     {
-      "name": "Tel Aruhn Boat",
+      "name": "Tel Aruhn",
       "x": 1354,
       "y": 972,
       "edges": [ 3, 4, 6 ]
     },
     {
-      "name": "Tel Branora Boat",
+      "name": "Tel Branora",
       "x": 1334,
       "y": 1751,
       "edges": [ 5 ]
     },
     {
-      "name": "Molag Mar Boat",
+      "name": "Molag Mar",
       "x": 1311,
       "y": 1536,
       "edges": [ 0, 8 ]
     },
     {
-      "name": "Vivec Boat",
+      "name": "Vivec",
       "x": 884,
       "y": 1599,
       "edges": [ 0, 8, 9 ]
     },
     {
-      "name": "Ebonheart Boat",
+      "name": "Ebonheart",
       "x": 799,
       "y": 1757,
       "edges": [ 0, 5, 8, 10 ]
@@ -161,7 +161,7 @@
   ],
   "holamayan": [
     {
-      "name": "Ebonheart Boat To Holamayan",
+      "name": "Ebonheart",
       "x": 799,
       "y": 1742
     },
@@ -174,30 +174,30 @@
   ],
   "gondola": [
     {
-      "name": "Arena Canton Gondola",
+      "name": "Arena Canton",
       "x": 865,
       "y": 1676
     },
     {
-      "name": "Foreign Quarter Gondola",
+      "name": "Foreign Quarter",
       "x": 839,
       "y": 1611,
       "edges": [ 0 ]
     },
     {
-      "name": "Hlaalu Canton Gondola",
+      "name": "Hlaalu Canton",
       "x": 816,
       "y": 1674,
       "edges": [ 0, 1 ]
     },
     {
-      "name": "Telvanni Canton Gondola",
+      "name": "Telvanni Canton",
       "x": 926,
       "y": 1671,
       "edges": [ 0, 1 ]
     },
     {
-      "name": "Temple Canton Gondola",
+      "name": "Temple Canton",
       "x": 851,
       "y": 1736,
       "edges": [ 0, 2, 3 ]
