@@ -78,7 +78,7 @@
         constructor(data: any) {
             this.features = [
                 new Feature("Mark/Recall", "mark", true),
-                new Feature("Mages Gguild", "mages-guild", true),
+                new Feature("Mages Guild", "mages-guild", true),
                 new Feature("Silt Striders", "silt-strider", true),
                 new Feature("Boats", "boat", true),
                 new Feature("Holamayan Boat", "holamayan", true),
