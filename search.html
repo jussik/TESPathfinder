@@ -27,8 +27,8 @@
         Features: visible active
         <div *ng-for="#feat of world.features">
             {{feat.name}}:
-            <input type="checkbox" [(ng-model)]="feat.visible" (click)="visiblityChanged(feat)">
-            <input type="checkbox" [(ng-model)]="feat.enabled" (click)="enabledChanged(feat)" [hidden]="!feat.affectsPath">
+            <input type="checkbox" [(ng-model)]="feat.visible">
+            <input type="checkbox" [(ng-model)]="feat.enabled" [hidden]="!feat.affectsPath">
         </div>
     </div>
 </div>

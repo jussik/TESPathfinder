@@ -1,5 +1,5 @@
 ﻿import {Component, View, Inject, NgFor, formDirectives} from 'angular2/angular2';
-import {Vec2, Node, Feature, World, WorldUpdate} from 'world';
+import {Vec2, Node, Feature, World, WorldUpdate} from './world';
 
 class PathSegment {
     constructor(private mode: string, private type: string, public text?: string) { }

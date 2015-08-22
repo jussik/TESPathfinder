@@ -1,8 +1,10 @@
 ﻿/// <reference path="typings/angular2/angular2.d.ts" />
+import 'reflect-metadata';
+
 import {Component, View, Inject, bootstrap} from 'angular2/angular2';
-import {World} from 'world';
-import {MapComponent} from 'map';
-import {SearchComponent} from 'search';
+import {World} from './world';
+import {MapComponent} from './map';
+import {SearchComponent} from './search';
 
 @Component({
     selector: 'app',

@@ -1,5 +1,5 @@
 ﻿import {Component, View, Inject, ElementRef} from 'angular2/angular2';
-import {Vec2, Node, CellRow, World, WorldUpdate} from 'world';
+import {Vec2, Node, CellRow, World, WorldUpdate} from './world';
 
 @Component({ selector: 'map' })
 @View({ template: '<img id="map" src="img/map.jpg" (click)="mapClick($event)">' })
