@@ -1,5 +1,5 @@
 ﻿{
-  "magesGuild": [
+  "mages-guild": [
     {
       "name": "Balmora Mages Guild",
       "x": 567,
@@ -8,25 +8,29 @@
     {
       "name": "Caldera Mages Guild",
       "x": 614,
-      "y": 1088
+      "y": 1088,
+      "edges": [ 0 ]
     },
     {
       "name": "Vivec Mages Guild",
       "x": 849,
-      "y": 1628
+      "y": 1628,
+      "edges": [ 0, 1 ]
     },
     {
       "name": "Ald'Ruhn Mages Guild",
       "x": 606,
-      "y": 904
+      "y": 904,
+      "edges": [ 0, 1, 2 ]
     },
     {
       "name": "Sadrith Mora Mages Guild",
       "x": 1494,
-      "y": 1041
+      "y": 1041,
+      "edges": [ 0, 1, 2, 3 ]
     }
   ],
-  "siltStrider": [
+  "silt-strider": [
     {
       "name": "Seyda Neen Silt Strider",
       "x": 638,
@@ -36,49 +40,136 @@
       "name": "Balmora Silt Strider",
       "x": 569,
       "y": 1297,
-      "edges": [0]
+      "edges": [ 0 ]
     },
     {
       "name": "Vivec Silt Strider",
       "x": 864,
       "y": 1587,
-      "edges": [0,1]
+      "edges": [ 0, 1 ]
     },
     {
       "name": "Suran Silt Strider",
       "x": 974,
       "y": 1452,
-      "edges": [0,1,2]
+      "edges": [ 0, 1, 2 ]
     },
     {
       "name": "Molag Mar Silt Strider",
       "x": 1246,
       "y": 1512,
-      "edges": [2,3]
+      "edges": [ 2, 3 ]
     },
     {
       "name": "Ald'Ruhn Silt Strider",
       "x": 588,
       "y": 897,
-      "edges": [1]
+      "edges": [ 1 ]
     },
     {
       "name": "Gnisis Silt Strider",
       "x": 214,
       "y": 711,
-      "edges": [0,5]
+      "edges": [ 0, 5 ]
     },
     {
       "name": "Khuul Silt Strider",
       "x": 323,
       "y": 460,
-      "edges": [5,6]
+      "edges": [ 5, 6 ]
     },
     {
-      "name": "Maar Gan Strider",
+      "name": "Maar Gan Silt Strider",
       "x": 564,
       "y": 652,
-      "edges": [5,6,7]
+      "edges": [ 5, 6, 7 ]
+    }
+  ],
+  "boat": [
+    {
+      "name": "Hla Oad Boat",
+      "x": 421,
+      "y": 1410
+    },
+    {
+      "name": "Gnaar Mok Boat",
+      "x": 369,
+      "y": 1049,
+      "edges": [ 0 ]
+    },
+    {
+      "name": "Khuul Boat",
+      "x": 310,
+      "y": 420,
+      "edges": [ 1 ]
+    },
+    {
+      "name": "Dagon Fel Boat",
+      "x": 1026,
+      "y": 195,
+      "edges": [ 2 ]
+    },
+    {
+      "name": "Tel Mora Boat",
+      "x": 1269,
+      "y": 560,
+      "edges": [ 3 ]
+    },
+    {
+      "name": "Sadrith Mora Boat",
+      "x": 1455,
+      "y": 982,
+      "edges": [ 3, 4 ]
+    },
+    {
+      "name": "Vos Boat",
+      "x": 1231,
+      "y": 573,
+      "edges": [ 4 ],
+      "oneWayEdges": [ 5 ]
+    },
+    {
+      "name": "Tel Aruhn Boat",
+      "x": 1354,
+      "y": 972,
+      "edges": [ 3, 4, 6 ]
+    },
+    {
+      "name": "Tel Branora Boat",
+      "x": 1334,
+      "y": 1751,
+      "edges": [ 5 ]
+    },
+    {
+      "name": "Molag Mar Boat",
+      "x": 1311,
+      "y": 1536,
+      "edges": [ 0, 8 ]
+    },
+    {
+      "name": "Vivec Boat",
+      "x": 884,
+      "y": 1599,
+      "edges": [ 0, 8, 9 ]
+    },
+    {
+      "name": "Ebonheart Boat",
+      "x": 799,
+      "y": 1757,
+      "edges": [ 0, 5, 8, 10 ]
+    }
+  ],
+  "holamayan": [
+    {
+      "name": "Ebonheart Boat To Holamayan",
+      "x": 799,
+      "y": 1742
+    },
+    {
+      "name": "Holamayan",
+      "x": 1559,
+      "y": 1390,
+      "edges": [ 0 ]
     }
   ]
 }

@@ -6,15 +6,15 @@
         <button (click)="search(loc.value, dest.value)">Go</button>
     </div>
     <div>
-        From X:{{world.sourceNode?.pos?.x}} Y:{{world.sourceNode?.pos?.y}}
+        From [{{world.sourceNode?.pos?.x}}-{{world.sourceNode?.pos?.y}}]
         <button (click)="world.context = 'source'">Set</button>
     </div>
     <div>
-        To X:{{world.destNode?.pos?.x}} Y:{{world.destNode?.pos?.y}}
+        To [{{world.destNode?.pos?.x}}-{{world.destNode?.pos?.y}}]
         <button (click)="world.context = 'destination'">Set</button>
     </div>
     <div>
-        Mark X:{{world.markNode?.pos?.x}} Y:{{world.markNode?.pos?.y}}
+        Mark [{{world.markNode?.pos?.x}}-{{world.markNode?.pos?.y}}]
         <button (click)="world.context = 'mark'">Set</button>
     </div>
     <div>Context: {{world.context}}</div>

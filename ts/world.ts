@@ -56,42 +56,48 @@ export class World {
     private nodesByName: Map<string, Node> = {};
 
     load(data: any) {
-        // mages guild
-        this.nodes = data.magesGuild.map(n => new Node(n.name, n.x, n.y, "mages-guild"));
-        this.edges = [];
-        var len = this.nodes.length;
-        for (var i = 0; i < len - 1; i++) {
-            var n1: Node = this.nodes[i];
-            for (var j = i + 1; j < len; j++) {
-                var n2: Node = this.nodes[j];
-                var edge = new Edge(n1, n2, 20);
-                n1.edges.push(edge);
-                n2.edges.push(edge);
-                this.edges.push(edge);
-            }
+        for (var k in data) {
+            this.loadTransport(data, k);
         }
 
-        // silt strider
-        var striderNodes: Node[] = data.siltStrider.map(n => new Node(n.name, n.x, n.y, "silt-strider"));
-        this.nodes = this.nodes.concat(striderNodes);
-        data.siltStrider.forEach((n, i1) => {
-            if (n.edges) {
-                var n1 = striderNodes[i1];
-                n.edges.forEach(i2 => {
-                    var n2 = striderNodes[i2];
-                    var edge = new Edge(n1, n2, 10);
-                    n1.edges.push(edge);
-                    n2.edges.push(edge);
-                    this.edges.push(edge);
-                });
-            }
-        });
+        this.nodes.forEach(n => {
+            console.log(n.name);
+            n.edges.forEach(e => {
+                console.log("-> " + (n === e.srcNode ? e.destNode : e.srcNode).name);
+            });
+        })
 
         // index by name
         this.nodesByName = {};
         this.nodes.forEach(n => this.nodesByName[n.name.toLowerCase()] = n);
 
         this.onchange(WorldUpdate.Loaded);
+    }
+
+    loadTransport(data: any, type: string) {
+        var array: any[] = data[type];
+        var nodes: Node[] = array.map(n => new Node(n.name, n.x, n.y, type));
+        this.nodes = this.nodes.concat(nodes);
+        array.forEach((n, i1) => {
+            if (n.edges) {
+                var n1 = nodes[i1];
+                n.edges.forEach(i2 => {
+                    var n2 = nodes[i2];
+                    var edge = new Edge(n1, n2, 10);
+                    n1.edges.push(edge);
+                    n2.edges.push(edge);
+                    this.edges.push(edge);
+                });
+            }
+            if (n.oneWayEdges) {
+                var n1 = nodes[i1];
+                n.oneWayEdges.forEach(i2 => {
+                    var edge = new Edge(n1, nodes[i2], 10);
+                    n1.edges.push(edge);
+                    this.edges.push(edge);
+                });
+            }
+        });
     }
 
     addListener(listener: WorldListener) {
