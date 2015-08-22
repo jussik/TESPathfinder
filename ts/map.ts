@@ -149,7 +149,11 @@ module tesp {
         }
 
         private updateFeatures() {
-            this.world.features.forEach(f => this.element.classList.toggle("hide-" + f.type, !f.visible));
+            this.element.className = "";
+            this.world.features.forEach(f => {
+                if (!f.visible)
+                    this.element.classList.add("hide-" + f.type);
+            });
         }
 
         private drawNode(pos: Vec2, name: string, type: string): HTMLElement {
