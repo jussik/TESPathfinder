@@ -2,7 +2,14 @@
 
 A web application for finding the quickest way to travel around Vvardenfell in _The Elder Scrolls III: Morrowind_.
 
-Implemented in Typescript using Angular 2.
+## Todo
+
+1. Intervention spells used in path finding
+1. Propylon chambers
+1. Enable/disable features, show/hide map elements
+1. Text seach
+1. Non-transport related places (towns, ruins etc.)
+1. Pretty interface
 
 ## Build
 

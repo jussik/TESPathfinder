@@ -23,10 +23,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
-    <Content Include="config.js" />
     <Content Include="img\map.jpg" />
     <Content Include="index.html" />
-    <Content Include="search.html" />
+    <Content Include="lib\es6-promise.js" />
+    <Content Include="lib\fetch.js" />
+    <Content Include="lib\html5-dataset.js" />
     <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -35,16 +36,11 @@
     <TypeScriptCompile Include="ts\app.ts" />
     <TypeScriptCompile Include="ts\map.ts" />
     <TypeScriptCompile Include="ts\search.ts" />
-    <TypeScriptCompile Include="ts\typings\angular2\angular2.d.ts" />
-    <TypeScriptCompile Include="ts\typings\es6-promise\es6-promise.d.ts" />
-    <TypeScriptCompile Include="ts\typings\rx\rx-lite.d.ts" />
-    <TypeScriptCompile Include="ts\typings\rx\rx.d.ts" />
     <TypeScriptCompile Include="ts\world.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\data.json" />
     <Content Include="README.md" />
-    <Content Include="package.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -84,8 +80,8 @@
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
     <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
-    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
-    <TypeScriptOutFile />
+    <TypeScriptModuleKind>None</TypeScriptModuleKind>
+    <TypeScriptOutFile>js/all.js</TypeScriptOutFile>
     <TypeScriptOutDir>js</TypeScriptOutDir>
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>

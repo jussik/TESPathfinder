@@ -3,12 +3,35 @@
 <head>
     <meta charset="utf-8" />
     <title>TES Pathfinder</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="app.css" type="text/css" />
-    <script src="jspm_packages/system.js"></script>
-    <script src="config.js"></script>
 </head>
-<body>
-    <app></app>
-    <script>System.import('js/app');</script>
+<body class="loading">
+    <div id="spinner">Loading...</div>
+    <div id="map">
+        <img src="img/map.jpg">
+    </div>
+    <div id="search">
+        <div class="search-container" data-search-container="input">
+            <div>From
+                <button data-context-set="source">Set</button>
+                <button data-context-unset="source">Unset</button>
+            </div>
+            <div>To
+                <button data-context-set="destination">Set</button>
+                <button data-context-unset="destination">Unset</button>
+            </div>
+            <div>Mark
+                <button data-context-set="mark">Set</button>
+                <button data-context-unset="mark">Unset</button>
+            </div>
+        </div>
+        <div class="search-container" data-search-container="path"></div>
+        <div class="search-container" data-search-container="features"></div>
+    </div>
+    <script src="lib/html5-dataset.js"></script>
+    <script src="lib/es6-promise.js"></script>
+    <script src="lib/fetch.js"></script>
+    <script src="js/all.js"></script>
 </body>
 </html>
