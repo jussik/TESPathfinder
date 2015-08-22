@@ -28,6 +28,13 @@ export class Edge {
     constructor(public srcNode: Node, public destNode: Node, public cost: number) { }
 }
 
+export class CellRow {
+    constructor(public y: number, public x1: number, public x2: number) { }
+}
+export class Area {
+    constructor(public target: Node, public rows: CellRow[]) { }
+}
+
 export interface WorldListener { (WorldUpdate): void; }
 export enum WorldUpdate { Loaded, ContextChanged, SourceChange, DestinationChange, MarkChange, PathUpdated }
 
@@ -47,6 +54,7 @@ class PathNode {
 export class World {
     nodes: Node[] = [];
     edges: Edge[] = [];
+    areas: Area[] = [];
     sourceNode: Node;
     destNode: Node;
     markNode: Node;
@@ -56,6 +64,10 @@ export class World {
     private nodesByName: Map<string, Node> = {};
 
     load(data: any) {
+        this.nodes = [];
+        this.edges = [];
+        this.areas = [];
+
         for (var k in data) {
             this.loadTransport(data, k);
         }
@@ -72,8 +84,8 @@ export class World {
         var nodes: Node[] = array.map(n => new Node(n.name, n.x, n.y, type));
         this.nodes = this.nodes.concat(nodes);
         array.forEach((n, i1) => {
+            var n1 = nodes[i1];
             if (n.edges) {
-                var n1 = nodes[i1];
                 n.edges.forEach(i2 => {
                     var n2 = nodes[i2];
                     var edge = new Edge(n1, n2, 10);
@@ -83,12 +95,16 @@ export class World {
                 });
             }
             if (n.oneWayEdges) {
-                var n1 = nodes[i1];
                 n.oneWayEdges.forEach(i2 => {
                     var edge = new Edge(n1, nodes[i2], 10);
                     n1.edges.push(edge);
                     this.edges.push(edge);
                 });
+            }
+            if (n.cells) {
+                var y = n.top || 0;
+                var rows = n.cells.map(c => new CellRow(y++, c[0], c[1]));
+                this.areas.push(new Area(n1, rows));
             }
         });
     }

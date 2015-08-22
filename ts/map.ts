@@ -1,5 +1,5 @@
 ﻿import {Component, View, Inject, ElementRef} from 'angular2/angular2';
-import {Vec2, Node, World, WorldUpdate} from 'world';
+import {Vec2, Node, CellRow, World, WorldUpdate} from 'world';
 
 @Component({ selector: 'map' })
 @View({ template: '<img id="map" src="img/map.jpg" (click)="mapClick($event)">' })
@@ -7,6 +7,7 @@ export class MapComponent {
     private element: HTMLElement;
     private edgeContainer: HTMLElement;
     private nodeContainer: HTMLElement;
+    private areaContainer: HTMLElement;
     private pathContainer: HTMLElement;
     private gridContainer: HTMLElement;
     private markElem: HTMLElement;
@@ -43,6 +44,39 @@ export class MapComponent {
         this.element.appendChild(this.edgeContainer);
         this.world.edges.forEach(e =>
             this.edgeContainer.appendChild(this.drawEdge(e.srcNode.pos, e.destNode.pos, e.srcNode.type)));
+
+        if (this.areaContainer != null)
+            this.areaContainer.parentElement.removeChild(this.areaContainer);
+        this.areaContainer = document.createElement("div");
+        this.element.appendChild(this.areaContainer);
+        this.world.areas.forEach(a => {
+            var type: string = a.target.type;
+            var prev: CellRow = null;
+            for (var i = 0; i < a.rows.length; i++) {
+                var row = a.rows[i];
+                if (prev != null) {
+                    if (row.x1 !== prev.x1) {
+                        this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, prev.x1, row.y, type));
+                    }
+                    if (row.x2 !== prev.x2) {
+                        this.areaContainer.appendChild(this.drawCellEdge(row.x2 + 1, row.y, prev.x2 + 1, row.y, type));
+                    }
+                } else {
+                    this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, row.x2 + 1, row.y, type));
+                }
+                this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, row.x1, row.y + 1, type));
+                this.areaContainer.appendChild(this.drawCellEdge(row.x2 + 1, row.y, row.x2 + 1, row.y + 1, type));
+                prev = row;
+            }
+            this.areaContainer.appendChild(this.drawCellEdge(prev.x1, prev.y + 1, prev.x2 + 1, prev.y + 1, type));
+        });
+    }
+
+    private drawCellEdge(x1: number, y1: number, x2: number, y2: number, type: string) {
+        return this.drawEdge(this.cell2vec(x1, y1), this.cell2vec(x2, y2), type);
+    }
+    private cell2vec(x: number, y: number): Vec2 {
+        return new Vec2(x * 44.5 + 20, y * 44.6 + 35);
     }
 
     private renderPath() {
@@ -98,6 +132,18 @@ export class MapComponent {
                 el.style.top = (i * 44.6 + 35) + "px";
                 this.gridContainer.appendChild(el);
             }
+            /*for (var i = 0; i < 37; i++) {
+                for (var j = 0; j < 42; j++) {
+                    var el = document.createElement('div');
+                    el.textContent = i + ',' + j;
+                    el.style.position = "absolute";
+                    el.style.color = "white";
+                    el.style.left = (i * 44.5 + 25) + "px";
+                    el.style.top = (j * 44.6 + 40) + "px";
+                    el.style.zIndex = "10";
+                    this.gridContainer.appendChild(el);
+                }
+            }*/
         }
     }
 
