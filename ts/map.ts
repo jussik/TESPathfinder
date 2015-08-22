@@ -8,6 +8,7 @@ export class MapComponent {
     private edgeContainer: HTMLElement;
     private nodeContainer: HTMLElement;
     private pathContainer: HTMLElement;
+    private gridContainer: HTMLElement;
     private markElem: HTMLElement;
 
     constructor(@Inject(World) private world: World, @Inject(ElementRef) element: ElementRef) {
@@ -25,6 +26,7 @@ export class MapComponent {
         this.renderNodes();
         this.renderPath();
         this.renderMark();
+        this.renderGrid();
     }
 
     private renderNodes() {
@@ -80,7 +82,26 @@ export class MapComponent {
         }
     }
 
-    drawNode(pos: Vec2, name: string, type: string): HTMLElement {
+    private renderGrid() {
+        if (!this.gridContainer) {
+            this.gridContainer = document.createElement("div");
+            this.element.appendChild(this.gridContainer);
+            for (var i = 0; i < 37; i++) {
+                var el = document.createElement('div');
+                el.classList.add("grid", "grid-v");
+                el.style.left = (i * 44.5 + 20) + "px";
+                this.gridContainer.appendChild(el);
+            }
+            for (var i = 0; i < 42; i++) {
+                var el = document.createElement('div');
+                el.classList.add("grid", "grid-h");
+                el.style.top = (i * 44.5 + 35) + "px";
+                this.gridContainer.appendChild(el);
+            }
+        }
+    }
+
+    private drawNode(pos: Vec2, name: string, type: string): HTMLElement {
         var element = document.createElement("div");
         element.classList.add("map-node", "map-" + type);
         element.title = name;
@@ -89,7 +110,7 @@ export class MapComponent {
         return element;
     }
 
-    drawEdge(n1: Vec2, n2: Vec2, type: string): HTMLElement {
+    private drawEdge(n1: Vec2, n2: Vec2, type: string): HTMLElement {
         var element = document.createElement("div");
         element.classList.add("map-edge", "map-" + type);
         var length = n1.distance(n2);
