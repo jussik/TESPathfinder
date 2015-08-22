@@ -47,8 +47,16 @@
 .map-boat { background: skyblue; }
 .map-holamayan { background: aquamarine; }
 .map-gondola { background: olivedrab; }
-.map-divine { background: purple; }
+.map-divine { background: magenta; }
+.map-almsivi { background: yellow; }
 .map-path { background: white; z-index: 3; }
+
+.map-edge.map-divine {
+    background: repeating-linear-gradient(45deg, transparent, transparent 4px, magenta 4px, magenta 6px);
+}
+.map-edge.map-almsivi {
+    background: repeating-linear-gradient(-45deg, transparent, transparent 4px, yellow 4px, yellow 6px);
+}
 
 .grid {
     position: absolute;
