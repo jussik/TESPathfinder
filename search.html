@@ -21,4 +21,6 @@
         <button (click)="world.clearContext('mark')">Unset</button>
     </div>
     <div>Context: {{world.context}}</div>
+    <div>Path:</div>
+    <div *ng-for="#node of world.path">&bullet; {{node.name}}</div>
 </div>

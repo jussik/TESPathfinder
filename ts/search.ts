@@ -1,8 +1,11 @@
-﻿import {Component, View, Inject, NgIf} from 'angular2/angular2';
+﻿import {Component, View, Inject, NgFor} from 'angular2/angular2';
 import {Vec2, World} from 'world';
 
 @Component({ selector: 'search' })
-@View({ templateUrl: 'search.html' })
+@View({
+    templateUrl: 'search.html',
+    directives: [NgFor]
+})
 export class SearchComponent {
     constructor( @Inject(World) private world: World) { }
 

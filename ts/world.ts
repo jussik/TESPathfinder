@@ -162,7 +162,7 @@ export class World {
         this.path = [];
         var n = dest;
         while (n) {
-            this.path.push(n.node);
+            this.path.unshift(n.node);
             n = n.prev;
         }
 
