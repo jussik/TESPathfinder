@@ -5,8 +5,7 @@ A web application for finding the quickest way to travel around Vvardenfell in _
 ## Todo
 
 1. Intervention spells with intermediate walking
-1. Propylon chambers
-1. Enable/disable features, show/hide map elements
+1. Enable/disable features from affecting path calculation
 1. Text seach
 1. Non-transport related places (towns, ruins etc.)
 1. Pretty interface
