@@ -11,10 +11,12 @@ module tesp {
 
         constructor(private world: World, private element: HTMLElement) {
             world.addListener(reason => {
-                if (reason === WorldUpdate.PathUpdated)
+                if (reason === WorldUpdate.PathUpdate)
                     this.renderPath();
                 else if (reason === WorldUpdate.MarkChange)
                     this.renderMark();
+                else if (reason === WorldUpdate.FeatureChange)
+                    this.updateFeatures();
             });
 
             element.onclick = ev => this.world.contextClick(ev.pageX, ev.pageY);
@@ -23,6 +25,7 @@ module tesp {
             this.renderPath();
             this.renderMark();
             this.renderGrid();
+            this.updateFeatures();
         }
 
         private renderNodes() {
@@ -127,6 +130,10 @@ module tesp {
                     this.gridContainer.appendChild(el);
                 }
             }
+        }
+
+        private updateFeatures() {
+            this.world.features.forEach(f => this.element.classList.toggle("hide-" + f.type, !f.visible));
         }
 
         private drawNode(pos: Vec2, name: string, type: string): HTMLElement {

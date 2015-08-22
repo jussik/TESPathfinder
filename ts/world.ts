@@ -65,7 +65,7 @@
     }
 
     export interface WorldListener { (WorldUpdate): void; }
-    export enum WorldUpdate { ContextChanged, SourceChange, DestinationChange, MarkChange, PathUpdated }
+    export enum WorldUpdate { ContextChange, SourceChange, DestinationChange, MarkChange, FeatureChange, PathUpdate }
 
     export class Feature {
         enabled: boolean;
@@ -170,6 +170,9 @@
         addListener(listener: WorldListener) {
             this.listeners.push(listener);
         }
+        trigger(reason: WorldUpdate) {
+            this.listeners.forEach(fn => fn(reason));
+        }
 
         findNode(name: string): Node {
             return this.nodesByName[name.toLowerCase()] || null;
@@ -178,7 +181,7 @@
         findPath() {
             if (this.sourceNode == null || this.destNode == null) {
                 this.path = [];
-                this.onchange(WorldUpdate.PathUpdated);
+                this.trigger(WorldUpdate.PathUpdate);
                 return;
             }
 
@@ -251,7 +254,7 @@
                 n = n.prev;
             }
 
-            this.onchange(WorldUpdate.PathUpdated);
+            this.trigger(WorldUpdate.PathUpdate);
         }
 
         private _context: string;
@@ -260,7 +263,7 @@
         }
         set context(value: string) {
             this._context = value;
-            this.onchange(WorldUpdate.ContextChanged);
+            this.trigger(WorldUpdate.ContextChange);
         }
 
         contextClick(x: number, y: number) {
@@ -273,21 +276,21 @@
                 } else {
                     this.sourceNode = new Node("You", x, y, "source");
                 }
-                this.onchange(WorldUpdate.SourceChange);
+                this.trigger(WorldUpdate.SourceChange);
             } else if (this.context === 'destination') {
                 if (this.destNode != null) {
                     this.destNode.pos = new Vec2(x, y);
                 } else {
                     this.destNode = new Node("Your destination", x, y, "destination");
                 }
-                this.onchange(WorldUpdate.DestinationChange);
+                this.trigger(WorldUpdate.DestinationChange);
             } else if (this.context === 'mark') {
                 if (this.markNode != null) {
                     this.markNode.pos = new Vec2(x, y);
                 } else {
                     this.markNode = new Node("Recall", x, y, "mark");
                 }
-                this.onchange(WorldUpdate.MarkChange);
+                this.trigger(WorldUpdate.MarkChange);
             }
 
             this.context = null;
@@ -297,13 +300,13 @@
         clearContext(context: string) {
             if (context === 'source') {
                 this.sourceNode = null;
-                this.onchange(WorldUpdate.SourceChange);
+                this.trigger(WorldUpdate.SourceChange);
             } else if (context === 'destination') {
                 this.destNode = null;
-                this.onchange(WorldUpdate.DestinationChange);
+                this.trigger(WorldUpdate.DestinationChange);
             } else if (context === 'mark') {
                 this.markNode = null;
-                this.onchange(WorldUpdate.MarkChange);
+                this.trigger(WorldUpdate.MarkChange);
             }
 
             this.context = null;
@@ -312,9 +315,6 @@
 
         private sortnodes() {
             this.nodes.sort((a, b) => a.id - b.id);
-        }
-        private onchange(reason: WorldUpdate) {
-            this.listeners.forEach(fn => fn(reason));
         }
     }
 }

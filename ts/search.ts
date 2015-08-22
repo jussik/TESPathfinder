@@ -21,7 +21,7 @@ module tesp {
 
         constructor(private world: World, private element: HTMLElement) {
             world.addListener(reason => {
-                if (reason === WorldUpdate.PathUpdated)
+                if (reason === WorldUpdate.PathUpdate)
                     this.updatePath();
             });
 
@@ -89,9 +89,15 @@ module tesp {
                 var el = document.createElement("div");
                 el.textContent = f.name + ":";
 
-                el.appendChild(this.drawCheckbox(val => f.visible = val, f.visible));
+                el.appendChild(this.drawCheckbox(val => {
+                    f.visible = val;
+                    this.world.trigger(WorldUpdate.FeatureChange);
+                }, f.visible));
                 if (f.affectsPath)
-                    el.appendChild(this.drawCheckbox(val => f.enabled = val, f.enabled));
+                    el.appendChild(this.drawCheckbox(val => {
+                        f.enabled = val;
+                        this.world.trigger(WorldUpdate.FeatureChange);
+                    }, f.enabled));
 
                 this.featuresContainer.appendChild(el);
             });
