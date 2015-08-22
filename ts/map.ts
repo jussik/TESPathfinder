@@ -95,7 +95,7 @@ export class MapComponent {
             for (var i = 0; i < 42; i++) {
                 var el = document.createElement('div');
                 el.classList.add("grid", "grid-h");
-                el.style.top = (i * 44.5 + 35) + "px";
+                el.style.top = (i * 44.6 + 35) + "px";
                 this.gridContainer.appendChild(el);
             }
         }
