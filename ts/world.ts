@@ -29,7 +29,7 @@ export class Edge {
 }
 
 export interface WorldListener { (WorldUpdate): void; }
-export enum WorldUpdate { Loaded, ContextChanged, SourceChange, DestinationChange, PathUpdated }
+export enum WorldUpdate { Loaded, ContextChanged, SourceChange, DestinationChange, MarkChange, PathUpdated }
 
 class PathEdge {
     constructor(public target: PathNode, public cost: number) { }
@@ -49,15 +49,13 @@ export class World {
     edges: Edge[] = [];
     sourceNode: Node;
     destNode: Node;
+    markNode: Node;
     path: Node[];
 
     private listeners: WorldListener[] = [];
     private nodesByName: Map<string, Node> = {};
 
     load(data: any) {
-        this.sourceNode = null;
-        this.context = null;
-
         // mages guild
         this.nodes = data.magesGuild.map(n => new Node(n.name, n.x, n.y, "mages-guild"));
         this.edges = [];
@@ -133,6 +131,15 @@ export class World {
                 .filter(n2 => n2 !== n && !n.edges.some(e => e.target === n2))
                 .map(n2 => new PathEdge(n2, n.node.pos.distance(n2.node.pos)))));
 
+        // mark
+        if (this.markNode != null) {
+            var mn = new PathNode(this.markNode);
+            mn.edges = nodes.filter(n => n !== source).map(n =>
+                new PathEdge(n, mn.node.pos.distance(n.node.pos)));
+            source.edges.push(new PathEdge(mn, 1));
+            nodes.push(mn);
+        }
+
         var q: PathNode[] = nodes.slice();
 
         while (q.length > 0) {
@@ -187,6 +194,13 @@ export class World {
                 this.destNode = new Node("Your destination", x, y, "destination");
             }
             this.onchange(WorldUpdate.DestinationChange);
+        } else if (this.context === 'mark') {
+            if (this.markNode != null) {
+                this.markNode.pos = new Vec2(x, y);
+            } else {
+                this.markNode = new Node("Recall", x, y, "mark");
+            }
+            this.onchange(WorldUpdate.MarkChange);
         }
 
         this.context = null;

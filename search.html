@@ -13,5 +13,9 @@
         To X:{{world.destNode?.pos?.x}} Y:{{world.destNode?.pos?.y}}
         <button (click)="world.context = 'destination'">Set</button>
     </div>
+    <div>
+        Mark X:{{world.markNode?.pos?.x}} Y:{{world.markNode?.pos?.y}}
+        <button (click)="world.context = 'mark'">Set</button>
+    </div>
     <div>Context: {{world.context}}</div>
 </div>
