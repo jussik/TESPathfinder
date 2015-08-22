@@ -1,5 +1,5 @@
-﻿import {Component, View, Inject, NgFor} from 'angular2/angular2';
-import {Vec2, Node, World, WorldUpdate} from 'world';
+﻿import {Component, View, Inject, NgFor, formDirectives} from 'angular2/angular2';
+import {Vec2, Node, Feature, World, WorldUpdate} from 'world';
 
 class PathSegment {
     constructor(private mode: string, private type: string, public text?: string) { }
@@ -18,7 +18,7 @@ class PathEdge extends PathSegment {
 @Component({ selector: 'search' })
 @View({
     templateUrl: 'search.html',
-    directives: [NgFor]
+    directives: [NgFor, formDirectives]
 })
 export class SearchComponent {
     private path: PathSegment[];
@@ -30,7 +30,7 @@ export class SearchComponent {
         });
     }
 
-    updatePath() {
+    private updatePath() {
         var path = this.world.path;
         this.path = [];
         if (path != null && path.length > 1) {

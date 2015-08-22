@@ -38,6 +38,16 @@ export class Area {
 export interface WorldListener { (WorldUpdate): void; }
 export enum WorldUpdate { Loaded, ContextChanged, SourceChange, DestinationChange, MarkChange, PathUpdated }
 
+export class Feature {
+    enabled: boolean;
+    visible: boolean;
+
+    constructor(public name: string, public type: string, public affectsPath) {
+        this.enabled = true;
+        this.visible = true;
+    }
+}
+
 class PathEdge {
     constructor(public target: PathNode, public cost: number) { }
 }
@@ -59,9 +69,27 @@ export class World {
     destNode: Node;
     markNode: Node;
     path: Node[];
+    features: Feature[];
 
     private listeners: WorldListener[] = [];
     private nodesByName: Map<string, Node> = {};
+
+    constructor() {
+        this.features = [
+            new Feature("Mark/Recall", "mark", true),
+            new Feature("Mages Gguild", "mages-guild", true),
+            new Feature("Silt Striders", "silt-strider", true),
+            new Feature("Boats", "boat", true),
+            new Feature("Holamayan Boat", "holamayan", true),
+            new Feature("Vivec Gondolas", "gondola", true),
+            new Feature("Divine Intervention", "divine", true),
+            new Feature("Almsivi Intervention", "almsivi", true),
+            new Feature("Transport lines", "edge", false),
+            new Feature("Locations", "node", false),
+            new Feature("Area borders", "area", false),
+            new Feature("Gridlines", "grid", false)
+        ];
+    }
 
     load(data: any) {
         this.nodes = [];

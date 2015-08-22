@@ -43,7 +43,7 @@ export class MapComponent {
         this.edgeContainer = document.createElement("div");
         this.element.appendChild(this.edgeContainer);
         this.world.edges.forEach(e =>
-            this.edgeContainer.appendChild(this.drawEdge(e.srcNode.pos, e.destNode.pos, e.srcNode.type)));
+            this.edgeContainer.appendChild(this.drawEdge(e.srcNode.pos, e.destNode.pos, e.srcNode.type, "map-transport-edge")));
 
         if (this.areaContainer != null)
             this.areaContainer.parentElement.removeChild(this.areaContainer);
@@ -73,7 +73,7 @@ export class MapComponent {
     }
 
     private drawCellEdge(x1: number, y1: number, x2: number, y2: number, type: string) {
-        return this.drawEdge(this.cell2vec(x1, y1), this.cell2vec(x2, y2), type);
+        return this.drawEdge(this.cell2vec(x1, y1), this.cell2vec(x2, y2), type, "map-area");
     }
     private cell2vec(x: number, y: number): Vec2 {
         return new Vec2(x * 44.5 + 20, y * 44.6 + 35);
@@ -122,13 +122,13 @@ export class MapComponent {
             this.element.appendChild(this.gridContainer);
             for (var i = 0; i < 37; i++) {
                 var el = document.createElement('div');
-                el.classList.add("grid", "grid-v");
+                el.classList.add("map-grid", "map-grid-v");
                 el.style.left = (i * 44.5 + 20) + "px";
                 this.gridContainer.appendChild(el);
             }
             for (var i = 0; i < 42; i++) {
                 var el = document.createElement('div');
-                el.classList.add("grid", "grid-h");
+                el.classList.add("map-grid", "map-grid-h");
                 el.style.top = (i * 44.6 + 35) + "px";
                 this.gridContainer.appendChild(el);
             }
@@ -156,9 +156,11 @@ export class MapComponent {
         return element;
     }
 
-    private drawEdge(n1: Vec2, n2: Vec2, type: string): HTMLElement {
+    private drawEdge(n1: Vec2, n2: Vec2, type: string, subtype?: string): HTMLElement {
         var element = document.createElement("div");
         element.classList.add("map-edge", "map-" + type);
+        if (subtype)
+            element.classList.add(subtype);
         var length = n1.distance(n2);
         element.style.left = ((n1.x + n2.x) / 2) - (length / 2) + "px";
         element.style.top = ((n1.y + n2.y) / 2) - 1 + "px";
