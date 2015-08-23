@@ -107,7 +107,7 @@ module tesp {
                 var loc = node.node.type == edge.type ? node.node.name : node.node.longName;
                 text = `${action} to ${loc}`;
             } else {
-                icon = "male";
+                icon = "compass";
                 text = node.node.longName;
             }
 
