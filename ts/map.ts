@@ -179,9 +179,5 @@ module tesp {
             element.style.transform = "rotate(" + Math.atan2(n1.y - n2.y, n1.x - n2.x) + "rad)";
             return element;
         }
-
-        private mapClick(ev: MouseEvent) {
-            this.world.contextClick(ev.pageX, ev.pageY);
-        }
     }
 }

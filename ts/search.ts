@@ -80,7 +80,7 @@ module tesp {
             el.textContent = `${node.name} (${node.type})`;
             return el;
         }
-        static teleportTypes: { [key: string]: boolean } = { mark: true, divine: true, almsivi: true };
+        private static teleportTypes: { [key: string]: boolean } = { mark: true, divine: true, almsivi: true };
         private drawPathEdge(n1: Node, n2: Node): HTMLElement {
             var el = document.createElement("div");
             el.textContent = n1.type === n2.type ? n1.type : (Search.teleportTypes[n2.type] ? n2.type : 'walk');
@@ -106,7 +106,7 @@ module tesp {
             });
         }
 
-        drawCheckbox(onchange: (value: boolean) => void, initial: boolean): HTMLElement {
+        private drawCheckbox(onchange: (value: boolean) => void, initial: boolean): HTMLElement {
             var input = document.createElement("input");
             input.type = "checkbox";
             input.onchange = ev => onchange(input.checked);

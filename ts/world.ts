@@ -98,9 +98,9 @@
         path: Node[];
         features: FeatureList;
 
-        static defaultTransportCost: number = 10;
-        static transportCost: { [key: string]: number } = { "mages-guild": 30 };
-        static spellCost: number = 5;
+        private static defaultTransportCost: number = 10;
+        private static transportCost: { [key: string]: number } = { "mages-guild": 30 };
+        private static spellCost: number = 5;
 
         private listeners: WorldListener[] = [];
         private nodesByName: {[key:string]: Node} = {};
@@ -313,10 +313,6 @@
 
             this.context = null;
             this.findPath();
-        }
-
-        private sortnodes() {
-            this.nodes.sort((a, b) => a.id - b.id);
         }
     }
 }
