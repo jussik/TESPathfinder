@@ -9,8 +9,8 @@ module tesp {
             window.fetch("data/data.json").then(res =>
                 res.json().then(data => {
                     var world = new World(data);
-                    new MapComponent(world, document.getElementById("map"));
-                    new SearchComponent(world, document.getElementById("search"));
+                    new Map(world, document.getElementById("map"));
+                    new Search(world, document.getElementById("search"));
                     document.body.classList.remove("loading");
                 }));
         }

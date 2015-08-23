@@ -1,7 +1,7 @@
 ﻿/// <reference path="world.ts" />
 
 module tesp {
-    export class MapComponent {
+    export class Map {
         private edgeContainer: HTMLElement;
         private nodeContainer: HTMLElement;
         private areaContainer: HTMLElement;

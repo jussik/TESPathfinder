@@ -15,7 +15,7 @@ module tesp {
         }
     }
 
-    export class SearchComponent {
+    export class Search {
         private pathContainer: HTMLElement;
         private featuresContainer: HTMLElement;
 
@@ -83,7 +83,7 @@ module tesp {
         static teleportTypes: { [key: string]: boolean } = { mark: true, divine: true, almsivi: true };
         private drawPathEdge(n1: Node, n2: Node): HTMLElement {
             var el = document.createElement("div");
-            el.textContent = n1.type === n2.type ? n1.type : (SearchComponent.teleportTypes[n2.type] ? n2.type : 'walk');
+            el.textContent = n1.type === n2.type ? n1.type : (Search.teleportTypes[n2.type] ? n2.type : 'walk');
             return el;
         }
 
