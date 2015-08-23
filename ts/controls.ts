@@ -20,13 +20,16 @@ module tesp {
             var nodeSearchIndex: { [key: string]: Node } = {};
             var searchInput = <HTMLInputElement>element.querySelector('.search-input');
             var datalist = <HTMLDataListElement>element.querySelector('#search-list');
-            this.world.nodes.forEach(n => {
-                var opt: HTMLOptionElement = document.createElement("option");
-                var value = `${n.name} (${this.world.features.byName[n.type].name})`;
-                nodeSearchIndex[value] = n;
-                opt.value = value;
-                datalist.appendChild(opt);
-            });
+            this.world.nodes
+                .concat(this.world.landmarks.map(a => a.target))
+                .forEach(n => {
+                    var opt: HTMLOptionElement = document.createElement("option");
+                    var feat = this.world.features.byName[n.type];
+                    var value = feat ? `${n.name} (${this.world.features.byName[n.type].name})` : n.name;
+                    nodeSearchIndex[value] = n;
+                    opt.value = value;
+                    datalist.appendChild(opt);
+                });
 
             for (var child: HTMLElement = <HTMLElement>element.firstElementChild; child; child = <HTMLElement>child.nextElementSibling) {
                 var name = child.dataset['controlContainer'];
