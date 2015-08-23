@@ -17,7 +17,7 @@
         static widthOffset: number = 20;
         static heightOffset: number = 35;
         static fromPosition(pos: Vec2): Vec2 {
-            return new Vec2(Math.floor((pos.x - Cell.widthOffset) / Cell.width), Math.floor((pos.y - Cell.heightOffset) / Cell.height));
+            return new Vec2((pos.x - Cell.widthOffset) / Cell.width, (pos.y - Cell.heightOffset) / Cell.height);
         }
     }
 
@@ -39,7 +39,11 @@
     }
 
     export class CellRow {
-        constructor(public y: number, public x1: number, public x2: number) { }
+        width: number;
+
+        constructor(public y: number, public x1: number, public x2: number) {
+            this.width = x2 - x1 + 1;
+        }
     }
     export class Area {
         private minY: number;
@@ -51,9 +55,9 @@
         }
 
         public containsCell(pos: Vec2) {
-            if (pos.y >= this.minY && pos.y <= this.maxY) {
-                var row = this.rows[pos.y - this.minY];
-                return pos.x >= row.x1 && pos.x <= row.x2;
+            if (pos.y >= this.minY && pos.y < this.maxY + 1) {
+                var row = this.rows[Math.floor(pos.y) - this.minY];
+                return pos.x >= row.x1 && pos.x < row.x2 + 1;
             }
             return false;
         }
@@ -209,6 +213,41 @@
                 n.edges = n.node.edges.map(e =>
                     new PathEdge(nodeMap[(e.srcNode === n.node ? e.destNode : e.srcNode).id], e.cost)));
 
+            // intervention
+            nodes.forEach(n => {
+                var cell = Cell.fromPosition(n.node.pos);
+                this.areas.forEach(a => {
+                    if (a.containsCell(cell)) {
+                        // node inside area, teleport to temple/shrine
+                        n.edges.push(new PathEdge(nodeMap[a.target.id], World.spellCost));
+                    } else {
+                        // node outside area, walk to edge
+                        var dist: number = Infinity;
+                        var closest: Vec2;
+                        a.rows.forEach(r => {
+                            // v is closest point (in cell units) from node to row
+                            var v = new Vec2(
+                                Math.max(Math.min(cell.x, r.x1 + r.width), r.x1),
+                                Math.max(Math.min(cell.y, r.y + 1), r.y));
+                            var alt = cell.distance(v);
+                            if (alt < dist) {
+                                dist = alt;
+                                closest = v;
+                            }
+                        });
+                        var pos = Vec2.fromCell(closest.x, closest.y);
+                        var cost = n.node.pos.distance(pos);
+                        if (cost < maxCost) {
+                            // new node to allow us to teleport once we're in the area
+                            var an = new PathNode(new Node(`${a.target.name} ${a.target.type} area`, pos.x, pos.y, "area"));
+                            an.edges = [new PathEdge(nodeMap[a.target.id], World.spellCost)];
+                            nodes.push(an);
+                            n.edges.push(new PathEdge(an, cost));
+                        }
+                    }
+                });
+            });
+
             // implicit edges (walking)
             nodes.forEach(n =>
                 n.edges = n.edges.concat(nodes
@@ -225,16 +264,6 @@
                 source.edges.push(new PathEdge(mn, World.spellCost));
                 nodes.push(mn);
             }
-
-            // intervention
-            nodes.forEach(n => {
-                var cell = Cell.fromPosition(n.node.pos);
-                this.areas.forEach(a => {
-                    if (a.containsCell(cell)) {
-                        n.edges.push(new PathEdge(nodeMap[a.target.id], World.spellCost));
-                    }
-                });
-            });
 
             var q: PathNode[] = nodes.slice();
 

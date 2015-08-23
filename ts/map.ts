@@ -145,6 +145,21 @@ module tesp {
                     el.style.top = (i * Cell.height + Cell.heightOffset) + "px";
                     this.gridContainer.appendChild(el);
                 }
+
+                // show grid coordinates
+                /*for (var i = 0; i < 37; i++) {
+                    for (var j = 0; j < 42; j++) {
+                        var el = document.createElement('div');
+                        el.textContent = i + ',' + j;
+                        el.style.position = "absolute";
+                        el.style.color = "rgba(255,255,255,0.75)";
+                        el.style.left = (i * 44.5 + 22) + "px";
+                        el.style.top = (j * 44.6 + 37) + "px";
+                        el.style.zIndex = "10";
+                        el.style.font = "7pt sans-serif";
+                        this.gridContainer.appendChild(el);
+                    }
+                }*/
             }
         }
 
