@@ -71,6 +71,9 @@
             this.visible = true;
         }
     }
+    export interface FeatureList extends Array<Feature> {
+        byName: {[key:string]:Feature};
+    }
 
     class PathEdge {
         constructor(public target: PathNode, public cost: number) { }
@@ -86,14 +89,14 @@
     }
 
     export class World {
-        nodes: Node[] = [];
-        edges: Edge[] = [];
-        areas: Area[] = [];
+        nodes: Node[];
+        edges: Edge[];
+        areas: Area[];
         sourceNode: Node;
         destNode: Node;
         markNode: Node;
         path: Node[];
-        features: Feature[];
+        features: FeatureList;
 
         static defaultTransportCost: number = 10;
         static transportCost: { [key: string]: number } = { "mages-guild": 30 };
@@ -103,7 +106,7 @@
         private nodesByName: {[key:string]: Node} = {};
 
         constructor(data: any) {
-            this.features = [
+            this.features = <FeatureList>[
                 new Feature("Mark/Recall", "mark", true),
                 new Feature("Mages Guild", "mages-guild", true),
                 new Feature("Silt Striders", "silt-strider", true),
@@ -115,9 +118,14 @@
                 new Feature("Almsivi Intervention", "almsivi", true),
                 new Feature("Transport lines", "edge", false),
                 new Feature("Locations", "node", false),
-                new Feature("Area borders", "area", false),
+                new Feature("Intervention area borders", "area", false),
                 new Feature("Gridlines", "grid", false)
             ];
+            this.features.byName = {};
+            this.features.forEach(f => this.features.byName[f.type] = f);
+            this.features.byName['edge'].visible = false;
+            this.features.byName['area'].visible = false;
+            this.features.byName['grid'].visible = false;
 
             this.nodes = [];
             this.edges = [];
