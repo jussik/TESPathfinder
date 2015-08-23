@@ -121,11 +121,9 @@
                 new Feature("Intervention area borders", "area", false),
                 new Feature("Gridlines", "grid", false)
             ];
-            this.features.byName = {};
-            this.features.forEach(f => this.features.byName[f.type] = f);
-            this.features.byName['edge'].visible = false;
-            this.features.byName['area'].visible = false;
-            this.features.byName['grid'].visible = false;
+            var fIdx: { [key: string]: Feature } = this.features.byName = {};
+            this.features.forEach(f => fIdx[f.type] = f);
+            fIdx['edge'].visible = fIdx['area'].visible = fIdx['grid'].visible = false;
 
             this.nodes = [];
             this.edges = [];
