@@ -112,6 +112,7 @@ module tesp {
             }
 
             var i = document.createElement("i");
+            i.classList.add("path-icon");
             i.classList.add("fa");
             i.classList.add("fa-" + icon);
             el.appendChild(i);

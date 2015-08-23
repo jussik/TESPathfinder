@@ -44,6 +44,11 @@
     display: none;
 }
 
+.path-icon {
+    width: 16px;
+    text-align: center;
+}
+
 .map-node {
     position: absolute;
     z-index: 5;

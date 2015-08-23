@@ -321,10 +321,12 @@
 
             if (this.context === 'source') {
                 var region = this.getRegionName(x, y);
-                this.contextNode(new Node("You", region ? `You in ${region}` : "You", x, y, "source"));
+                var name = region ? `Location in ${region}` : "You";
+                this.contextNode(new Node(name, name, x, y, "source"));
             } else if (this.context === 'destination') {
                 var region = this.getRegionName(x, y);
-                this.contextNode(new Node("Your destination", region ? `Your destination in ${region}` : "Your destination", x, y, "destination"));
+                var name = region ? `Location in ${region}` : "Your destination";
+                this.contextNode(new Node(name, name, x, y, "destination"));
             } else if (this.context === 'mark') {
                 var region = this.getRegionName(x, y);
                 this.markNode = new Node("Mark", region ? `Mark in ${region}` : "Mark", x, y, "mark");
