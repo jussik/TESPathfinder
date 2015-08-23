@@ -202,6 +202,8 @@
             var dest = new PathNode(this.destNode);
             nodes.push(dest);
 
+            var maxCost = this.sourceNode.pos.distance(this.destNode.pos);
+
             // explicit edges (services)
             nodes.forEach(n =>
                 n.edges = n.node.edges.map(e =>
@@ -211,13 +213,15 @@
             nodes.forEach(n =>
                 n.edges = n.edges.concat(nodes
                     .filter(n2 => n2 !== n && !n.edges.some(e => e.target === n2))
-                    .map(n2 => new PathEdge(n2, n.node.pos.distance(n2.node.pos)))));
+                    .map(n2 => new PathEdge(n2, n.node.pos.distance(n2.node.pos)))
+                    .filter(e => e.cost < maxCost)));
 
             // mark
             if (this.markNode != null) {
                 var mn = new PathNode(this.markNode);
-                mn.edges = nodes.filter(n => n !== source).map(n =>
-                    new PathEdge(n, mn.node.pos.distance(n.node.pos)));
+                mn.edges = nodes.filter(n => n !== source)
+                    .map(n => new PathEdge(n, mn.node.pos.distance(n.node.pos)))
+                    .filter(e => e.cost < maxCost);
                 source.edges.push(new PathEdge(mn, World.spellCost));
                 nodes.push(mn);
             }
