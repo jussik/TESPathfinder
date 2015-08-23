@@ -16,4 +16,5 @@ Compile ts/*.ts into js/ (e.g. with tsc, TODO: instructions).
 ## Acknowledgements
 
 * Map of Vvardenfell from: http://thegamersjournal.com/rpg/pc/morrowind/maps.php
+* Font Awesome by Dave Gandy - http://fontawesome.io
 * _The Elder Scrolls III: Morrowind_ is a copyright of Bethesda Softworks Inc.

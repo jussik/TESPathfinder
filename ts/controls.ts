@@ -1,20 +1,6 @@
 ﻿/// <reference path="world.ts" />
 
 module tesp {
-    class PathSegment {
-        constructor(private mode: string, private type: string, public text?: string) { }
-    }
-    class PathNode extends PathSegment {
-        constructor(node: Node) {
-            super('node', node.type, node.name);
-        }
-    }
-    class PathEdge extends PathSegment {
-        constructor(n1: Node, n2: Node) {
-            super('edge', n1.type === n2.type ? n1.type : (n2.type === 'mark' ? n2.type : 'walk'));
-        }
-    }
-
     export class Controls {
         private pathContainer: HTMLElement;
         private featuresContainer: HTMLElement;
@@ -90,25 +76,47 @@ module tesp {
                 this.pathContainer.removeChild(child);
             }
 
-            var pathNode = this.world.pathEnd;
+            var pathNode: PathNode = this.world.pathEnd;
             while (pathNode) {
-                this.pathContainer.insertBefore(this.drawPathNode(pathNode.node), this.pathContainer.firstElementChild);
-                if (pathNode.prev) {
-                    this.pathContainer.insertBefore(this.drawPathEdge(pathNode.node, pathNode.prev.node, pathNode.prevEdge.type), this.pathContainer.firstElementChild);
-                }
+                this.pathContainer.insertBefore(this.drawPathNode(pathNode), this.pathContainer.firstElementChild);
                 pathNode = pathNode.prev;
             }
         }
 
-        private drawPathNode(node: Node): HTMLElement {
+        private drawPathNode(node: PathNode): HTMLElement {
             var el = document.createElement("div");
-            el.textContent = `${node.name} (${node.type})`;
-            return el;
-        }
-        private static teleportTypes: { [key: string]: boolean } = { mark: true, divine: true, almsivi: true };
-        private drawPathEdge(n1: Node, n2: Node, type: string): HTMLElement {
-            var el = document.createElement("div");
-            el.textContent = type;
+
+            var icon: string, text: string;
+            var edge = node.prevEdge;
+            if (edge) {
+                var action: string;
+                if (edge.type === "walk") {
+                    action = "Walk";
+                    icon = "map";
+                } else {
+                    var feat = this.world.features.byName[edge.type];
+                    if (feat) {
+                        action = feat.name;
+                        icon = feat.icon;
+                    } else {
+                        action = edge.type;
+                        icon = "question";
+                    }
+                }
+
+                var loc = node.node.type == edge.type ? node.node.name : node.node.longName;
+                text = `${action} to ${loc}`;
+            } else {
+                icon = "male";
+                text = node.node.longName;
+            }
+
+            var i = document.createElement("i");
+            i.classList.add("fa");
+            i.classList.add("fa-" + icon);
+            el.appendChild(i);
+            el.appendChild(document.createTextNode(" " + text));
+
             return el;
         }
 
@@ -118,14 +126,14 @@ module tesp {
                 el.textContent = f.name + ":";
 
                 el.appendChild(this.drawCheckbox(val => {
-                    f.visible = val;
+                    f.hidden = !val;
                     this.world.trigger(WorldUpdate.FeatureChange);
-                }, f.visible));
+                }, !f.hidden));
                 if (f.affectsPath)
                     el.appendChild(this.drawCheckbox(val => {
-                        f.enabled = val;
+                        f.disabled = !val;
                         this.world.trigger(WorldUpdate.FeatureChange);
-                    }, f.enabled));
+                    }, !f.disabled));
 
                 this.featuresContainer.appendChild(el);
             });

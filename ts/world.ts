@@ -68,13 +68,10 @@
     export enum WorldUpdate { ContextChange, SourceChange, DestinationChange, MarkChange, FeatureChange, PathUpdate }
 
     export class Feature {
-        enabled: boolean;
-        visible: boolean;
+        disabled: boolean;
+        hidden: boolean;
 
-        constructor(public name: string, public type: string, public affectsPath: boolean) {
-            this.enabled = true;
-            this.visible = true;
-        }
+        constructor(public name: string, public type: string, public icon: string, public affectsPath: boolean) { }
     }
     export interface FeatureList extends Array<Feature> {
         byName: {[key:string]:Feature};
@@ -113,23 +110,23 @@
 
         constructor(data: any) {
             this.features = <FeatureList>[
-                new Feature("Mark/Recall", "mark", true),
-                new Feature("Mages Guild", "mages-guild", true),
-                new Feature("Silt Strider", "silt-strider", true),
-                new Feature("Boat", "boat", true),
-                new Feature("Holamayan Boat", "holamayan", true),
-                new Feature("Propylon Chamber", "propylon", true),
-                new Feature("Vivec Gondola", "gondola", true),
-                new Feature("Divine Intervention", "divine", true),
-                new Feature("Almsivi Intervention", "almsivi", true),
-                new Feature("Transport lines", "edge", false),
-                new Feature("Locations", "node", false),
-                new Feature("Intervention area borders", "area", false),
-                new Feature("Gridlines", "grid", false)
+                new Feature("Recall", "mark", "bolt", true),
+                new Feature("Mages Guild", "mages-guild", "eye", true),
+                new Feature("Silt Strider", "silt-strider", "bug", true),
+                new Feature("Boat", "boat", "ship", true),
+                new Feature("Holamayan Boat", "holamayan", "ship", true),
+                new Feature("Propylon Chamber", "propylon", "cog", true),
+                new Feature("Vivec Gondola", "gondola", "ship", true),
+                new Feature("Divine Intervention", "divine", "bolt", true),
+                new Feature("Almsivi Intervention", "almsivi", "bolt", true),
+                new Feature("Transport lines", "edge", "", false),
+                new Feature("Locations", "node", "", false),
+                new Feature("Intervention area borders", "area", "", false),
+                new Feature("Gridlines", "grid", "", false)
             ];
             var fIdx: { [key: string]: Feature } = this.features.byName = {};
             this.features.forEach(f => fIdx[f.type] = f);
-            fIdx['edge'].visible = fIdx['area'].visible = fIdx['grid'].visible = false;
+            fIdx['edge'].hidden = fIdx['area'].hidden = fIdx['grid'].hidden = true;
 
             this.nodes = [];
             this.edges = [];
@@ -206,7 +203,7 @@
             var nodeMap: { [key: number]: PathNode } = {};
             var feats = this.features.byName;
             var nodes: PathNode[] = this.nodes
-                .filter(n => feats[n.type].enabled && n !== this.sourceNode && n !== this.destNode)
+                .filter(n => !feats[n.type].disabled && n !== this.sourceNode && n !== this.destNode)
                 .map(n => nodeMap[n.id] = new PathNode(n));
 
             var source = new PathNode(this.sourceNode);
@@ -233,7 +230,7 @@
                     .filter(e => e.cost <= maxCost)));
 
             // mark
-            if (this.markNode != null && feats['mark'].enabled) {
+            if (this.markNode != null && !feats['mark'].disabled) {
                 var mn = new PathNode(this.markNode);
                 mn.edges = nodes.filter(n => n !== source)
                     .map(n => new PathEdge(n, mn.node.pos.distance(n.node.pos), "walk"))
@@ -246,7 +243,7 @@
             nodes.forEach(n => {
                 var cell = Cell.fromPosition(n.node.pos);
                 this.areas.forEach(a => {
-                    if (feats[a.target.type].enabled) {
+                    if (!feats[a.target.type].disabled) {
                         if (a.containsCell(cell)) {
                             // node inside area, teleport to temple/shrine
                             n.edges.push(new PathEdge(nodeMap[a.target.id], World.spellCost, a.target.type));
@@ -320,7 +317,7 @@
             } else if (this.context === 'destination') {
                 this.contextNode(new Node("Your destination", `Your destination at [${x}-${y}]`, x, y, "destination"));
             } else if (this.context === 'mark') {
-                this.markNode = new Node("Recall", `Recall to [${x}-${y}]`, x, y, "mark");
+                this.markNode = new Node("Recall", `Mark at [${x}-${y}]`, x, y, "mark");
                 this.trigger(WorldUpdate.MarkChange);
                 this.context = null;
             }
@@ -340,7 +337,7 @@
                 this.trigger(WorldUpdate.DestinationChange);
             } else if (this.context === 'mark') {
                 var pos = node.pos;
-                this.markNode = new Node("Recall to " + node.name, "Recall to " + node.longName, pos.x, pos.y, "mark");
+                this.markNode = new Node(node.name, node.longName, pos.x, pos.y, "mark");
                 this.markNode.referenceId = node.referenceId || node.id;
                 this.context = null;
                 this.trigger(WorldUpdate.MarkChange);

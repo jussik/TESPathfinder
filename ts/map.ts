@@ -170,7 +170,7 @@ module tesp {
         private updateFeatures() {
             this.element.className = "";
             this.world.features.forEach(f => {
-                if (!f.visible)
+                if (f.hidden)
                     this.element.classList.add("hide-" + f.type);
             });
         }
