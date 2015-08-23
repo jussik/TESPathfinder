@@ -92,7 +92,7 @@ module tesp {
                 var action: string;
                 if (edge.type === "walk") {
                     action = "Walk";
-                    icon = "map";
+                    icon = "compass";
                 } else {
                     var feat = this.world.features.byName[edge.type];
                     if (feat) {
@@ -107,7 +107,7 @@ module tesp {
                 var loc = node.node.type == edge.type ? node.node.name : node.node.longName;
                 text = `${action} to ${loc}`;
             } else {
-                icon = "compass";
+                icon = "map-marker";
                 text = node.node.longName;
             }
 
