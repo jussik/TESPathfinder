@@ -140,6 +140,14 @@
             // index by name
             this.nodesByName = {};
             this.nodes.forEach(n => this.nodesByName[n.name.toLowerCase()] = n);
+
+            this.addListener(reason => {
+                if (reason === WorldUpdate.SourceChange
+                    || reason === WorldUpdate.DestinationChange
+                    || reason === WorldUpdate.MarkChange
+                    || reason === WorldUpdate.FeatureChange)
+                    this.findPath();
+            });
         }
 
         loadTransport(data: any, type: string) {
@@ -184,7 +192,7 @@
             return this.nodesByName[name.toLowerCase()] || null;
         }
 
-        findPath() {
+        private findPath() {
             if (this.sourceNode == null || this.destNode == null) {
                 this.path = [];
                 this.trigger(WorldUpdate.PathUpdate);
@@ -193,11 +201,10 @@
 
             // create nodes
             var nodeMap: { [key: number]: PathNode } = {};
-            var nodes: PathNode[] = this.nodes.map(n => {
-                var pn = new PathNode(n);
-                nodeMap[n.id] = pn;
-                return pn;
-            });
+            var feats = this.features.byName;
+            var nodes: PathNode[] = this.nodes
+                .filter(n => feats[n.type].enabled)
+                .map(n => nodeMap[n.id] = new PathNode(n));
 
             var source = new PathNode(this.sourceNode);
             source.dist = 0;
@@ -213,50 +220,15 @@
                 n.edges = n.node.edges.map(e =>
                     new PathEdge(nodeMap[(e.srcNode === n.node ? e.destNode : e.srcNode).id], e.cost)));
 
-            // intervention
-            nodes.forEach(n => {
-                var cell = Cell.fromPosition(n.node.pos);
-                this.areas.forEach(a => {
-                    if (a.containsCell(cell)) {
-                        // node inside area, teleport to temple/shrine
-                        n.edges.push(new PathEdge(nodeMap[a.target.id], World.spellCost));
-                    } else {
-                        // node outside area, walk to edge
-                        var dist: number = Infinity;
-                        var closest: Vec2;
-                        a.rows.forEach(r => {
-                            // v is closest point (in cell units) from node to row
-                            var v = new Vec2(
-                                Math.max(Math.min(cell.x, r.x1 + r.width), r.x1),
-                                Math.max(Math.min(cell.y, r.y + 1), r.y));
-                            var alt = cell.distance(v);
-                            if (alt < dist) {
-                                dist = alt;
-                                closest = v;
-                            }
-                        });
-                        var pos = Vec2.fromCell(closest.x, closest.y);
-                        var cost = n.node.pos.distance(pos);
-                        if (cost < maxCost) {
-                            // new node to allow us to teleport once we're in the area
-                            var an = new PathNode(new Node(`${a.target.name} ${a.target.type} area`, pos.x, pos.y, "area"));
-                            an.edges = [new PathEdge(nodeMap[a.target.id], World.spellCost)];
-                            nodes.push(an);
-                            n.edges.push(new PathEdge(an, cost));
-                        }
-                    }
-                });
-            });
-
             // implicit edges (walking)
             nodes.forEach(n =>
                 n.edges = n.edges.concat(nodes
                     .filter(n2 => n2 !== n && !n.edges.some(e => e.target === n2))
                     .map(n2 => new PathEdge(n2, n.node.pos.distance(n2.node.pos)))
-                    .filter(e => e.cost < maxCost)));
+                    .filter(e => e.cost <= maxCost)));
 
             // mark
-            if (this.markNode != null) {
+            if (this.markNode != null && feats['mark'].enabled) {
                 var mn = new PathNode(this.markNode);
                 mn.edges = nodes.filter(n => n !== source)
                     .map(n => new PathEdge(n, mn.node.pos.distance(n.node.pos)))
@@ -264,6 +236,43 @@
                 source.edges.push(new PathEdge(mn, World.spellCost));
                 nodes.push(mn);
             }
+
+            // intervention
+            nodes.forEach(n => {
+                var cell = Cell.fromPosition(n.node.pos);
+                this.areas.forEach(a => {
+                    if (feats[a.target.type].enabled) {
+                        if (a.containsCell(cell)) {
+                            // node inside area, teleport to temple/shrine
+                            n.edges.push(new PathEdge(nodeMap[a.target.id], World.spellCost));
+                        } else {
+                            // node outside area, walk to edge
+                            var dist: number = Infinity;
+                            var closest: Vec2;
+                            a.rows.forEach(r => {
+                                // v is closest point (in cell units) from node to row
+                                var v = new Vec2(
+                                    Math.max(Math.min(cell.x, r.x1 + r.width), r.x1),
+                                    Math.max(Math.min(cell.y, r.y + 1), r.y));
+                                var alt = cell.distance(v);
+                                if (alt < dist) {
+                                    dist = alt;
+                                    closest = v;
+                                }
+                            });
+                            var pos = Vec2.fromCell(closest.x, closest.y);
+                            var cost = n.node.pos.distance(pos);
+                            if (cost < maxCost) {
+                                // new node to allow us to teleport once we're in the area
+                                var an = new PathNode(new Node(`${a.target.name} ${a.target.type} area`, pos.x, pos.y, "area"));
+                                an.edges = [new PathEdge(nodeMap[a.target.id], World.spellCost)];
+                                nodes.push(an);
+                                n.edges.push(new PathEdge(an, cost));
+                            }
+                        }
+                    }
+                });
+            });
 
             var q: PathNode[] = nodes.slice();
 
@@ -329,7 +338,6 @@
             }
 
             this.context = null;
-            this.findPath();
         }
 
         clearContext(context: string) {
@@ -345,7 +353,6 @@
             }
 
             this.context = null;
-            this.findPath();
         }
     }
 }
