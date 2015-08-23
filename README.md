@@ -4,6 +4,7 @@ A web application for finding the quickest way to travel around Vvardenfell in _
 
 ## Todo
 
+1. Region names for user placed from/to/mark locations
 1. Non-transport related places (towns, ruins etc.)
 1. Pretty interface
 
