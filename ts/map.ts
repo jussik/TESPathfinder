@@ -25,7 +25,23 @@ module tesp {
                     this.updateFeatures();
             });
 
-            element.onclick = ev => this.world.contextClick(ev.pageX, ev.pageY);
+            element.onclick = ev => {
+                if (!this.world.context)
+                    return;
+
+                var target = <HTMLElement>ev.target;
+                var node: Node = null;
+                if (target.classList.contains('map-node')) {
+                    var id = target.dataset['nodeId'];
+                    if (id !== undefined) {
+                        node = this.world.findNodeById(+id);
+                    }
+                }
+                if (node != null)
+                    this.world.contextNode(node);
+                else
+                    this.world.contextClick(ev.pageX, ev.pageY)
+            };
 
             this.renderNodes();
             this.renderPath();
@@ -39,8 +55,7 @@ module tesp {
                 this.nodeContainer.parentElement.removeChild(this.nodeContainer);
             this.nodeContainer = document.createElement("div");
             this.element.appendChild(this.nodeContainer);
-            this.world.nodes.forEach(n =>
-                this.nodeContainer.appendChild(this.drawNode(n.pos, n.name, n.type)));
+            this.world.nodes.forEach(n => this.nodeContainer.appendChild(this.drawNode(n)));
 
             if (this.edgeContainer != null)
                 this.edgeContainer.parentElement.removeChild(this.edgeContainer);
@@ -111,20 +126,11 @@ module tesp {
         }
 
         private addOrUpdateNodeElem(node: Node, elem: HTMLElement): HTMLElement {
-            if (node != null) {
-                var pos = node.pos;
-                if (elem) {
-                    elem.style.left = pos.x + 'px';
-                    elem.style.top = pos.y + 'px';
-                } else {
-                    elem = this.drawNode(pos, node.name, node.type);
-                    this.element.appendChild(elem);
-                }
-                return elem;
-            } else if (elem) {
+            if (elem)
                 elem.parentElement.removeChild(elem);
-                return null;
-            }
+            return node != null
+                ? <HTMLElement>this.element.appendChild(this.drawNode(node))
+                : null;
         }
 
         private renderGrid() {
@@ -171,13 +177,14 @@ module tesp {
             });
         }
 
-        private drawNode(pos: Vec2, name: string, type: string): HTMLElement {
+        private drawNode(node: Node): HTMLElement  {
             var element = document.createElement("div");
             element.classList.add("map-node");
-            element.classList.add("map-" + type);
+            element.classList.add("map-" + node.type);
             element.title = name;
-            element.style.left = pos.x + "px";
-            element.style.top = pos.y + "px";
+            element.style.left = node.pos.x + "px";
+            element.style.top = node.pos.y + "px";
+            element.dataset['nodeId'] = (node.referenceId || node.id) + '';
             return element;
         }
 

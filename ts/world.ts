@@ -25,9 +25,10 @@
         id: number;
         pos: Vec2;
         edges: Edge[];
+        referenceId: number;
 
         private static identity: number = 1;
-        constructor(public name: string, x: number, y: number, public type: string) {
+        constructor(public name: string, public longName: string, x: number, y: number, public type: string) {
             this.id = Node.identity++;
             this.pos = new Vec2(x, y);
             this.edges = [];
@@ -107,17 +108,17 @@
         private static spellCost: number = 5;
 
         private listeners: WorldListener[] = [];
-        private nodesByName: {[key:string]: Node} = {};
+        private nodesById: { [key: number]: Node } = {};
 
         constructor(data: any) {
             this.features = <FeatureList>[
                 new Feature("Mark/Recall", "mark", true),
                 new Feature("Mages Guild", "mages-guild", true),
-                new Feature("Silt Striders", "silt-strider", true),
-                new Feature("Boats", "boat", true),
+                new Feature("Silt Strider", "silt-strider", true),
+                new Feature("Boat", "boat", true),
                 new Feature("Holamayan Boat", "holamayan", true),
-                new Feature("Propylon Chambers", "propylon", true),
-                new Feature("Vivec Gondolas", "gondola", true),
+                new Feature("Propylon Chamber", "propylon", true),
+                new Feature("Vivec Gondola", "gondola", true),
                 new Feature("Divine Intervention", "divine", true),
                 new Feature("Almsivi Intervention", "almsivi", true),
                 new Feature("Transport lines", "edge", false),
@@ -137,9 +138,9 @@
                 this.loadTransport(data, k);
             }
 
-            // index by name
-            this.nodesByName = {};
-            this.nodes.forEach(n => this.nodesByName[n.name.toLowerCase()] = n);
+            // index by id
+            this.nodesById = {};
+            this.nodes.forEach(n => this.nodesById[n.id] = n);
 
             this.addListener(reason => {
                 if (reason === WorldUpdate.SourceChange
@@ -152,7 +153,8 @@
 
         loadTransport(data: any, type: string) {
             var array: any[] = data[type];
-            var nodes: Node[] = array.map(n => new Node(n.name, n.x, n.y, type));
+            var typeName = this.features.byName[type].name;
+            var nodes: Node[] = array.map(n => new Node(n.name, `${n.name} (${typeName})`, n.x, n.y, type));
             this.nodes = this.nodes.concat(nodes);
             var cost = World.transportCost[type] || World.defaultTransportCost;
             array.forEach((n, i1) => {
@@ -188,12 +190,12 @@
             this.listeners.forEach(fn => fn(reason));
         }
 
-        findNode(name: string): Node {
-            return this.nodesByName[name.toLowerCase()] || null;
+        findNodeById(id: number): Node {
+            return this.nodesById[id] || null;
         }
 
         private findPath() {
-            if (this.sourceNode == null || this.destNode == null) {
+            if (this.sourceNode == null || this.destNode == null || this.sourceNode === this.destNode) {
                 this.path = [];
                 this.trigger(WorldUpdate.PathUpdate);
                 return;
@@ -203,15 +205,17 @@
             var nodeMap: { [key: number]: PathNode } = {};
             var feats = this.features.byName;
             var nodes: PathNode[] = this.nodes
-                .filter(n => feats[n.type].enabled)
+                .filter(n => feats[n.type].enabled && n !== this.sourceNode && n !== this.destNode)
                 .map(n => nodeMap[n.id] = new PathNode(n));
 
             var source = new PathNode(this.sourceNode);
             source.dist = 0;
             nodes.push(source);
+            nodeMap[this.sourceNode.id] = source;
 
             var dest = new PathNode(this.destNode);
             nodes.push(dest);
+            nodeMap[this.destNode.id] = dest;
 
             var maxCost = this.sourceNode.pos.distance(this.destNode.pos);
 
@@ -264,7 +268,8 @@
                             var cost = n.node.pos.distance(pos);
                             if (cost < maxCost) {
                                 // new node to allow us to teleport once we're in the area
-                                var an = new PathNode(new Node(`${a.target.name} ${a.target.type} area`, pos.x, pos.y, "area"));
+                                var name = `${a.target.name} ${a.target.type} area`;
+                                var an = new PathNode(new Node(name, name, pos.x, pos.y, "area"));
                                 an.edges = [new PathEdge(nodeMap[a.target.id], World.spellCost)];
                                 nodes.push(an);
                                 n.edges.push(new PathEdge(an, cost));
@@ -315,44 +320,51 @@
                 return;
 
             if (this.context === 'source') {
-                if (this.sourceNode != null) {
-                    this.sourceNode.pos = new Vec2(x, y);
-                } else {
-                    this.sourceNode = new Node("You", x, y, "source");
-                }
+                this.contextNode(new Node("You", `You at [${x}-${y}]`, x, y, "source"));
+            } else if (this.context === 'destination') {
+                this.contextNode(new Node("Your destination", `Your destination at [${x}-${y}]`, x, y, "destination"));
+            } else if (this.context === 'mark') {
+                this.markNode = new Node("Recall", `Recall to [${x}-${y}]`, x, y, "mark");
+                this.trigger(WorldUpdate.MarkChange);
+                this.context = null;
+            }
+        }
+
+        contextNode(node: Node) {
+            if (!this.context)
+                return;
+
+            if (this.context === 'source') {
+                this.sourceNode = node;
+                this.context = null;
                 this.trigger(WorldUpdate.SourceChange);
             } else if (this.context === 'destination') {
-                if (this.destNode != null) {
-                    this.destNode.pos = new Vec2(x, y);
-                } else {
-                    this.destNode = new Node("Your destination", x, y, "destination");
-                }
+                this.destNode = node;
+                this.context = null;
                 this.trigger(WorldUpdate.DestinationChange);
             } else if (this.context === 'mark') {
-                if (this.markNode != null) {
-                    this.markNode.pos = new Vec2(x, y);
-                } else {
-                    this.markNode = new Node("Recall", x, y, "mark");
-                }
+                var pos = node.pos;
+                this.markNode = new Node("Recall to " + node.name, "Recall to " + node.longName, pos.x, pos.y, "mark");
+                this.markNode.referenceId = node.referenceId || node.id;
+                this.context = null;
                 this.trigger(WorldUpdate.MarkChange);
             }
-
-            this.context = null;
         }
 
         clearContext(context: string) {
             if (context === 'source') {
                 this.sourceNode = null;
+                this.context = null;
                 this.trigger(WorldUpdate.SourceChange);
             } else if (context === 'destination') {
                 this.destNode = null;
+                this.context = null;
                 this.trigger(WorldUpdate.DestinationChange);
             } else if (context === 'mark') {
                 this.markNode = null;
+                this.context = null;
                 this.trigger(WorldUpdate.MarkChange);
             }
-
-            this.context = null;
         }
     }
 }

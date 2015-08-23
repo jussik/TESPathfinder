@@ -8,7 +8,7 @@ module tesp {
         res.json().then(data => {
             var world = new World(data);
             new Map(world, document.getElementById("map"));
-            new Controls(world, document.getElementById("search"));
+            new Controls(world, document.getElementById("controls"));
             document.body.classList.remove("loading");
         }));
 }

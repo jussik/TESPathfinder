@@ -21,7 +21,7 @@
     z-index: 1;
 }
 
-#search {
+#controls {
     position: fixed;
     left: 5px;
     top: 5px;
@@ -33,14 +33,14 @@
     border-top: 1px solid white;
     border-bottom: 1px solid rgba(0,0,0,0.5);
 }
-.search-container {
+.control-container {
     margin: 10px;
 }
 
 .loading #spinner {
     display: block;
 }
-.loading #search {
+.loading #controls {
     display: none;
 }
 

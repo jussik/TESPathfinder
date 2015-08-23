@@ -23,10 +23,35 @@ module tesp {
             world.addListener(reason => {
                 if (reason === WorldUpdate.PathUpdate)
                     this.updatePath();
+                else if (reason === WorldUpdate.SourceChange)
+                    this.updateNodeInfo('.control-source-info', this.world.sourceNode);
+                else if (reason === WorldUpdate.DestinationChange)
+                    this.updateNodeInfo('.control-destination-info', this.world.destNode);
                 else if (reason === WorldUpdate.MarkChange)
-                    element.querySelector('.search-mark').textContent = this.world.markNode != null
-                        ? `[${this.world.markNode.pos.x}-${this.world.markNode.pos.y}]` : "";
+                    this.updateNodeInfo('.control-mark-info', this.world.markNode);
             });
+
+            var nodeSearchIndex: { [key: string]: Node } = {};
+            var searchInput = <HTMLInputElement>element.querySelector('.search-input');
+            var datalist = <HTMLDataListElement>element.querySelector('#search-list');
+            this.world.nodes.forEach(n => {
+                var opt: HTMLOptionElement = document.createElement("option");
+                var value = `${n.name} (${this.world.features.byName[n.type].name})`;
+                nodeSearchIndex[value] = n;
+                opt.value = value;
+                datalist.appendChild(opt);
+            });
+
+            for (var child: HTMLElement = <HTMLElement>element.firstElementChild; child; child = <HTMLElement>child.nextElementSibling) {
+                var name = child.dataset['controlContainer'];
+                if (name === "path") {
+                    this.pathContainer = child;
+                } else if (name === "features") {
+                    this.featuresContainer = child;
+                }
+            }
+
+            this.drawFeatures();
 
             element.onclick = ev => {
                 if (ev.target instanceof HTMLButtonElement) {
@@ -41,19 +66,22 @@ module tesp {
                     if (cunset !== undefined) {
                         this.world.clearContext(cunset);
                     }
+
+                    var csearch = data['contextSearch'];
+                    if (csearch !== undefined) {
+                        var node: Node = nodeSearchIndex[searchInput.value];
+                        if (node !== undefined) {
+                            this.world.context = csearch;
+                            this.world.contextNode(node);
+                            searchInput.value = "";
+                        }
+                    }
                 }
             };
+        }
 
-            for (var child: HTMLElement = <HTMLElement>element.firstElementChild; child; child = <HTMLElement>child.nextElementSibling) {
-                var name = child.dataset['searchContainer'];
-                if (name === "path") {
-                    this.pathContainer = child;
-                } else if (name === "features") {
-                    this.featuresContainer = child;
-                }
-            }
-
-            this.drawFeatures();
+        updateNodeInfo(selector: string, node: Node) {
+            this.element.querySelector(selector).textContent = node != null ? node.longName : "";
         }
 
         private updatePath() {
