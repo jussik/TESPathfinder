@@ -68,7 +68,8 @@ module tesp {
                 this.areaContainer.parentElement.removeChild(this.areaContainer);
             this.areaContainer = document.createElement("div");
             this.element.appendChild(this.areaContainer);
-            this.world.areas.forEach(a => {
+            // regions only for debug as rendering code doesn't consider overlaps
+            this.world.areas/*.concat(this.world.regions)*/.forEach(a => {
                 var type: string = a.target.type;
                 var prev: CellRow = null;
                 for (var i = 0; i < a.rows.length; i++) {

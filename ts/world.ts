@@ -137,7 +137,6 @@
                 this.loadTransport(data.transport, k);
             }
             this.regions = (<any[]>data.regions)
-                .filter(a => a.cells.length > 0) // TODO: remove once all regions have cells
                 .map(a => this.makeArea(new Node(a.name, a.name, 0, 0, "region"), a));
 
             // index by id
