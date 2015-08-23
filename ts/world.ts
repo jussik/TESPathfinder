@@ -317,7 +317,7 @@
             } else if (this.context === 'destination') {
                 this.contextNode(new Node("Your destination", `Your destination at [${x}-${y}]`, x, y, "destination"));
             } else if (this.context === 'mark') {
-                this.markNode = new Node("Recall", `Mark at [${x}-${y}]`, x, y, "mark");
+                this.markNode = new Node("Mark", `Mark at [${x}-${y}]`, x, y, "mark");
                 this.trigger(WorldUpdate.MarkChange);
                 this.context = null;
             }
