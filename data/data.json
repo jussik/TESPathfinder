@@ -215,6 +215,96 @@
       ]
     }
   ],
+  "landmarks": [
+    {
+      "name": "V",
+      "top": 3,
+      "cells": [ [ 15, 15 ] ]
+    },
+    {
+      "name": "D",
+      "top": 3,
+      "cells": [ [ 22, 22 ] ]
+    },
+    {
+      "name": "A",
+      "top": 4,
+      "cells": [ [ 11, 11 ] ]
+    },
+    {
+      "name": "S",
+      "top": 4,
+      "cells": [ [ 16, 16 ] ]
+    },
+    {
+      "name": "M",
+      "top": 4,
+      "cells": [ [ 21, 21 ] ]
+    },
+    {
+      "name": "R",
+      "top": 7,
+      "cells": [ [ 21 ] ]
+    },
+    {
+      "name": "A",
+      "top": 7,
+      "cells": [ [ 10, 10 ] ]
+    },
+    {
+      "name": "U",
+      "top": 7,
+      "cells": [ [ 11, 11 ] ]
+    },
+    {
+      "name": "V",
+      "top": 7,
+      "cells": [ [ 14, 14 ] ]
+    },
+    {
+      "name": "F",
+      "top": 10,
+      "cells": [ [ 13, 13 ] ]
+    },
+    {
+      "name": "Z",
+      "top": 10,
+      "cells": [ [ 20, 20 ] ]
+    },
+    {
+      "name": "K",
+      "top": 11,
+      "cells": [ [ 15, 15 ] ]
+    },
+    {
+      "name": "M",
+      "top": 13,
+      "cells": [ [ 12, 12 ] ]
+    },
+    {
+      "name": "B",
+      "top": 16,
+      "cells": [ [ 10, 10 ] ]
+    },
+    {
+      "name": "Ald'Ruhn",
+      "top": 18,
+      "cells": [
+        [ 13, 13 ],
+        [ 12, 13 ]
+      ]
+    },
+    {
+      "name": "B",
+      "top": 10,
+      "cells": [ [ 13, 13 ] ]
+    },
+    {
+      "name": "G",
+      "top": 21,
+      "cells": [ [ 17, 17 ] ]
+    }
+  ],
   "transport": {
     "mages-guild": [
       {

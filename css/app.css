@@ -79,7 +79,7 @@
 .map-gondola { background: olivedrab; }
 .map-divine { background: magenta; }
 .map-almsivi { background: yellow; }
-.map-region { background: cyan; z-index: 1; }
+.map-region, .map-landmark { background: cyan; z-index: 1; }
 
 .hide-mark .map-mark { display: none; }
 .hide-mages-guild .map-mages-guild { display: none; }
@@ -100,9 +100,6 @@
 }
 .map-edge.map-almsivi {
     background: repeating-linear-gradient(-45deg, transparent, transparent 4px, yellow 4px, yellow 6px);
-}
-.map-edge.map-region {
-    background: repeating-linear-gradient(-45deg, transparent, transparent 4px, cyan 4px, cyan 6px);
 }
 .map-edge.map-mark {
     background: repeating-linear-gradient(-45deg, transparent, transparent 4px, white 4px, white 6px);

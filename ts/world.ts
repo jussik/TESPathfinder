@@ -96,6 +96,7 @@
         edges: Edge[];
         areas: Area[];
         regions: Area[];
+        landmarks: Area[];
         sourceNode: Node;
         destNode: Node;
         markNode: Node;
@@ -138,6 +139,21 @@
             }
             this.regions = (<any[]>data.regions)
                 .map(a => this.makeArea(new Node(a.name, a.name, 0, 0, "region"), a));
+            this.landmarks = (<any[]>data.landmarks).map(a => {
+                var node = new Node(a.name, a.name, 0, 0, "landmark");
+                var area = this.makeArea(node, a);
+                // set node location to average center point of all cells
+                var sumX: number = 0;
+                var sumY: number = 0;
+                var count: number = 0;
+                area.rows.forEach(r => {
+                    sumX += (r.x1 + r.width / 2) * r.width;
+                    sumY += (r.y + 0.5) * r.width;
+                    count += r.width;
+                });
+                node.pos = Vec2.fromCell(sumX / count, sumY / count);
+                return area;
+            });
 
             // index by id
             this.nodesById = {};
@@ -320,25 +336,24 @@
                 return;
 
             if (this.context === 'source') {
-                var region = this.getRegionName(x, y);
-                var name = region ? `Location in ${region}` : "You";
+                var name = this.getAreaName(x, y) || "You";
                 this.contextNode(new Node(name, name, x, y, "source"));
             } else if (this.context === 'destination') {
-                var region = this.getRegionName(x, y);
-                var name = region ? `Location in ${region}` : "Your destination";
+                var name = this.getAreaName(x, y) || "Your destination";
                 this.contextNode(new Node(name, name, x, y, "destination"));
             } else if (this.context === 'mark') {
-                var region = this.getRegionName(x, y);
+                var region = this.getAreaName(x, y);
                 this.markNode = new Node("Mark", region ? `Mark in ${region}` : "Mark", x, y, "mark");
                 this.trigger(WorldUpdate.MarkChange);
                 this.context = null;
             }
         }
-        private getRegionName(x: number, y: number) {
-            var region: Area;
+        private getAreaName(x: number, y: number) {
+            var area: Area;
             var cell = Cell.fromPosition(new Vec2(x, y));
-            return this.regions.some(r => r.containsCell(cell) && (region = r) != null)
-                ? region.target.name
+            return this.landmarks.some(r => r.containsCell(cell) && (area = r) != null)
+                || this.regions.some(r => r.containsCell(cell) && (area = r) != null)
+                ? area.target.name
                 : null;
         }
 

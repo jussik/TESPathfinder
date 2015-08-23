@@ -55,7 +55,9 @@ module tesp {
                 this.nodeContainer.parentElement.removeChild(this.nodeContainer);
             this.nodeContainer = document.createElement("div");
             this.element.appendChild(this.nodeContainer);
-            this.world.nodes.forEach(n => this.nodeContainer.appendChild(this.drawNode(n)));
+            this.world.nodes
+                //.concat(this.world.landmarks.map(l => l.target))
+                .forEach(n => this.nodeContainer.appendChild(this.drawNode(n)));
 
             if (this.edgeContainer != null)
                 this.edgeContainer.parentElement.removeChild(this.edgeContainer);
@@ -68,28 +70,30 @@ module tesp {
                 this.areaContainer.parentElement.removeChild(this.areaContainer);
             this.areaContainer = document.createElement("div");
             this.element.appendChild(this.areaContainer);
-            // regions only for debug as rendering code doesn't consider overlaps
-            this.world.areas/*.concat(this.world.regions)*/.forEach(a => {
-                var type: string = a.target.type;
-                var prev: CellRow = null;
-                for (var i = 0; i < a.rows.length; i++) {
-                    var row = a.rows[i];
-                    if (prev != null) {
-                        if (row.x1 !== prev.x1) {
-                            this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, prev.x1, row.y, type));
+            this.world.areas
+                //.concat(this.world.regions)
+                //.concat(this.world.landmarks)
+                .forEach(a => {
+                    var type: string = a.target.type;
+                    var prev: CellRow = null;
+                    for (var i = 0; i < a.rows.length; i++) {
+                        var row = a.rows[i];
+                        if (prev != null) {
+                            if (row.x1 !== prev.x1) {
+                                this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, prev.x1, row.y, type));
+                            }
+                            if (row.x2 !== prev.x2) {
+                                this.areaContainer.appendChild(this.drawCellEdge(row.x2 + 1, row.y, prev.x2 + 1, row.y, type));
+                            }
+                        } else {
+                            this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, row.x2 + 1, row.y, type));
                         }
-                        if (row.x2 !== prev.x2) {
-                            this.areaContainer.appendChild(this.drawCellEdge(row.x2 + 1, row.y, prev.x2 + 1, row.y, type));
-                        }
-                    } else {
-                        this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, row.x2 + 1, row.y, type));
+                        this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, row.x1, row.y + 1, type));
+                        this.areaContainer.appendChild(this.drawCellEdge(row.x2 + 1, row.y, row.x2 + 1, row.y + 1, type));
+                        prev = row;
                     }
-                    this.areaContainer.appendChild(this.drawCellEdge(row.x1, row.y, row.x1, row.y + 1, type));
-                    this.areaContainer.appendChild(this.drawCellEdge(row.x2 + 1, row.y, row.x2 + 1, row.y + 1, type));
-                    prev = row;
-                }
-                this.areaContainer.appendChild(this.drawCellEdge(prev.x1, prev.y + 1, prev.x2 + 1, prev.y + 1, type));
-            });
+                    this.areaContainer.appendChild(this.drawCellEdge(prev.x1, prev.y + 1, prev.x2 + 1, prev.y + 1, type));
+                });
         }
 
         private drawCellEdge(x1: number, y1: number, x2: number, y2: number, type: string) {
