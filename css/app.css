@@ -74,6 +74,7 @@
 .map-gondola { background: olivedrab; }
 .map-divine { background: magenta; }
 .map-almsivi { background: yellow; }
+.map-region { background: cyan; z-index: 1; }
 
 .hide-mark .map-mark { display: none; }
 .hide-mages-guild .map-mages-guild { display: none; }

@@ -95,6 +95,7 @@
         nodes: Node[];
         edges: Edge[];
         areas: Area[];
+        regions: Area[];
         sourceNode: Node;
         destNode: Node;
         markNode: Node;
@@ -132,9 +133,12 @@
             this.edges = [];
             this.areas = [];
 
-            for (var k in data) {
-                this.loadTransport(data, k);
+            for (var k in data.transport) {
+                this.loadTransport(data.transport, k);
             }
+            this.regions = (<any[]>data.regions)
+                .filter(a => a.cells.length > 0) // TODO: remove once all regions have cells
+                .map(a => this.makeArea(new Node(a.name, a.name, 0, 0, "region"), a));
 
             // index by id
             this.nodesById = {};
@@ -174,11 +178,15 @@
                     });
                 }
                 if (n.cells) {
-                    var y = n.top || 0;
-                    var rows = (<number[][]>n.cells).map(c => new CellRow(y++, c[0], c[1]));
-                    this.areas.push(new Area(n1, rows));
+                    this.areas.push(this.makeArea(n1, n));
                 }
             });
+        }
+
+        makeArea(node: Node, data: any) {
+            var y = data.top || 0;
+            var rows = (<number[][]>data.cells).map(c => new CellRow(y++, c[0], c[1]));
+            return new Area(node, rows);
         }
 
         addListener(listener: WorldListener) {
@@ -313,14 +321,24 @@
                 return;
 
             if (this.context === 'source') {
-                this.contextNode(new Node("You", `You at [${x}-${y}]`, x, y, "source"));
+                var region = this.getRegionName(x, y);
+                this.contextNode(new Node("You", region ? `You in ${region}` : "You", x, y, "source"));
             } else if (this.context === 'destination') {
-                this.contextNode(new Node("Your destination", `Your destination at [${x}-${y}]`, x, y, "destination"));
+                var region = this.getRegionName(x, y);
+                this.contextNode(new Node("Your destination", region ? `Your destination in ${region}` : "Your destination", x, y, "destination"));
             } else if (this.context === 'mark') {
-                this.markNode = new Node("Mark", `Mark at [${x}-${y}]`, x, y, "mark");
+                var region = this.getRegionName(x, y);
+                this.markNode = new Node("Mark", region ? `Mark in ${region}` : "Mark", x, y, "mark");
                 this.trigger(WorldUpdate.MarkChange);
                 this.context = null;
             }
+        }
+        private getRegionName(x: number, y: number) {
+            var region: Area;
+            var cell = Cell.fromPosition(new Vec2(x, y));
+            return this.regions.some(r => r.containsCell(cell) && (region = r) != null)
+                ? region.target.name
+                : null;
         }
 
         contextNode(node: Node) {
