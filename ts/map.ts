@@ -99,19 +99,17 @@ module tesp {
             if (this.pathContainer != null)
                 this.pathContainer.parentElement.removeChild(this.pathContainer);
 
-            var path: Node[] = this.world.path;
-            if (path == null || path.length < 2) {
+            var pathNode: PathNode = this.world.pathEnd;
+            if (pathNode == null) {
                 this.pathContainer = null;
                 return;
             }
 
             this.pathContainer = document.createElement("div");
             this.element.appendChild(this.pathContainer);
-            var n1 = path[0]
-            for (var i = 1; i < path.length; i++) {
-                var n2 = path[i];
-                this.pathContainer.appendChild(this.drawEdge(n1.pos, n2.pos, 'path'));
-                n1 = n2;
+            while (pathNode && pathNode.prev) {
+                this.pathContainer.appendChild(this.drawEdge(pathNode.node.pos, pathNode.prev.node.pos, 'path', 'map-' + pathNode.prevEdge.type));
+                pathNode = pathNode.prev;
             }
         }
 
@@ -181,7 +179,7 @@ module tesp {
             var element = document.createElement("div");
             element.classList.add("map-node");
             element.classList.add("map-" + node.type);
-            element.title = name;
+            element.title = node.longName;
             element.style.left = node.pos.x + "px";
             element.style.top = node.pos.y + "px";
             element.dataset['nodeId'] = (node.referenceId || node.id) + '';

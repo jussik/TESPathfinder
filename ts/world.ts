@@ -80,12 +80,13 @@
         byName: {[key:string]:Feature};
     }
 
-    class PathEdge {
-        constructor(public target: PathNode, public cost: number) { }
+    export class PathEdge {
+        constructor(public target: PathNode, public cost: number, public type: string) { }
     }
-    class PathNode {
+    export class PathNode {
         dist: number;
         prev: PathNode;
+        prevEdge: PathEdge;
         edges: PathEdge[];
 
         constructor(public node: Node) {
@@ -100,7 +101,7 @@
         sourceNode: Node;
         destNode: Node;
         markNode: Node;
-        path: Node[];
+        pathEnd: PathNode;
         features: FeatureList;
 
         private static defaultTransportCost: number = 10;
@@ -196,7 +197,7 @@
 
         private findPath() {
             if (this.sourceNode == null || this.destNode == null || this.sourceNode === this.destNode) {
-                this.path = [];
+                this.pathEnd = null;
                 this.trigger(WorldUpdate.PathUpdate);
                 return;
             }
@@ -222,22 +223,22 @@
             // explicit edges (services)
             nodes.forEach(n =>
                 n.edges = n.node.edges.map(e =>
-                    new PathEdge(nodeMap[(e.srcNode === n.node ? e.destNode : e.srcNode).id], e.cost)));
+                    new PathEdge(nodeMap[(e.srcNode === n.node ? e.destNode : e.srcNode).id], e.cost, n.node.type)));
 
             // implicit edges (walking)
             nodes.forEach(n =>
                 n.edges = n.edges.concat(nodes
                     .filter(n2 => n2 !== n && !n.edges.some(e => e.target === n2))
-                    .map(n2 => new PathEdge(n2, n.node.pos.distance(n2.node.pos)))
+                    .map(n2 => new PathEdge(n2, n.node.pos.distance(n2.node.pos), "walk"))
                     .filter(e => e.cost <= maxCost)));
 
             // mark
             if (this.markNode != null && feats['mark'].enabled) {
                 var mn = new PathNode(this.markNode);
                 mn.edges = nodes.filter(n => n !== source)
-                    .map(n => new PathEdge(n, mn.node.pos.distance(n.node.pos)))
+                    .map(n => new PathEdge(n, mn.node.pos.distance(n.node.pos), "walk"))
                     .filter(e => e.cost < maxCost);
-                source.edges.push(new PathEdge(mn, World.spellCost));
+                source.edges.push(new PathEdge(mn, World.spellCost, "mark"));
                 nodes.push(mn);
             }
 
@@ -248,7 +249,7 @@
                     if (feats[a.target.type].enabled) {
                         if (a.containsCell(cell)) {
                             // node inside area, teleport to temple/shrine
-                            n.edges.push(new PathEdge(nodeMap[a.target.id], World.spellCost));
+                            n.edges.push(new PathEdge(nodeMap[a.target.id], World.spellCost, a.target.type));
                         } else {
                             // node outside area, walk to edge
                             var dist: number = Infinity;
@@ -270,9 +271,9 @@
                                 // new node to allow us to teleport once we're in the area
                                 var name = `${a.target.name} ${a.target.type} area`;
                                 var an = new PathNode(new Node(name, name, pos.x, pos.y, "area"));
-                                an.edges = [new PathEdge(nodeMap[a.target.id], World.spellCost)];
+                                an.edges = [new PathEdge(nodeMap[a.target.id], World.spellCost, a.target.type)];
                                 nodes.push(an);
-                                n.edges.push(new PathEdge(an, cost));
+                                n.edges.push(new PathEdge(an, cost, "walk"));
                             }
                         }
                     }
@@ -292,17 +293,12 @@
                     if (alt < v.dist) {
                         v.dist = alt;
                         v.prev = u;
+                        v.prevEdge = e;
                     }
                 }
             }
 
-            this.path = [];
-            var n = dest;
-            while (n) {
-                this.path.unshift(n.node);
-                n = n.prev;
-            }
-
+            this.pathEnd = dest;
             this.trigger(WorldUpdate.PathUpdate);
         }
 

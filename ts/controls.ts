@@ -90,16 +90,13 @@ module tesp {
                 this.pathContainer.removeChild(child);
             }
 
-            var path = this.world.path;
-            if (path != null && path.length > 1) {
-                var n1 = path[0];
-                this.pathContainer.appendChild(this.drawPathNode(n1));
-                for (var i = 1; i < path.length; i++) {
-                    var n2 = path[i];
-                    this.pathContainer.appendChild(this.drawPathEdge(n1, n2));
-                    this.pathContainer.appendChild(this.drawPathNode(n2));
-                    n1 = n2;
+            var pathNode = this.world.pathEnd;
+            while (pathNode) {
+                this.pathContainer.insertBefore(this.drawPathNode(pathNode.node), this.pathContainer.firstElementChild);
+                if (pathNode.prev) {
+                    this.pathContainer.insertBefore(this.drawPathEdge(pathNode.node, pathNode.prev.node, pathNode.prevEdge.type), this.pathContainer.firstElementChild);
                 }
+                pathNode = pathNode.prev;
             }
         }
 
@@ -109,9 +106,9 @@ module tesp {
             return el;
         }
         private static teleportTypes: { [key: string]: boolean } = { mark: true, divine: true, almsivi: true };
-        private drawPathEdge(n1: Node, n2: Node): HTMLElement {
+        private drawPathEdge(n1: Node, n2: Node, type: string): HTMLElement {
             var el = document.createElement("div");
-            el.textContent = n1.type === n2.type ? n1.type : (Controls.teleportTypes[n2.type] ? n2.type : 'walk');
+            el.textContent = type;
             return el;
         }
 
