@@ -4,7 +4,11 @@ A web application for finding the quickest way to travel around Vvardenfell in _
 
 ## Todo
 
-1. Pretty interface
+1. Right click interface ("From here", "To here", "Mark here", "What is this place?")
+1. Collapsible sections for search, options and navigation instructions
+1. Ability to save options in localStorage
+1. Snazzy UX!
+1. Buzzwords!
 
 ## Build
 
