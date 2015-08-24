@@ -30,6 +30,9 @@
         }
 
         open(x: number, y: number, node: Node) {
+            if (!node.permanent)
+                node = null; // disallow operations on temporary nodes
+
             var lines: string[] = [];
             var landmark = this.app.world.getLandmarkName(x, y);
             if (node != null) {

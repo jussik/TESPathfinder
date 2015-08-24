@@ -18,6 +18,7 @@
             var nodeSearchIndex: { [key: string]: Node } = {};
             var searchInput = <HTMLInputElement>element.querySelector('.search-input');
             var datalist = <HTMLDataListElement>element.querySelector('#search-list');
+
             this.app.world.nodes
                 .concat(this.app.world.landmarks.map(a => a.target))
                 .forEach(n => {
@@ -39,6 +40,15 @@
             }
 
             this.drawFeatures();
+
+            searchInput.oninput = ev => {
+                var node: Node = nodeSearchIndex[searchInput.value];
+                if (node !== undefined) {
+                    this.app.menu.open(node.pos.x, node.pos.y, node);
+                } else {
+                    this.app.menu.hide();
+                }
+            }
 
             element.onclick = ev => {
                 if (ev.target instanceof HTMLButtonElement) {
@@ -124,7 +134,7 @@
 
             var a = document.createElement("a");
             a.textContent = linkText;
-            a.onclick = () => this.app.menu.open(node.pos.x, node.pos.y, node.permanent ? node : null);
+            a.onclick = () => this.app.menu.open(node.pos.x, node.pos.y, node);
             el.appendChild(a);
 
             return el;
