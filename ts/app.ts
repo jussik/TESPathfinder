@@ -11,6 +11,6 @@ module tesp {
             new Controls(world, document.getElementById("controls"));
             document.body.classList.remove("loading");
             // TODO: put this somewhere sensible
-            document.body.onclick = document.body.oncontextmenu = ev => document.getElementById("context-menu").style.display = "none";
+            document.body.onmousedown = document.body.oncontextmenu = document.body.onscroll = ev => document.getElementById("context-menu").style.display = "none";
         }));
 }

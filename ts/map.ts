@@ -38,7 +38,7 @@ module tesp {
             };
 
             this.contextElem = document.getElementById("context-menu");
-            this.contextElem.oncontextmenu = ev => ev.stopPropagation();
+            this.contextElem.oncontextmenu = this.contextElem.onmousedown = ev => ev.stopPropagation();
             this.contextElem.onclick = ev => {
                 ev.stopPropagation();
                 var item = <HTMLElement>event.target;
@@ -75,6 +75,7 @@ module tesp {
             this.renderMark();
             this.renderGrid();
             this.updateFeatures();
+            this.initDragScroll();
         }
 
         private getEventNode(event: MouseEvent) {
@@ -142,6 +143,38 @@ module tesp {
                 data['posY'] = ev.pageY + '';
                 delete data['nodeId'];
             }
+        }
+
+        private initDragScroll() {
+            var img = <HTMLElement>this.element.querySelector('img');
+            var mousedown = false, prevX: number, prevY: number;
+            img.onmousedown = ev => {
+                if (ev.button === 0 && ev.target === img) {
+                    mousedown = true;
+                    prevX = ev.clientX;
+                    prevY = ev.clientY;
+                    ev.preventDefault();
+                }
+            };
+            img.onmouseup = ev => {
+                if (mousedown) {
+                    mousedown = false;
+                    ev.preventDefault();
+                }
+            }
+            img.onmousemove = ev => {
+                if (mousedown) {
+                    if (ev.which !== 1) {
+                        mousedown = false;
+                    } else {
+                        document.body.scrollLeft += prevX - ev.clientX;
+                        document.body.scrollTop += prevY - ev.clientY;
+                        prevX = ev.clientX;
+                        prevY = ev.clientY;
+                    }
+                    ev.preventDefault();
+                }
+            };
         }
 
         private renderNodes() {
