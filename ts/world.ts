@@ -108,7 +108,6 @@
         features: FeatureList;
 
         private static defaultTransportCost: number = 10;
-        private static transportCost: { [key: string]: number } = { "mages-guild": 30 };
         private static spellCost: number = 5;
 
         private listeners: WorldListener[] = [];
@@ -178,7 +177,7 @@
             var typeName = feat.location || feat.name;
             var nodes: Node[] = array.map(n => new Node(n.name, `${typeName}, ${n.name}`, n.x, n.y, type));
             this.nodes = this.nodes.concat(nodes);
-            var cost = World.transportCost[type] || World.defaultTransportCost;
+            var cost = World.defaultTransportCost;
             array.forEach((n, i1) => {
                 var n1 = nodes[i1];
                 if (n.edges) {
