@@ -4,6 +4,11 @@
     font: 9pt sans-serif;
 }
 
+a {
+    color: #258;
+    cursor: pointer;
+}
+
 #spinner {
     display: none;
 
@@ -31,7 +36,7 @@
     position: fixed;
     left: 5px;
     top: 5px;
-    z-index: 10;
+    z-index: 11;
 
     padding: 10px;
     background: rgba(255, 255, 255, 0.75);
@@ -54,13 +59,12 @@ body.scrolling * {
     cursor: move;
 }
 
-
 #context-menu {
     display: none;
     position: absolute;
     background: white;
     border: 1px solid #bbb;
-    z-index: 11;
+    z-index: 10;
 
     padding: 3px;
     margin: 0;
@@ -68,6 +72,7 @@ body.scrolling * {
 #context-menu > li {
     list-style: none;
     padding: 3px 7px 3px 5px;
+    white-space: nowrap;
 }
 #context-menu > li.link {
     cursor: pointer;

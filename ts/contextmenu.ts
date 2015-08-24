@@ -73,7 +73,6 @@
             else
                 this.element.classList.remove("has-mark");
 
-            this.element.style.display = "inherit";
             var data = this.element.dataset;
             if (node != null) {
                 data['nodeId'] = node.id + '';
@@ -84,6 +83,25 @@
                 data['posY'] = y + '';
                 delete data['nodeId'];
             }
+
+            this.element.style.display = "inherit";
+
+            var scrollX: number = pageXOffset, scrollY: number = pageYOffset;
+            var rect = this.element.getBoundingClientRect();
+            if (rect.left < 0) {
+                scrollX = pageXOffset + rect.left - 10;
+            } else if (rect.right > innerWidth) {
+                scrollX = pageXOffset + rect.right - innerWidth + 27;
+            }
+
+            if (rect.top < 0) {
+                scrollY = pageYOffset + rect.top - 10;
+            } else if (rect.bottom > innerHeight) {
+                scrollY = pageYOffset + rect.bottom - innerHeight + 27;
+            }
+
+            if (scrollX !== pageXOffset || scrollY !== pageYOffset)
+                scroll(scrollX, scrollY);
         }
         hide() {
             this.element.style.display = "none";

@@ -28,7 +28,7 @@
         referenceId: number;
 
         private static identity: number = 1;
-        constructor(public name: string, public longName: string, x: number, y: number, public type: string) {
+        constructor(public name: string, public longName: string, x: number, y: number, public type: string, public permanent: boolean = false) {
             this.id = Node.identity++;
             this.pos = new Vec2(x, y);
             this.edges = [];
@@ -126,7 +126,7 @@
                 { name: "Almsivi Intervention", location: "Tribunal Temple", type: "almsivi", icon: "bolt" },
                 { name: "Transport lines", type: "edge", visualOnly: true },
                 { name: "Locations", type: "node", visualOnly: true },
-                { name: "Intervention area borders", type: "area", visualOnly: true },
+                { name: "Intervention area border", type: "area", visualOnly: true },
                 { name: "Gridlines", type: "grid", visualOnly: true }
             ];
             var fIdx: { [key: string]: Feature } = this.features.byName = {};
@@ -175,7 +175,7 @@
             var array: any[] = data[type];
             var feat = this.features.byName[type];
             var typeName = feat.location || feat.name;
-            var nodes: Node[] = array.map(n => new Node(n.name, `${typeName}, ${n.name}`, n.x, n.y, type));
+            var nodes: Node[] = array.map(n => new Node(n.name, `${typeName}, ${n.name}`, n.x, n.y, type, true));
             this.nodes = this.nodes.concat(nodes);
             var cost = World.transportCost;
             array.forEach((n, i1) => {

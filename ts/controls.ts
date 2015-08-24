@@ -84,11 +84,12 @@
             }
         }
 
-        private drawPathNode(node: PathNode): HTMLElement {
+        private drawPathNode(pathNode: PathNode): HTMLElement {
             var el = document.createElement("div");
 
-            var icon: string, text: string;
-            var edge = node.prevEdge;
+            var icon: string, text: string, linkText: string;
+            var node = pathNode.node;
+            var edge = pathNode.prevEdge;
             if (edge) {
                 var action: string;
                 if (edge.type === "walk") {
@@ -105,11 +106,12 @@
                     }
                 }
 
-                var loc = node.node.type == edge.type ? node.node.name : node.node.longName;
-                text = `${action} to ${loc}`;
+                text = ` ${action} to `;
+                linkText = node.type == edge.type ? node.name : node.longName;
             } else {
                 icon = "map-marker";
-                text = node.node.longName;
+                text = " ";
+                linkText = node.longName;
             }
 
             var i = document.createElement("i");
@@ -117,7 +119,13 @@
             i.classList.add("fa");
             i.classList.add("fa-" + icon);
             el.appendChild(i);
-            el.appendChild(document.createTextNode(" " + text));
+
+            el.appendChild(document.createTextNode(text));
+
+            var a = document.createElement("a");
+            a.textContent = linkText;
+            a.onclick = () => this.app.menu.open(node.pos.x, node.pos.y, node.permanent ? node : null);
+            el.appendChild(a);
 
             return el;
         }
