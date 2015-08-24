@@ -6,22 +6,20 @@
                 ev.stopPropagation();
                 var item = <HTMLElement>event.target;
                 if (item.classList.contains("link")) {
-                    var cset = item.dataset['contextSet'];
-                    if (cset !== undefined) {
-                        this.app.world.context = cset;
-
+                    var context = item.dataset['contextSet'];
+                    if (context !== undefined) {
                         var data = this.element.dataset;
                         var nodeId = data['nodeId'];
                         var node: Node;
                         if (nodeId !== undefined && (node = this.app.world.findNodeById(+nodeId)) != null) {
-                            this.app.world.contextNode(node);
+                            this.app.world.setContextNode(context, node);
                         } else {
-                            this.app.world.contextClick(+data['posX'], +data['posY']);
+                            this.app.world.setContextLocation(context, +data['posX'], +data['posY']);
                         }
                     } else {
-                        var cunset = item.dataset['contextUnset'];
-                        if (cunset !== undefined) {
-                            this.app.world.clearContext(cunset);
+                        context = item.dataset['contextUnset'];
+                        if (context !== undefined) {
+                            this.app.world.clearContext(context);
                         }
                     }
                     this.hide();
@@ -29,8 +27,12 @@
             };
         }
 
+        openNode(node: Node) {
+            this.open(node.pos.x, node.pos.y, node);
+        }
+
         open(x: number, y: number, node: Node) {
-            if (!node.permanent)
+            if (node != null && !node.permanent)
                 node = null; // disallow operations on temporary nodes
 
             var lines: string[] = [];
@@ -71,11 +73,6 @@
             this.element.style.left = x + "px";
             this.element.style.top = y + "px";
 
-            if (this.app.world.markNode != null)
-                this.element.classList.add("has-mark");
-            else
-                this.element.classList.remove("has-mark");
-
             var data = this.element.dataset;
             if (node != null) {
                 data['nodeId'] = node.id + '';
@@ -91,15 +88,15 @@
 
             var scrollX: number = pageXOffset, scrollY: number = pageYOffset;
             var rect = this.element.getBoundingClientRect();
-            if (rect.left < 0) {
+            if (rect.left < 10) {
                 scrollX = pageXOffset + rect.left - 10;
-            } else if (rect.right > innerWidth) {
+            } else if (rect.right > innerWidth - 27) {
                 scrollX = pageXOffset + rect.right - innerWidth + 27;
             }
 
-            if (rect.top < 0) {
+            if (rect.top < 10) {
                 scrollY = pageYOffset + rect.top - 10;
-            } else if (rect.bottom > innerHeight) {
+            } else if (rect.bottom > innerHeight - 27) {
                 scrollY = pageYOffset + rect.bottom - innerHeight + 27;
             }
 

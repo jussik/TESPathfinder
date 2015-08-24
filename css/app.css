@@ -2,11 +2,19 @@
     margin: 0;
     background: #233;
     font: 9pt sans-serif;
+    line-height: 16px;
 }
 
 a {
-    color: #258;
+    color: #08a;
     cursor: pointer;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+h1 {
+    color: #056;
 }
 
 #spinner {
@@ -39,13 +47,8 @@ a {
     z-index: 11;
 
     padding: 10px;
-    background: rgba(255, 255, 255, 0.75);
-    border-radius: 5px;
-    border-top: 1px solid white;
-    border-bottom: 1px solid rgba(0,0,0,0.5);
-}
-.control-container {
-    margin: 10px;
+    background: white;
+    border: 1px solid #bbb;
 }
 
 body.loading #spinner {
@@ -57,6 +60,19 @@ body.loading #controls {
 
 body.scrolling * {
     cursor: move;
+}
+
+.control-container {
+    margin: 10px;
+}
+.control-mark-row {
+    display: none;
+}
+body.has-mark .control-mark-row {
+    display: block;
+}
+.search-area {
+    margin: 5px 0;
 }
 
 #context-menu {
@@ -88,13 +104,18 @@ body.scrolling * {
 #context-menu > li.unset-mark {
     display: none;
 }
-#context-menu.has-mark > li.unset-mark {
+
+body.has-mark > #context-menu > li.unset-mark {
     display: inherit;
 }
 
 .path-icon {
-    width: 16px;
+    width: 18px;
+    line-height: 20px;
     text-align: center;
+    color: #056;
+    font-size: 12pt;
+    vertical-align: -1px;
 }
 
 .map-node {

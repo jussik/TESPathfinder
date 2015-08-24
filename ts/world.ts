@@ -65,7 +65,7 @@
     }
 
     export interface WorldListener { (reason: WorldUpdate): void; }
-    export enum WorldUpdate { ContextChange, SourceChange, DestinationChange, MarkChange, FeatureChange, PathUpdate }
+    export enum WorldUpdate { SourceChange, DestinationChange, MarkChange, FeatureChange, PathUpdate }
 
     export class Feature {
         name: string;
@@ -168,6 +168,8 @@
                     || reason === WorldUpdate.MarkChange
                     || reason === WorldUpdate.FeatureChange)
                     this.findPath();
+                if (reason === WorldUpdate.MarkChange)
+                    this.app.toggleClass("has-mark", this.markNode != null);
             });
         }
 
@@ -328,33 +330,6 @@
             this.trigger(WorldUpdate.PathUpdate);
         }
 
-        private _context: string;
-        get context(): string {
-            return this._context;
-        }
-        set context(value: string) {
-            this._context = value;
-            this.trigger(WorldUpdate.ContextChange);
-        }
-
-        contextClick(x: number, y: number) {
-            if (!this.context)
-                return;
-
-            var areaName = this.getLandmarkName(x, y) || this.getRegionName(x, y);
-            if (this.context === 'source') {
-                var name = areaName || "You";
-                this.contextNode(new Node(name, name, x, y, "source"));
-            } else if (this.context === 'destination') {
-                var name = areaName || "Your destination";
-                this.contextNode(new Node(name, name, x, y, "destination"));
-            } else if (this.context === 'mark') {
-                var name = areaName ? `Mark in ${areaName}` : "Mark";
-                this.markNode = new Node(name, name, x, y, "mark");
-                this.trigger(WorldUpdate.MarkChange);
-                this.context = null;
-            }
-        }
         getRegionName(x: number, y: number): string {
             var area: Area;
             var cell = Cell.fromPosition(new Vec2(x, y));
@@ -370,39 +345,43 @@
                 : null;
         }
 
-        contextNode(node: Node) {
-            if (!this.context)
-                return;
-
-            if (this.context === 'source') {
-                this.sourceNode = node;
-                this.context = null;
-                this.trigger(WorldUpdate.SourceChange);
-            } else if (this.context === 'destination') {
-                this.destNode = node;
-                this.context = null;
-                this.trigger(WorldUpdate.DestinationChange);
-            } else if (this.context === 'mark') {
-                var pos = node.pos;
-                this.markNode = new Node(node.name, node.longName, pos.x, pos.y, "mark");
-                this.markNode.referenceId = node.referenceId || node.id;
-                this.context = null;
+        setContextLocation(context: string, x: number, y: number) {
+            var areaName = this.getLandmarkName(x, y) || this.getRegionName(x, y);
+            if (context === 'source') {
+                var name = areaName || "You";
+                this.setContextNode(context, new Node(name, name, x, y, "source"));
+            } else if (context === 'destination') {
+                var name = areaName || "Your destination";
+                this.setContextNode(context, new Node(name, name, x, y, "destination"));
+            } else if (context === 'mark') {
+                var name = areaName ? `Mark in ${areaName}` : "Mark";
+                this.markNode = new Node(name, name, x, y, "mark");
                 this.trigger(WorldUpdate.MarkChange);
             }
         }
-
+        setContextNode(context: string, node: Node) {
+            if (context === 'source') {
+                this.sourceNode = node;
+                this.trigger(WorldUpdate.SourceChange);
+            } else if (context === 'destination') {
+                this.destNode = node;
+                this.trigger(WorldUpdate.DestinationChange);
+            } else if (context === 'mark') {
+                var pos = node.pos;
+                this.markNode = new Node(node.name, node.longName, pos.x, pos.y, "mark");
+                this.markNode.referenceId = node.referenceId || node.id;
+                this.trigger(WorldUpdate.MarkChange);
+            }
+        }
         clearContext(context: string) {
             if (context === 'source') {
                 this.sourceNode = null;
-                this.context = null;
                 this.trigger(WorldUpdate.SourceChange);
             } else if (context === 'destination') {
                 this.destNode = null;
-                this.context = null;
                 this.trigger(WorldUpdate.DestinationChange);
             } else if (context === 'mark') {
                 this.markNode = null;
-                this.context = null;
                 this.trigger(WorldUpdate.MarkChange);
             }
         }

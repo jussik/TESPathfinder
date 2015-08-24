@@ -25,13 +25,8 @@
 
             element.onclick = ev => {
                 var node = this.getEventNode(ev);
-                if (this.app.world.context) {
-                    if (node != null)
-                        this.app.world.contextNode(node);
-                    else
-                        this.app.world.contextClick(ev.pageX, ev.pageY)
-                } else if (node != null) {
-                    this.triggerContextMenu(ev);
+                if (node != null) {
+                    this.triggerContextMenu(ev, node);
                 }
             };
 
@@ -60,8 +55,8 @@
             return null;
         }
 
-        private triggerContextMenu(ev: MouseEvent) {
-            this.app.menu.open(ev.pageX, ev.pageY, this.getEventNode(ev));
+        private triggerContextMenu(ev: MouseEvent, node?: Node) {
+            this.app.menu.open(ev.pageX, ev.pageY, node || this.getEventNode(ev));
         }
 
         private initDragScroll() {

@@ -44,41 +44,22 @@
             searchInput.oninput = ev => {
                 var node: Node = nodeSearchIndex[searchInput.value];
                 if (node !== undefined) {
-                    this.app.menu.open(node.pos.x, node.pos.y, node);
+                    this.app.menu.openNode(node);
                 } else {
                     this.app.menu.hide();
                 }
             }
-
-            element.onclick = ev => {
-                if (ev.target instanceof HTMLButtonElement) {
-                    var data = (<HTMLButtonElement>ev.target).dataset;
-
-                    var cset = data['contextSet'];
-                    if (cset !== undefined) {
-                        this.app.world.context = cset;
-                    }
-
-                    var cunset = data['contextUnset'];
-                    if (cunset !== undefined) {
-                        this.app.world.clearContext(cunset);
-                    }
-
-                    var csearch = data['contextSearch'];
-                    if (csearch !== undefined) {
-                        var node: Node = nodeSearchIndex[searchInput.value];
-                        if (node !== undefined) {
-                            this.app.world.context = csearch;
-                            this.app.world.contextNode(node);
-                            searchInput.value = "";
-                        }
-                    }
-                }
-            };
         }
 
         updateNodeInfo(selector: string, node: Node) {
-            this.element.querySelector(selector).textContent = node != null ? node.longName : "";
+            var el = <HTMLElement>this.element.querySelector(selector);
+            if (node != null) {
+                el.textContent = node.longName;
+                el.onclick = ev => this.app.menu.openNode(node);
+            } else {
+                el.textContent = "";
+                el.onclick = null;
+            }
         }
 
         private updatePath() {
@@ -134,7 +115,7 @@
 
             var a = document.createElement("a");
             a.textContent = linkText;
-            a.onclick = () => this.app.menu.open(node.pos.x, node.pos.y, node);
+            a.onclick = () => this.app.menu.openNode(node);
             el.appendChild(a);
 
             return el;

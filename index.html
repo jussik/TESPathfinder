@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <title>TES Pathfinder</title>
-    <link rel="stylesheet" href="css/app.css" type="text/css" />
     <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/app.css" type="text/css" />
 </head>
 <body class="loading">
     <div id="spinner">
@@ -22,34 +22,17 @@
         <li class="link unset-mark" data-context-unset="mark">Remove Mark</li>
     </ul>
     <div id="controls">
+        <div class="control-container">
+            <h1>Pathfinder</h1>
+        </div>
         <div class="control-container" data-control-container="input">
-            <div>
-                From
-                <button data-context-set="source">Set</button>
-                <button data-context-unset="source">Unset</button>
-                <span class="control-source-info"></span>
-            </div>
-            <div>
-                To
-                <button data-context-set="destination">Set</button>
-                <button data-context-unset="destination">Unset</button>
-                <span class="control-destination-info"></span>
-            </div>
-            <div>
-                Mark
-                <button data-context-set="mark">Set</button>
-                <button data-context-unset="mark">Unset</button>
-                <span class="control-mark-info"></span>
-            </div>
-            <div>
+            <div>From: <a class="control-source-info"></a></div>
+            <div>To: <a class="control-destination-info"></a></div>
+            <div class="control-mark-row">Mark: <a class="control-mark-info"></a></div>
+            <div class="search-area">
                 Search
                 <input class="search-input" list="search-list">
                 <datalist id="search-list"></datalist>
-                <br />
-                Set as:
-                <button data-context-search="source">From</button>
-                <button data-context-search="destination">To</button>
-                <button data-context-search="mark">Mark</button>
             </div>
         </div>
         <div class="control-container" data-control-container="path"></div>
