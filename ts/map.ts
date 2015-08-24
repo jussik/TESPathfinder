@@ -10,6 +10,7 @@ module tesp {
         private sourceElem: HTMLElement;
         private destElem: HTMLElement;
         private markElem: HTMLElement;
+        private contextElem: HTMLElement;
 
         constructor(private world: World, private element: HTMLElement) {
             world.addListener(reason => {
@@ -29,25 +30,118 @@ module tesp {
                 if (!this.world.context)
                     return;
 
-                var target = <HTMLElement>ev.target;
-                var node: Node = null;
-                if (target.classList.contains('map-node')) {
-                    var id = target.dataset['nodeId'];
-                    if (id !== undefined) {
-                        node = this.world.findNodeById(+id);
-                    }
-                }
+                var node = this.getEventNode(ev);
                 if (node != null)
                     this.world.contextNode(node);
                 else
                     this.world.contextClick(ev.pageX, ev.pageY)
             };
 
+            this.contextElem = document.getElementById("context-menu");
+            this.contextElem.oncontextmenu = ev => ev.stopPropagation();
+            this.contextElem.onclick = ev => {
+                ev.stopPropagation();
+                var item = <HTMLElement>event.target;
+                if (item.classList.contains("link")) {
+                    var cset = item.dataset['contextSet'];
+                    if (cset !== undefined) {
+                        this.world.context = cset;
+
+                        var data = this.contextElem.dataset;
+                        var nodeId = data['nodeId'];
+                        var node: Node;
+                        if (nodeId !== undefined && (node = this.world.findNodeById(+nodeId)) != null) {
+                            this.world.contextNode(node);
+                        } else {
+                            this.world.contextClick(+data['posX'], +data['posY']);
+                        }
+                    } else {
+                        var cunset = item.dataset['contextUnset'];
+                        if (cunset !== undefined) {
+                            this.world.clearContext(cunset);
+                        }
+                    }
+                    this.contextElem.style.display = "none";
+                }
+            };
+            element.oncontextmenu = ev => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.drawContextMenu(ev);
+            }
+
             this.renderNodes();
             this.renderPath();
             this.renderMark();
             this.renderGrid();
             this.updateFeatures();
+        }
+
+        private getEventNode(event: MouseEvent) {
+            var target = <HTMLElement>event.target;
+            if (target.classList.contains('map-node')) {
+                var id = target.dataset['nodeId'];
+                if (id !== undefined) {
+                    return this.world.findNodeById(+id);
+                }
+            }
+            return null;
+        }
+
+        private drawContextMenu(ev: MouseEvent) {
+            var lines: string[] = [];
+            var node = this.getEventNode(ev);
+            var landmark = this.world.getLandmarkName(ev.pageX, ev.pageY);
+            if (node != null) {
+                var feat = this.world.features.byName[node.type];
+                if (feat != null) {
+                    lines.push(feat.location || feat.name);
+                    lines.push(node.name);
+                } else {
+                    lines.push(node.longName);
+                }
+                if (landmark != null && landmark !== node.name) {
+                    lines.push(landmark);
+                }
+            } else if (landmark != null) {
+                lines.push(landmark);
+            }
+            var region = this.world.getRegionName(ev.pageX, ev.pageY);
+            if (region != null) {
+                lines.push(region + " Region");
+            }
+
+            var separator = this.contextElem.getElementsByClassName("separator")[0];
+            var child: Element;
+            while ((child = this.contextElem.firstElementChild) != separator) {
+                this.contextElem.removeChild(child);
+            }
+
+            lines.forEach(l => {
+                var item = document.createElement("li");
+                item.textContent = l;
+                this.contextElem.insertBefore(item, separator);
+            });
+
+            this.contextElem.style.left = ev.pageX + "px";
+            this.contextElem.style.top = ev.pageY + "px";
+
+            if (this.world.markNode != null)
+                this.contextElem.classList.add("has-mark");
+            else
+                this.contextElem.classList.remove("has-mark");
+
+            this.contextElem.style.display = "inherit";
+            var data = this.contextElem.dataset;
+            if (node != null) {
+                data['nodeId'] = node.id + '';
+                delete data['posX'];
+                delete data['posY'];
+            } else {
+                data['posX'] = ev.pageX + '';
+                data['posY'] = ev.pageY + '';
+                delete data['nodeId'];
+            }
         }
 
         private renderNodes() {
@@ -184,7 +278,6 @@ module tesp {
             var element = document.createElement("div");
             element.classList.add("map-node");
             element.classList.add("map-" + node.type);
-            element.title = node.longName;
             element.style.left = node.pos.x + "px";
             element.style.top = node.pos.y + "px";
             element.dataset['nodeId'] = (node.referenceId || node.id) + '';

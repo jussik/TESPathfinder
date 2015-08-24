@@ -99,7 +99,7 @@ module tesp {
                 } else {
                     var feat = this.world.features.byName[edge.type];
                     if (feat) {
-                        action = feat.name;
+                        action = feat.verb || feat.name;
                         icon = feat.icon;
                     } else {
                         action = edge.type;
@@ -133,7 +133,7 @@ module tesp {
                     f.hidden = !val;
                     this.world.trigger(WorldUpdate.FeatureChange);
                 }, !f.hidden));
-                if (f.affectsPath)
+                if (!f.visualOnly)
                     el.appendChild(this.drawCheckbox(val => {
                         f.disabled = !val;
                         this.world.trigger(WorldUpdate.FeatureChange);

@@ -647,8 +647,8 @@
         "edges": [ 0, 1, 2 ]
       },
       {
-        "name": "Sadrith Mora",
-        "x": 1487,
+        "name": "Wolverine Hall",
+        "x": 1490,
         "y": 1041,
         "edges": [ 0, 1, 2, 3 ]
       }
@@ -889,7 +889,7 @@
     ],
     "divine": [
       {
-        "name": "Gnisis",
+        "name": "Fort Darius",
         "x": 250,
         "y": 700,
         "top": 0,
@@ -922,7 +922,7 @@
         ]
       },
       {
-        "name": "Ald'Ruhn",
+        "name": "Buckmoth Legion Fort",
         "x": 611,
         "y": 961,
         "top": 0,
@@ -959,8 +959,8 @@
         ]
       },
       {
-        "name": "Sadrith Mora",
-        "x": 1497,
+        "name": "Wolverine Hall",
+        "x": 1500,
         "y": 1041,
         "top": 6,
         "cells": [
@@ -1001,7 +1001,7 @@
         ]
       },
       {
-        "name": "Balmora",
+        "name": "Moonmoth Legion Fort",
         "x": 658,
         "y": 1292,
         "top": 18,
@@ -1028,7 +1028,7 @@
         ]
       },
       {
-        "name": "Pelagiad",
+        "name": "Fort Pelagiad",
         "x": 722,
         "y": 1500,
         "top": 23,

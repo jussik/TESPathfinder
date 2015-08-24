@@ -10,5 +10,7 @@ module tesp {
             new Map(world, document.getElementById("map"));
             new Controls(world, document.getElementById("controls"));
             document.body.classList.remove("loading");
+            // TODO: put this somewhere sensible
+            document.body.onclick = document.body.oncontextmenu = ev => document.getElementById("context-menu").style.display = "none";
         }));
 }

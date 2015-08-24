@@ -1,6 +1,7 @@
 ﻿body {
     margin: 0;
     background: #233;
+    font: 9pt sans-serif;
 }
 
 #spinner {
@@ -44,6 +45,39 @@
     display: none;
 }
 
+
+#context-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #bbb;
+    z-index: 11;
+
+    padding: 3px;
+    margin: 0;
+}
+#context-menu > li {
+    list-style: none;
+    padding: 3px 7px 3px 5px;
+}
+#context-menu > li.link {
+    cursor: pointer;
+}
+#context-menu > li.link:hover {
+    background: #ddd;
+}
+#context-menu > li.separator {
+    border-bottom: 1px solid #bbb;
+    padding: 0;
+    margin: 5px 2px 5px 2px;
+}
+#context-menu > li.unset-mark {
+    display: none;
+}
+#context-menu.has-mark > li.unset-mark {
+    display: inherit;
+}
+
 .path-icon {
     width: 16px;
     text-align: center;
@@ -69,7 +103,6 @@
 }
 
 .map-path { background: white; z-index: 3; }
-.map-source, .map-destination { background: white; }
 .map-mark { background: black; }
 .map-mages-guild { background: red; }
 .map-silt-strider { background: orange; }
@@ -94,6 +127,11 @@
 .hide-node .map-node { display: none; }
 .hide-area .map-area { display: none; }
 .hide-grid .map-grid { display: none; }
+
+.map-source, .map-destination {
+    background: white;
+    display: block;
+}
 
 .map-edge.map-divine {
     background: repeating-linear-gradient(45deg, transparent, transparent 4px, magenta 4px, magenta 6px);
