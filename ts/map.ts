@@ -1,6 +1,4 @@
-﻿/// <reference path="world.ts" />
-
-module tesp {
+﻿module tesp {
     export class Map {
         private edgeContainer: HTMLElement;
         private nodeContainer: HTMLElement;
@@ -10,10 +8,9 @@ module tesp {
         private sourceElem: HTMLElement;
         private destElem: HTMLElement;
         private markElem: HTMLElement;
-        private contextElem: HTMLElement;
 
-        constructor(private world: World, private element: HTMLElement) {
-            world.addListener(reason => {
+        constructor(private app: Application, private element: HTMLElement) {
+            this.app.world.addListener(reason => {
                 if (reason === WorldUpdate.PathUpdate)
                     this.renderPath();
                 else if (reason === WorldUpdate.SourceChange)
@@ -27,47 +24,21 @@ module tesp {
             });
 
             element.onclick = ev => {
-                if (!this.world.context)
-                    return;
-
                 var node = this.getEventNode(ev);
-                if (node != null)
-                    this.world.contextNode(node);
-                else
-                    this.world.contextClick(ev.pageX, ev.pageY)
-            };
-
-            this.contextElem = document.getElementById("context-menu");
-            this.contextElem.oncontextmenu = this.contextElem.onmousedown = ev => ev.stopPropagation();
-            this.contextElem.onclick = ev => {
-                ev.stopPropagation();
-                var item = <HTMLElement>event.target;
-                if (item.classList.contains("link")) {
-                    var cset = item.dataset['contextSet'];
-                    if (cset !== undefined) {
-                        this.world.context = cset;
-
-                        var data = this.contextElem.dataset;
-                        var nodeId = data['nodeId'];
-                        var node: Node;
-                        if (nodeId !== undefined && (node = this.world.findNodeById(+nodeId)) != null) {
-                            this.world.contextNode(node);
-                        } else {
-                            this.world.contextClick(+data['posX'], +data['posY']);
-                        }
-                    } else {
-                        var cunset = item.dataset['contextUnset'];
-                        if (cunset !== undefined) {
-                            this.world.clearContext(cunset);
-                        }
-                    }
-                    this.contextElem.style.display = "none";
+                if (this.app.world.context) {
+                    if (node != null)
+                        this.app.world.contextNode(node);
+                    else
+                        this.app.world.contextClick(ev.pageX, ev.pageY)
+                } else if (node != null) {
+                    this.triggerContextMenu(ev);
                 }
             };
+
             element.oncontextmenu = ev => {
                 ev.preventDefault();
                 ev.stopPropagation();
-                this.drawContextMenu(ev);
+                this.triggerContextMenu(ev);
             }
 
             this.renderNodes();
@@ -83,66 +54,14 @@ module tesp {
             if (target.classList.contains('map-node')) {
                 var id = target.dataset['nodeId'];
                 if (id !== undefined) {
-                    return this.world.findNodeById(+id);
+                    return this.app.world.findNodeById(+id);
                 }
             }
             return null;
         }
 
-        private drawContextMenu(ev: MouseEvent) {
-            var lines: string[] = [];
-            var node = this.getEventNode(ev);
-            var landmark = this.world.getLandmarkName(ev.pageX, ev.pageY);
-            if (node != null) {
-                var feat = this.world.features.byName[node.type];
-                if (feat != null) {
-                    lines.push(feat.location || feat.name);
-                    lines.push(node.name);
-                } else {
-                    lines.push(node.longName);
-                }
-                if (landmark != null && landmark !== node.name) {
-                    lines.push(landmark);
-                }
-            } else if (landmark != null) {
-                lines.push(landmark);
-            }
-            var region = this.world.getRegionName(ev.pageX, ev.pageY);
-            if (region != null) {
-                lines.push(region + " Region");
-            }
-
-            var separator = this.contextElem.getElementsByClassName("separator")[0];
-            var child: Element;
-            while ((child = this.contextElem.firstElementChild) != separator) {
-                this.contextElem.removeChild(child);
-            }
-
-            lines.forEach(l => {
-                var item = document.createElement("li");
-                item.textContent = l;
-                this.contextElem.insertBefore(item, separator);
-            });
-
-            this.contextElem.style.left = ev.pageX + "px";
-            this.contextElem.style.top = ev.pageY + "px";
-
-            if (this.world.markNode != null)
-                this.contextElem.classList.add("has-mark");
-            else
-                this.contextElem.classList.remove("has-mark");
-
-            this.contextElem.style.display = "inherit";
-            var data = this.contextElem.dataset;
-            if (node != null) {
-                data['nodeId'] = node.id + '';
-                delete data['posX'];
-                delete data['posY'];
-            } else {
-                data['posX'] = ev.pageX + '';
-                data['posY'] = ev.pageY + '';
-                delete data['nodeId'];
-            }
+        private triggerContextMenu(ev: MouseEvent) {
+            this.app.menu.open(ev.pageX, ev.pageY, this.getEventNode(ev));
         }
 
         private initDragScroll() {
@@ -182,24 +101,24 @@ module tesp {
                 this.nodeContainer.parentElement.removeChild(this.nodeContainer);
             this.nodeContainer = document.createElement("div");
             this.element.appendChild(this.nodeContainer);
-            this.world.nodes
-                //.concat(this.world.landmarks.map(l => l.target))
+            this.app.world.nodes
+                //.concat(this.app.world.landmarks.map(l => l.target))
                 .forEach(n => this.nodeContainer.appendChild(this.drawNode(n)));
 
             if (this.edgeContainer != null)
                 this.edgeContainer.parentElement.removeChild(this.edgeContainer);
             this.edgeContainer = document.createElement("div");
             this.element.appendChild(this.edgeContainer);
-            this.world.edges.forEach(e =>
+            this.app.world.edges.forEach(e =>
                 this.edgeContainer.appendChild(this.drawEdge(e.srcNode.pos, e.destNode.pos, e.srcNode.type, "map-transport-edge")));
 
             if (this.areaContainer != null)
                 this.areaContainer.parentElement.removeChild(this.areaContainer);
             this.areaContainer = document.createElement("div");
             this.element.appendChild(this.areaContainer);
-            this.world.areas
-                //.concat(this.world.regions)
-                //.concat(this.world.landmarks)
+            this.app.world.areas
+                //.concat(this.app.world.regions)
+                //.concat(this.app.world.landmarks)
                 .forEach(a => {
                     var type: string = a.target.type;
                     var prev: CellRow = null;
@@ -231,7 +150,7 @@ module tesp {
             if (this.pathContainer != null)
                 this.pathContainer.parentElement.removeChild(this.pathContainer);
 
-            var pathNode: PathNode = this.world.pathEnd;
+            var pathNode: PathNode = this.app.world.pathEnd;
             if (pathNode == null) {
                 this.pathContainer = null;
                 return;
@@ -246,13 +165,13 @@ module tesp {
         }
 
         private renderMark() {
-            this.markElem = this.addOrUpdateNodeElem(this.world.markNode, this.markElem);
+            this.markElem = this.addOrUpdateNodeElem(this.app.world.markNode, this.markElem);
         }
         private renderSource() {
-            this.sourceElem = this.addOrUpdateNodeElem(this.world.sourceNode, this.sourceElem);
+            this.sourceElem = this.addOrUpdateNodeElem(this.app.world.sourceNode, this.sourceElem);
         }
         private renderDestination() {
-            this.destElem = this.addOrUpdateNodeElem(this.world.destNode, this.destElem);
+            this.destElem = this.addOrUpdateNodeElem(this.app.world.destNode, this.destElem);
         }
 
         private addOrUpdateNodeElem(node: Node, elem: HTMLElement): HTMLElement {
@@ -301,7 +220,7 @@ module tesp {
 
         private updateFeatures() {
             this.element.className = "";
-            this.world.features.forEach(f => {
+            this.app.world.features.forEach(f => {
                 if (f.hidden)
                     this.element.classList.add("hide-" + f.type);
             });

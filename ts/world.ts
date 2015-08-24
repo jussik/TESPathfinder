@@ -113,7 +113,7 @@
         private listeners: WorldListener[] = [];
         private nodesById: { [key: number]: Node } = {};
 
-        constructor(data: any) {
+        constructor(private app: Application, data: any) {
             this.features = <FeatureList>[
                 { name: "Mark/Recall", verb: "Recall", type: "mark", icon: "bolt" },
                 { name: "Mages Guild", verb: "Guild Guide", type: "mages-guild", icon: "eye" },

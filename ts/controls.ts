@@ -1,31 +1,29 @@
-﻿/// <reference path="world.ts" />
-
-module tesp {
+﻿module tesp {
     export class Controls {
         private pathContainer: HTMLElement;
         private featuresContainer: HTMLElement;
 
-        constructor(private world: World, private element: HTMLElement) {
-            world.addListener(reason => {
+        constructor(private app: Application, private element: HTMLElement) {
+            this.app.world.addListener(reason => {
                 if (reason === WorldUpdate.PathUpdate)
                     this.updatePath();
                 else if (reason === WorldUpdate.SourceChange)
-                    this.updateNodeInfo('.control-source-info', this.world.sourceNode);
+                    this.updateNodeInfo('.control-source-info', this.app.world.sourceNode);
                 else if (reason === WorldUpdate.DestinationChange)
-                    this.updateNodeInfo('.control-destination-info', this.world.destNode);
+                    this.updateNodeInfo('.control-destination-info', this.app.world.destNode);
                 else if (reason === WorldUpdate.MarkChange)
-                    this.updateNodeInfo('.control-mark-info', this.world.markNode);
+                    this.updateNodeInfo('.control-mark-info', this.app.world.markNode);
             });
 
             var nodeSearchIndex: { [key: string]: Node } = {};
             var searchInput = <HTMLInputElement>element.querySelector('.search-input');
             var datalist = <HTMLDataListElement>element.querySelector('#search-list');
-            this.world.nodes
-                .concat(this.world.landmarks.map(a => a.target))
+            this.app.world.nodes
+                .concat(this.app.world.landmarks.map(a => a.target))
                 .forEach(n => {
                     var opt: HTMLOptionElement = document.createElement("option");
-                    var feat = this.world.features.byName[n.type];
-                    var value = feat ? `${n.name} (${this.world.features.byName[n.type].name})` : n.name;
+                    var feat = this.app.world.features.byName[n.type];
+                    var value = feat ? `${n.name} (${this.app.world.features.byName[n.type].name})` : n.name;
                     nodeSearchIndex[value] = n;
                     opt.value = value;
                     datalist.appendChild(opt);
@@ -48,20 +46,20 @@ module tesp {
 
                     var cset = data['contextSet'];
                     if (cset !== undefined) {
-                        this.world.context = cset;
+                        this.app.world.context = cset;
                     }
 
                     var cunset = data['contextUnset'];
                     if (cunset !== undefined) {
-                        this.world.clearContext(cunset);
+                        this.app.world.clearContext(cunset);
                     }
 
                     var csearch = data['contextSearch'];
                     if (csearch !== undefined) {
                         var node: Node = nodeSearchIndex[searchInput.value];
                         if (node !== undefined) {
-                            this.world.context = csearch;
-                            this.world.contextNode(node);
+                            this.app.world.context = csearch;
+                            this.app.world.contextNode(node);
                             searchInput.value = "";
                         }
                     }
@@ -79,7 +77,7 @@ module tesp {
                 this.pathContainer.removeChild(child);
             }
 
-            var pathNode: PathNode = this.world.pathEnd;
+            var pathNode: PathNode = this.app.world.pathEnd;
             while (pathNode) {
                 this.pathContainer.insertBefore(this.drawPathNode(pathNode), this.pathContainer.firstElementChild);
                 pathNode = pathNode.prev;
@@ -97,7 +95,7 @@ module tesp {
                     action = "Walk";
                     icon = "compass";
                 } else {
-                    var feat = this.world.features.byName[edge.type];
+                    var feat = this.app.world.features.byName[edge.type];
                     if (feat) {
                         action = feat.verb || feat.name;
                         icon = feat.icon;
@@ -125,18 +123,18 @@ module tesp {
         }
 
         private drawFeatures() {
-            this.world.features.forEach(f => {
+            this.app.world.features.forEach(f => {
                 var el = document.createElement("div");
                 el.textContent = f.name + ":";
 
                 el.appendChild(this.drawCheckbox(val => {
                     f.hidden = !val;
-                    this.world.trigger(WorldUpdate.FeatureChange);
+                    this.app.world.trigger(WorldUpdate.FeatureChange);
                 }, !f.hidden));
                 if (!f.visualOnly)
                     el.appendChild(this.drawCheckbox(val => {
                         f.disabled = !val;
-                        this.world.trigger(WorldUpdate.FeatureChange);
+                        this.app.world.trigger(WorldUpdate.FeatureChange);
                     }, !f.disabled));
 
                 this.featuresContainer.appendChild(el);
