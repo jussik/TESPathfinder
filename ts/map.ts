@@ -67,31 +67,41 @@
         private initDragScroll() {
             var img = <HTMLElement>this.element.querySelector('img');
             var mousedown = false, prevX: number, prevY: number;
+            var stop = (ev: MouseEvent) => {
+                mousedown = false;
+                this.app.toggleClass("scrolling", false);
+                ev.preventDefault();
+            };
+            var start = (ev: MouseEvent) => {
+                mousedown = true;
+                prevX = ev.clientX;
+                prevY = ev.clientY;
+                this.app.toggleClass("scrolling", true);
+                ev.preventDefault();
+            }
             img.onmousedown = ev => {
                 if (ev.button === 0 && ev.target === img) {
-                    mousedown = true;
-                    prevX = ev.clientX;
-                    prevY = ev.clientY;
-                    ev.preventDefault();
+                    start(ev);
                 }
             };
             img.onmouseup = ev => {
                 if (mousedown) {
-                    mousedown = false;
-                    ev.preventDefault();
+                    stop(ev);
                 }
             }
             img.onmousemove = ev => {
+                if (!mousedown && ev.which === 1) {
+                    start(ev);
+                }
                 if (mousedown) {
                     if (ev.which !== 1) {
-                        mousedown = false;
+                        stop(ev);
                     } else {
-                        document.body.scrollLeft += prevX - ev.clientX;
-                        document.body.scrollTop += prevY - ev.clientY;
+                        scroll(pageXOffset + prevX - ev.clientX, pageYOffset + prevY - ev.clientY);
                         prevX = ev.clientX;
                         prevY = ev.clientY;
+                        ev.preventDefault();
                     }
-                    ev.preventDefault();
                 }
             };
         }

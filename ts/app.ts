@@ -15,9 +15,17 @@
                     this.controls = new Controls(this, document.getElementById("controls"));
                     this.menu = new ContextMenu(this, document.getElementById("context-menu"));
                     document.body.onmousedown = document.body.oncontextmenu = document.body.onscroll = ev => this.menu.hide();
-                    document.body.classList.remove("loading");
+                    this.toggleClass("loading", false);
                     return this;
                 });
+        }
+
+        toggleClass(name: string, enabled: boolean) {
+            if (enabled) {
+                document.body.classList.add(name);
+            } else {
+                document.body.classList.remove(name);
+            }
         }
     }
 

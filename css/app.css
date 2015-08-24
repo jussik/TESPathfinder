@@ -20,6 +20,11 @@
     left: 0;
     top: 0;
     z-index: 1;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #controls {
@@ -38,11 +43,15 @@
     margin: 10px;
 }
 
-.loading #spinner {
+body.loading #spinner {
     display: block;
 }
-.loading #controls {
+body.loading #controls {
     display: none;
+}
+
+body.scrolling * {
+    cursor: move;
 }
 
 
@@ -93,6 +102,7 @@
     height: 10px;
     border-radius: 6px;
     border: 1px solid white;
+    cursor: pointer;
 }
 
 .map-edge {
