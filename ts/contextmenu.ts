@@ -1,5 +1,7 @@
 ﻿module tesp {
     export class ContextMenu {
+        isOpen: boolean = false;;
+
         constructor(private app: Application, private element: HTMLElement) {
             this.element.oncontextmenu = this.element.onmousedown = ev => ev.stopPropagation();
             this.element.onclick = ev => {
@@ -32,8 +34,17 @@
         }
 
         open(x: number, y: number, node: Node) {
-            if (node != null && !node.permanent)
-                node = null; // disallow operations on temporary nodes
+            // remove node if neither it or its reference are permanent
+            if (node != null && !node.permanent) {
+                if (node.referenceId == null) {
+                    node = null;
+                } else {
+                    node = this.app.world.findNodeById(node.referenceId);
+                    if (node != null && !node.permanent) {
+                        node = null;
+                    }
+                }
+            }
 
             var lines: string[] = [];
             var landmark = this.app.world.getLandmarkName(x, y);
@@ -94,17 +105,22 @@
                 scrollX = pageXOffset + rect.right - innerWidth + 27;
             }
 
-            if (rect.top < 10) {
-                scrollY = pageYOffset + rect.top - 10;
+            if (rect.top < 50) {
+                scrollY = pageYOffset + rect.top - 50;
             } else if (rect.bottom > innerHeight - 27) {
                 scrollY = pageYOffset + rect.bottom - innerHeight + 27;
             }
 
             if (scrollX !== pageXOffset || scrollY !== pageYOffset)
                 scroll(scrollX, scrollY);
+
+            this.isOpen = true;
         }
         hide() {
-            this.element.style.display = "none";
+            if (this.isOpen) {
+                this.element.style.display = "none";
+                this.isOpen = false;
+            }
         }
     }
 }

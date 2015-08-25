@@ -13,17 +13,14 @@ a:hover {
     text-decoration: underline;
 }
 
-h1 {
-    color: #056;
-}
-
 #spinner {
     display: none;
 
     position: fixed;
-    top: 5px;
-    left: 5px;
+    left: 10px;
+    top: 51px;
     z-index: 10;
+    font-size: 20px;
 
     color: white;
 }
@@ -40,39 +37,63 @@ h1 {
     user-select: none;
 }
 
-#controls {
+.control-container {
     position: fixed;
-    left: 5px;
-    top: 5px;
+    top: 0;
     z-index: 11;
 
     padding: 10px;
     background: white;
-    border: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+}
+.search-container {
+    left: 0;
+    right: 0;
+    height: 41px;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.search-container > span {
+    display: inline-block;
+    width: 25%;
+    box-sizing: border-box;
+}
+.search-area {
+    text-align: right;
+}
+.search-area > input {
+    min-width: 200px;
+}
+.path-container {
+    left: 0;
+    top: 40px;
+    min-width: 200px;
+    box-sizing: border-box;
+    border-right: 1px solid #bbb;
+    padding-top: 0;
+    display: none;
+}
+.settings-icon {
+    color: #056;
+    font-size: 20px;
+    vertical-align: -2px;
+    margin: 0 8px 0 5px;
+    cursor: pointer;
+}
+.features-container {
+    right: 0;
+    top: 40px;
+    border-left: 1px solid #bbb;
+    display: none;
 }
 
 body.loading #spinner {
     display: block;
 }
-body.loading #controls {
-    display: none;
-}
 
 body.scrolling * {
     cursor: move;
-}
-
-.control-container {
-    margin: 10px;
-}
-.control-mark-row {
-    display: none;
-}
-body.has-mark .control-mark-row {
-    display: block;
-}
-.search-area {
-    margin: 5px 0;
 }
 
 #context-menu {

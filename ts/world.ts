@@ -354,8 +354,7 @@
                 var name = areaName || "Your destination";
                 this.setContextNode(context, new Node(name, name, x, y, "destination"));
             } else if (context === 'mark') {
-                var name = areaName ? `Mark in ${areaName}` : "Mark";
-                this.markNode = new Node(name, name, x, y, "mark");
+                this.markNode = new Node(areaName, areaName, x, y, "mark");
                 this.trigger(WorldUpdate.MarkChange);
             }
         }
@@ -368,7 +367,7 @@
                 this.trigger(WorldUpdate.DestinationChange);
             } else if (context === 'mark') {
                 var pos = node.pos;
-                this.markNode = new Node(node.name, node.longName, pos.x, pos.y, "mark");
+                this.markNode = new Node(node.longName, node.longName, pos.x, pos.y, "mark");
                 this.markNode.referenceId = node.referenceId || node.id;
                 this.trigger(WorldUpdate.MarkChange);
             }

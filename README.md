@@ -5,7 +5,6 @@ A web application for finding the quickest way to travel around Vvardenfell in _
 ## Todo
 
 1. Better search, datalist isn't cutting it
-1. Collapsible sections for search, options and navigation instructions
 1. Ability to save options in localStorage
 1. Snazzy UX!
 1. Buzzwords!

@@ -2,6 +2,7 @@
     export class Controls {
         private pathContainer: HTMLElement;
         private featuresContainer: HTMLElement;
+        private searchInput: HTMLInputElement;
 
         constructor(private app: Application, private element: HTMLElement) {
             this.app.world.addListener(reason => {
@@ -15,8 +16,15 @@
                     this.updateNodeInfo('.control-mark-info', this.app.world.markNode);
             });
 
+            this.pathContainer = <HTMLElement>element.querySelector(".path-container");
+            this.featuresContainer = <HTMLElement>element.querySelector(".features-container");
+            this.searchInput = <HTMLInputElement>element.querySelector('.search-input');
+
+            var featuresVisible = false;
+            (<HTMLElement>element.querySelector(".settings-icon")).onclick = ev => 
+                this.featuresContainer.style.display = (featuresVisible = !featuresVisible) ? "block" : "none";
+
             var nodeSearchIndex: { [key: string]: Node } = {};
-            var searchInput = <HTMLInputElement>element.querySelector('.search-input');
             var datalist = <HTMLDataListElement>element.querySelector('#search-list');
 
             this.app.world.nodes
@@ -24,25 +32,16 @@
                 .forEach(n => {
                     var opt: HTMLOptionElement = document.createElement("option");
                     var feat = this.app.world.features.byName[n.type];
-                    var value = feat ? `${n.name} (${this.app.world.features.byName[n.type].name})` : n.name;
+                    var value = feat ? `${n.name} (${feat.location || feat.name})` : n.name;
                     nodeSearchIndex[value] = n;
                     opt.value = value;
                     datalist.appendChild(opt);
                 });
 
-            for (var child: HTMLElement = <HTMLElement>element.firstElementChild; child; child = <HTMLElement>child.nextElementSibling) {
-                var name = child.dataset['controlContainer'];
-                if (name === "path") {
-                    this.pathContainer = child;
-                } else if (name === "features") {
-                    this.featuresContainer = child;
-                }
-            }
-
             this.drawFeatures();
 
-            searchInput.oninput = ev => {
-                var node: Node = nodeSearchIndex[searchInput.value];
+            this.searchInput.oninput = ev => {
+                var node: Node = nodeSearchIndex[this.searchInput.value];
                 if (node !== undefined) {
                     this.app.menu.openNode(node);
                 } else {
@@ -51,7 +50,7 @@
             }
         }
 
-        updateNodeInfo(selector: string, node: Node) {
+        private updateNodeInfo(selector: string, node: Node) {
             var el = <HTMLElement>this.element.querySelector(selector);
             if (node != null) {
                 el.textContent = node.longName;
@@ -69,10 +68,12 @@
             }
 
             var pathNode: PathNode = this.app.world.pathEnd;
+            this.pathContainer.style.display = pathNode ? "block" : "none";
             while (pathNode) {
                 this.pathContainer.insertBefore(this.drawPathNode(pathNode), this.pathContainer.firstElementChild);
                 pathNode = pathNode.prev;
             }
+
         }
 
         private drawPathNode(pathNode: PathNode): HTMLElement {

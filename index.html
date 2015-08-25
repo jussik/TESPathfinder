@@ -23,21 +23,18 @@
         <li class="link unset-mark" data-context-unset="mark">Remove Mark</li>
     </ul>
     <div id="controls">
-        <div class="control-container">
-            <h1>Pathfinder</h1>
-        </div>
-        <div class="control-container" data-control-container="input">
-            <div>From: <a class="control-source-info"></a></div>
-            <div>To: <a class="control-destination-info"></a></div>
-            <div class="control-mark-row">Mark: <a class="control-mark-info"></a></div>
-            <div class="search-area">
-                Search
-                <input class="search-input" list="search-list">
+        <div class="control-container search-container">
+            <span>From: <a class="control-source-info"></a></span>
+            <span>To: <a class="control-destination-info"></a></span>
+            <span class="control-mark-row">Mark: <a class="control-mark-info"></a></span>
+            <span class="search-area">
+                <input class="search-input" list="search-list" placeholder="Search...">
                 <datalist id="search-list"></datalist>
-            </div>
+                <i class="settings-icon fa fa-cog"></i>
+            </span>
         </div>
-        <div class="control-container" data-control-container="path"></div>
-        <div class="control-container" data-control-container="features"></div>
+        <div class="control-container path-container"></div>
+        <div class="control-container features-container"></div>
     </div>
     <script src="lib/html5-dataset.js"></script>
     <script src="lib/es6-promise.js"></script>
