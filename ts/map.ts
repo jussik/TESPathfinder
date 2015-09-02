@@ -1,4 +1,4 @@
-﻿module tesp {
+﻿module Tesp {
     export class Map {
         private edgeContainer: HTMLElement;
         private nodeContainer: HTMLElement;
@@ -10,16 +10,16 @@
         private markElem: HTMLElement;
 
         constructor(private app: Application, private element: HTMLElement) {
-            this.app.world.addListener(reason => {
-                if (reason === WorldUpdate.PathUpdate)
+            this.app.addChangeListener(reason => {
+                if (reason === ChangeReason.PathUpdate)
                     this.renderPath();
-                else if (reason === WorldUpdate.SourceChange)
+                else if (reason === ChangeReason.SourceChange)
                     this.renderSource();
-                else if (reason === WorldUpdate.DestinationChange)
+                else if (reason === ChangeReason.DestinationChange)
                     this.renderDestination();
-                else if (reason === WorldUpdate.MarkChange)
+                else if (reason === ChangeReason.MarkChange)
                     this.renderMark();
-                else if (reason === WorldUpdate.FeatureChange)
+                else if (reason === ChangeReason.FeatureChange)
                     this.updateFeatures();
             });
 
@@ -46,8 +46,8 @@
 
         private getEventNode(event: MouseEvent) {
             var target = <HTMLElement>event.target;
-            if (target.classList.contains('map-node')) {
-                var id = target.dataset['nodeId'];
+            if (target.classList.contains("map-node")) {
+                var id = target.dataset["nodeId"];
                 if (id !== undefined) {
                     return this.app.world.findNodeById(+id);
                 }
@@ -56,22 +56,22 @@
         }
 
         private triggerContextMenu(ev: MouseEvent, node?: Node) {
-            this.app.menu.open(ev.pageX, ev.pageY, node || this.getEventNode(ev));
+            this.app.menu.open(new Vec2(ev.pageX, ev.pageY), node || this.getEventNode(ev));
         }
 
         private initDragScroll() {
-            var img = <HTMLElement>this.element.querySelector('img');
+            var img = <HTMLElement>this.element.querySelector("img");
             var mousedown = false, prevX: number, prevY: number;
             var stop = (ev: MouseEvent) => {
                 mousedown = false;
-                this.app.toggleClass("scrolling", false);
+                this.app.toggleBodyClass("scrolling", false);
                 ev.preventDefault();
             };
             var start = (ev: MouseEvent) => {
                 mousedown = true;
                 prevX = ev.clientX;
                 prevY = ev.clientY;
-                this.app.toggleClass("scrolling", true);
+                this.app.toggleBodyClass("scrolling", true);
                 ev.preventDefault();
             }
             img.onmousedown = ev => {
@@ -125,7 +125,7 @@
                 //.concat(this.app.world.regions)
                 //.concat(this.app.world.landmarks)
                 .forEach(a => {
-                    var type: string = a.target.type;
+                    var type = a.target.type;
                     var prev: CellRow = null;
                     for (var i = 0; i < a.rows.length; i++) {
                         var row = a.rows[i];
@@ -143,7 +143,8 @@
                         this.areaContainer.appendChild(this.drawCellEdge(row.x2 + 1, row.y, row.x2 + 1, row.y + 1, type));
                         prev = row;
                     }
-                    this.areaContainer.appendChild(this.drawCellEdge(prev.x1, prev.y + 1, prev.x2 + 1, prev.y + 1, type));
+                    if(prev != null)
+                        this.areaContainer.appendChild(this.drawCellEdge(prev.x1, prev.y + 1, prev.x2 + 1, prev.y + 1, type));
                 });
         }
 
@@ -155,7 +156,7 @@
             if (this.pathContainer != null)
                 this.pathContainer.parentElement.removeChild(this.pathContainer);
 
-            var pathNode: PathNode = this.app.world.pathEnd;
+            var pathNode: PathNode = this.app.context.pathEnd;
             if (pathNode == null) {
                 this.pathContainer = null;
                 return;
@@ -164,19 +165,19 @@
             this.pathContainer = document.createElement("div");
             this.element.appendChild(this.pathContainer);
             while (pathNode && pathNode.prev) {
-                this.pathContainer.appendChild(this.drawEdge(pathNode.node.pos, pathNode.prev.node.pos, 'path', 'map-' + pathNode.prevEdge.type));
+                this.pathContainer.appendChild(this.drawEdge(pathNode.node.pos, pathNode.prev.node.pos, "path", "map-" + pathNode.prevEdge.type));
                 pathNode = pathNode.prev;
             }
         }
 
         private renderMark() {
-            this.markElem = this.addOrUpdateNodeElem(this.app.world.markNode, this.markElem);
+            this.markElem = this.addOrUpdateNodeElem(this.app.context.markNode, this.markElem);
         }
         private renderSource() {
-            this.sourceElem = this.addOrUpdateNodeElem(this.app.world.sourceNode, this.sourceElem);
+            this.sourceElem = this.addOrUpdateNodeElem(this.app.context.sourceNode, this.sourceElem);
         }
         private renderDestination() {
-            this.destElem = this.addOrUpdateNodeElem(this.app.world.destNode, this.destElem);
+            this.destElem = this.addOrUpdateNodeElem(this.app.context.destNode, this.destElem);
         }
 
         private addOrUpdateNodeElem(node: Node, elem: HTMLElement): HTMLElement {
@@ -191,15 +192,16 @@
             if (!this.gridContainer) {
                 this.gridContainer = document.createElement("div");
                 this.element.appendChild(this.gridContainer);
-                for (var i = 0; i < 37; i++) {
-                    var el = document.createElement('div');
+                var i: number, el: HTMLDivElement;
+                for (i = 0; i < 37; i++) {
+                    el = document.createElement("div");
                     el.classList.add("map-grid");
                     el.classList.add("map-grid-v");
                     el.style.left = (i * Cell.width + Cell.widthOffset) + "px";
                     this.gridContainer.appendChild(el);
                 }
-                for (var i = 0; i < 42; i++) {
-                    var el = document.createElement('div');
+                for (i = 0; i < 42; i++) {
+                    el = document.createElement("div");
                     el.classList.add("map-grid");
                     el.classList.add("map-grid-h");
                     el.style.top = (i * Cell.height + Cell.heightOffset) + "px";
@@ -207,7 +209,7 @@
                 }
 
                 // show grid coordinates
-                /*for (var i = 0; i < 37; i++) {
+                /*for (i = 0; i < 37; i++) {
                     for (var j = 0; j < 42; j++) {
                         var el = document.createElement('div');
                         el.textContent = i + ',' + j;
@@ -225,7 +227,7 @@
 
         private updateFeatures() {
             this.element.className = "";
-            this.app.world.features.forEach(f => {
+            this.app.features.forEach(f => {
                 if (f.hidden)
                     this.element.classList.add("hide-" + f.type);
             });
@@ -237,7 +239,7 @@
             element.classList.add("map-" + node.type);
             element.style.left = node.pos.x + "px";
             element.style.top = node.pos.y + "px";
-            element.dataset['nodeId'] = (node.referenceId || node.id) + '';
+            element.dataset["nodeId"] = (node.referenceId || node.id) + "";
             return element;
         }
 
@@ -251,7 +253,7 @@
             element.style.left = ((n1.x + n2.x) / 2) - (length / 2) + "px";
             element.style.top = ((n1.y + n2.y) / 2) - 1 + "px";
             element.style.width = length + "px";
-            element.style.transform = "rotate(" + Math.atan2(n1.y - n2.y, n1.x - n2.x) + "rad)";
+            element.style.transform = `rotate(${Math.atan2(n1.y - n2.y, n1.x - n2.x)}rad)`;
             return element;
         }
     }

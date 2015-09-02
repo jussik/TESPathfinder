@@ -1,6 +1,6 @@
-﻿module tesp {
+﻿module Tesp {
     export class ContextMenu {
-        isOpen: boolean = false;;
+        isOpen: boolean = false;
 
         constructor(private app: Application, private element: HTMLElement) {
             this.element.oncontextmenu = this.element.onmousedown = ev => ev.stopPropagation();
@@ -8,20 +8,20 @@
                 ev.stopPropagation();
                 var item = <HTMLElement>event.target;
                 if (item.classList.contains("link")) {
-                    var context = item.dataset['contextSet'];
+                    var context = item.dataset["contextSet"];
                     if (context !== undefined) {
                         var data = this.element.dataset;
-                        var nodeId = data['nodeId'];
+                        var nodeId = data["nodeId"];
                         var node: Node;
                         if (nodeId !== undefined && (node = this.app.world.findNodeById(+nodeId)) != null) {
-                            this.app.world.setContextNode(context, node);
+                            this.app.context.setContextNode(context, node);
                         } else {
-                            this.app.world.setContextLocation(context, +data['posX'], +data['posY']);
+                            this.app.context.setContextLocation(context, new Vec2(+data["posX"], +data["posY"]));
                         }
                     } else {
-                        context = item.dataset['contextUnset'];
+                        context = item.dataset["contextUnset"];
                         if (context !== undefined) {
-                            this.app.world.clearContext(context);
+                            this.app.context.clearContext(context);
                         }
                     }
                     this.hide();
@@ -30,10 +30,10 @@
         }
 
         openNode(node: Node) {
-            this.open(node.pos.x, node.pos.y, node);
+            this.open(node.pos, node);
         }
 
-        open(x: number, y: number, node: Node) {
+        open(pos: Vec2, node: Node) {
             // remove node if neither it or its reference are permanent
             if (node != null && !node.permanent) {
                 if (node.referenceId == null) {
@@ -47,9 +47,9 @@
             }
 
             var lines: string[] = [];
-            var landmark = this.app.world.getLandmarkName(x, y);
+            var landmark = this.app.world.getLandmarkName(pos);
             if (node != null) {
-                var feat = this.app.world.features.byName[node.type];
+                var feat = this.app.features.byName[node.type];
                 if (feat != null) {
                     lines.push(feat.location || feat.name);
                     lines.push(node.name);
@@ -59,19 +59,18 @@
                 if (landmark != null && landmark !== node.name) {
                     lines.push(landmark);
                 }
-                x = node.pos.x;
-                y = node.pos.y;
+                pos = node.pos;
             } else if (landmark != null) {
                 lines.push(landmark);
             }
-            var region = this.app.world.getRegionName(x, y);
+            var region = this.app.world.getRegionName(pos);
             if (region != null) {
                 lines.push(region + " Region");
             }
 
             var separator = this.element.getElementsByClassName("separator")[0];
             var child: Element;
-            while ((child = this.element.firstElementChild) != separator) {
+            while ((child = this.element.firstElementChild) !== separator) {
                 this.element.removeChild(child);
             }
 
@@ -81,23 +80,23 @@
                 this.element.insertBefore(item, separator);
             });
 
-            this.element.style.left = x + "px";
-            this.element.style.top = y + "px";
+            this.element.style.left = pos.x + "px";
+            this.element.style.top = pos.y + "px";
 
             var data = this.element.dataset;
             if (node != null) {
-                data['nodeId'] = node.id + '';
-                delete data['posX'];
-                delete data['posY'];
+                data["nodeId"] = node.id + "";
+                delete data["posX"];
+                delete data["posY"];
             } else {
-                data['posX'] = x + '';
-                data['posY'] = y + '';
-                delete data['nodeId'];
+                data["posX"] = pos.x + "";
+                data["posY"] = pos.y + "";
+                delete data["nodeId"];
             }
 
             this.element.style.display = "inherit";
 
-            var scrollX: number = pageXOffset, scrollY: number = pageYOffset;
+            var scrollX = pageXOffset, scrollY = pageYOffset;
             var rect = this.element.getBoundingClientRect();
             if (rect.left < 10) {
                 scrollX = pageXOffset + rect.left - 10;
