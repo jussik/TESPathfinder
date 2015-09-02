@@ -101,7 +101,7 @@
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
     <TypeScriptMapRoot />
-    <TypeScriptSourceRoot />
+    <TypeScriptSourceRoot>../ts/</TypeScriptSourceRoot>
     <TypeScriptExperimentalDecorators>true</TypeScriptExperimentalDecorators>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
