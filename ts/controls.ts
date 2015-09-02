@@ -1,4 +1,5 @@
 ﻿module Tesp {
+    /** UI controls for search and navigation */
     export class Controls {
         private pathContainer: HTMLElement;
         private featuresContainer: HTMLElement;

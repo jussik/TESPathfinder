@@ -1,4 +1,5 @@
 ﻿module Tesp {
+    /** The map UI */
     export class Map {
         private edgeContainer: HTMLElement;
         private nodeContainer: HTMLElement;

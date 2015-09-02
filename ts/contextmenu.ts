@@ -1,4 +1,5 @@
 ﻿module Tesp {
+    /** Manages the context menu of the map */
     export class ContextMenu {
         isOpen: boolean = false;
 

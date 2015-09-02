@@ -2,6 +2,7 @@
     export type ChangeListener = (reason: ChangeReason) => void;
     export enum ChangeReason { SourceChange, DestinationChange, MarkChange, FeatureChange, PathUpdate }
 
+    /** Core TESPathfinder application */
     export class Application {
         loaded: Promise<Application>;
         context: Context;
@@ -30,13 +31,16 @@
                 });
         }
 
+        /** Listen for application level changes */
         addChangeListener(listener: ChangeListener) {
             this.listeners.push(listener);
         }
+        /** Inform all listeners about a new change */
         triggerChange(reason: ChangeReason) {
             this.listeners.forEach(fn => fn(reason));
         }
 
+        /** Toggle a class attribute name in the document body */
         toggleBodyClass(name: string, enabled: boolean) {
             if (enabled) {
                 document.body.classList.add(name);
@@ -46,5 +50,6 @@
         }
     }
 
+    /** The current instance of the application, for debugging purposes only */
     export var app = new Application();
 }

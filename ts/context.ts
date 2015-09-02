@@ -1,4 +1,5 @@
 ﻿module Tesp {
+    /** The current mutable state of the application */
     export class Context {
         sourceNode: Node;
         destNode: Node;

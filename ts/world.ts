@@ -15,6 +15,7 @@
         cells: number[][];
     }
 
+    /** Static assets and locations */
     export class World {
         nodes: Node[];
         edges: Edge[];
