@@ -4,6 +4,7 @@
         private pathContainer: HTMLElement;
         private featuresContainer: HTMLElement;
         private searchInput: HTMLInputElement;
+        private searchBox: HTMLElement;
 
         constructor(private app: Application, private element: HTMLElement) {
             this.app.addChangeListener(reason => {
@@ -20,35 +21,92 @@
             this.pathContainer = <HTMLElement>element.querySelector(".path-container");
             this.featuresContainer = <HTMLElement>element.querySelector(".features-container");
             this.searchInput = <HTMLInputElement>element.querySelector(".search-input");
+            this.searchBox = <HTMLInputElement>element.querySelector(".search-results");
 
             var featuresVisible = false;
             (<HTMLElement>element.querySelector(".settings-icon")).onclick = () => 
                 this.featuresContainer.style.display = (featuresVisible = !featuresVisible) ? "block" : "none";
 
-            var nodeSearchIndex: { [key: string]: Node } = {};
-            var datalist = <HTMLDataListElement>element.querySelector("#search-list");
+            function prepTerm(text: string) {
+                return text != null ? text.toLowerCase().replace(/[^a-z]+/g, " ") : null;
+            }
 
-            this.app.world.nodes
+            var searchNodes = this.app.world.nodes
                 .concat(this.app.world.landmarks.map(a => a.target))
-                .forEach(n => {
-                    var opt: HTMLOptionElement = document.createElement("option");
+                .map(n => {
                     var feat = this.app.features.byName[n.type];
-                    var value = feat ? `${n.name} (${feat.location || feat.name})` : n.name;
-                    nodeSearchIndex[value] = n;
-                    opt.value = value;
-                    datalist.appendChild(opt);
-                });
+                    var featName = feat != null ? feat.location || feat.name : null
+                    return {
+                        name: prepTerm(n.name),
+                        location: prepTerm(featName),
+                        node: n,
+                        feature: featName
+                    };
+                })
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .sort((a, b) => (a.location || "").localeCompare(b.location || ""));
 
             this.drawFeatures();
 
             this.searchInput.oninput = () => {
-                var node: Node = nodeSearchIndex[this.searchInput.value];
-                if (node !== undefined) {
-                    this.app.menu.openNode(node);
-                } else {
-                    this.app.menu.hide();
+                var child: Element;
+                while ((child = this.searchBox.firstElementChild) != null) {
+                    this.searchBox.removeChild(child);
                 }
+
+                var search = this.searchInput.value.toLowerCase();
+
+                var starts: number[] = [];
+                var terms: string[] = [];
+                var alpha = false;
+                for (var i = 0; i < search.length; i++) {
+                    var c = search.charCodeAt(i);
+                    if (c > 96 && c < 123) {
+                        if (!alpha) {
+                            starts.push(i);
+                            alpha = true;
+                        }
+                    } else if (alpha) {
+                        terms = terms.concat(starts.map(s => search.substring(s, i)));
+                        alpha = false;
+                    }
+                }
+                if (alpha) {
+                    terms = terms.concat(starts.map(s => search.substring(s)));
+                }
+
+                var results = searchNodes
+                    .filter(n => {
+                        var c = 0;
+                        return terms.some(t => {
+                            if (n.name.indexOf(t) === 0 || n.location != null && n.location.indexOf(t) === 0)
+                                c++;
+                            return c >= starts.length;
+                        });
+                    });
+
+                this.searchBox.style.display = results.length > 0 ? "inherit" : "none";
+                results.forEach(n => {
+                    var item = document.createElement("li");
+                    item.className = "link";
+                    item.textContent = n.feature ? `${n.node.name}, ${n.feature}` : n.node.name;
+                    item.onclick = () => {
+                        this.app.menu.openNode(n.node);
+                        this.clearSearch();
+                    };
+                    item.onmousedown = ev => ev.stopPropagation();
+                    this.searchBox.appendChild(item);
+                });
+
+                var input = this.searchInput.getBoundingClientRect();
+                this.searchBox.style.top = (input.top + input.height) + "px";
+                this.searchBox.style.left = input.left + "px";
             }
+        }
+
+        clearSearch() {
+            this.searchInput.value = "";
+            this.searchBox.style.display = "none";
         }
 
         private updateNodeInfo(selector: string, node: Node) {

@@ -63,7 +63,10 @@ a:hover {
     text-align: right;
 }
 .search-area > input {
-    min-width: 200px;
+    width: 200px;
+}
+.search-input {
+    box-sizing: border-box;
 }
 .path-container {
     left: 0;
@@ -96,37 +99,42 @@ body.scrolling * {
     cursor: move;
 }
 
-#context-menu {
+.menu {
     display: none;
     position: absolute;
     background: white;
     border: 1px solid #bbb;
-    z-index: 10;
+    z-index: 12;
+    box-sizing: border-box;
 
     padding: 3px;
     margin: 0;
 }
-#context-menu > li {
+.menu.search-results {
+    position: fixed;
+    width: 200px;
+}
+.menu > li {
     list-style: none;
     padding: 3px 7px 3px 5px;
     white-space: nowrap;
+    overflow: hidden;
 }
-#context-menu > li.link {
+.menu > li.link {
     cursor: pointer;
 }
-#context-menu > li.link:hover {
+.menu > li.link:hover {
     background: #ddd;
 }
-#context-menu > li.separator {
+.menu > li.separator {
     border-bottom: 1px solid #bbb;
     padding: 0;
     margin: 5px 2px 5px 2px;
 }
-#context-menu > li.unset-mark {
+.menu > li.unset-mark {
     display: none;
 }
-
-body.has-mark > #context-menu > li.unset-mark {
+body.has-mark .menu > li.unset-mark {
     display: inherit;
 }
 

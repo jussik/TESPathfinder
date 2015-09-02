@@ -25,7 +25,11 @@
                     this.controls = new Controls(this, document.getElementById("controls"));
                     this.menu = new ContextMenu(this, document.getElementById("context-menu"));
 
-                    document.body.onmousedown = document.body.oncontextmenu = () => this.menu.hide();
+                    document.body.onmousedown = document.body.oncontextmenu = () => {
+                        // TODO: refactor into their respective classes
+                        this.menu.hide();
+                        this.controls.clearSearch();
+                    }
                     this.toggleBodyClass("loading", false);
                     return this;
                 });
