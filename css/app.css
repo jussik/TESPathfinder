@@ -110,6 +110,9 @@ body.scrolling * {
     padding: 3px;
     margin: 0;
 }
+.menu.fixed {
+    position: fixed;
+}
 .menu.search-results {
     position: fixed;
     width: 200px;

@@ -5,6 +5,7 @@
         private featuresContainer: HTMLElement;
         private searchInput: HTMLInputElement;
         private searchBox: HTMLElement;
+        private searchMenu: Menu;
 
         constructor(private app: Application, private element: HTMLElement) {
             this.app.addChangeListener(ChangeReason.SourceChange, () => this.updateNodeInfo(".control-source-info", this.app.context.sourceNode));
@@ -15,11 +16,22 @@
             this.pathContainer = <HTMLElement>element.querySelector(".path-container");
             this.featuresContainer = <HTMLElement>element.querySelector(".features-container");
             this.searchInput = <HTMLInputElement>element.querySelector(".search-input");
-            this.searchBox = <HTMLInputElement>element.querySelector(".search-results");
 
             var featuresVisible = false;
             (<HTMLElement>element.querySelector(".settings-icon")).onclick = () => 
                 this.featuresContainer.style.display = (featuresVisible = !featuresVisible) ? "block" : "none";
+
+            this.initSearch();
+        }
+
+        initSearch() {
+            var searchContainer = <HTMLInputElement>this.element.querySelector(".search-container");
+            this.searchMenu = new Menu(app, true);
+            var menuStyle = this.searchMenu.getStyle();
+            var input = this.searchInput.getBoundingClientRect();
+            menuStyle.minWidth = "200px";
+            menuStyle.top = (input.top + input.height) + "px";
+            menuStyle.right = (searchContainer.clientWidth - input.right) + "px";
 
             function prepTerm(text: string) {
                 return text != null ? text.toLowerCase().replace(/[^a-z]+/g, " ") : null;
@@ -47,7 +59,7 @@
                     var at = a.searchTerms, bt = b.searchTerms;
                     var ml = Math.max(at.length, bt.length);
                     for (var i = 0; i < ml; i++) {
-                        var d = (at[i]||"").localeCompare(bt[i]||"");
+                        var d = (at[i] || "").localeCompare(bt[i] || "");
                         if (d !== 0)
                             return d;
                     }
@@ -57,12 +69,11 @@
             this.drawFeatures();
 
             this.searchInput.oninput = () => {
-                var child: Element;
-                while ((child = this.searchBox.firstElementChild) != null) {
-                    this.searchBox.removeChild(child);
-                }
-
                 var search = this.searchInput.value.toLowerCase();
+                if (search === "") {
+                    this.searchMenu.hide();
+                    return;
+                }
 
                 var starts: number[] = [];
                 var terms: string[] = [];
@@ -87,36 +98,28 @@
                     .filter(n => {
                         var c = 0;
                         return terms.some(t => {
-                            if(n.searchTerms.some(st => st.indexOf(t) === 0))
+                            if (n.searchTerms.some(st => st.indexOf(t) === 0))
                                 c++;
                             return c >= starts.length;
                         });
                     });
 
-                this.searchBox.style.display = results.length > 0 ? "inherit" : "none";
-                results.forEach(n => {
-                    var item = document.createElement("li");
-                    item.className = "link";
-                    item.textContent = n.terms.join(", ");
-                    item.onclick = () => {
+                this.searchMenu.setData(results.map(n =>
+                    new MenuItem(n.terms.join(", "), () => {
                         this.app.menu.openNode(n.node);
                         this.clearSearch();
-                    };
-                    item.onmousedown = ev => ev.stopPropagation();
-                    this.searchBox.appendChild(item);
-                });
-
-                var input = this.searchInput.getBoundingClientRect();
-                this.searchBox.style.top = (input.top + input.height) + "px";
-                this.searchBox.style.left = input.left + "px";
+                    })));
+                this.searchMenu.open();
             }
 
-            this.app.addChangeListener(ChangeReason.ClearMenus, () => this.clearSearch());
+            this.app.addChangeListener(ChangeReason.ClearMenus, () => {
+                if (document.activeElement !== this.searchInput)
+                    return this.clearSearch();
+            });
         }
-
         clearSearch() {
             this.searchInput.value = "";
-            this.searchBox.style.display = "none";
+            this.searchMenu.hide();
         }
 
         private updateNodeInfo(selector: string, node: Node) {

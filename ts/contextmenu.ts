@@ -1,41 +1,36 @@
 ﻿module Tesp {
     /** Manages the context menu of the map */
     export class ContextMenu {
-        isOpen: boolean = false;
+        private menu: Menu;
+        private links: MenuItem[];
+        private unmarkLink: MenuItem;
 
-        constructor(private app: Application, private element: HTMLElement) {
-            this.element.oncontextmenu = this.element.onmousedown = ev => ev.stopPropagation();
-            this.element.onclick = ev => {
-                ev.stopPropagation();
-                var item = <HTMLElement>event.target;
-                if (item.classList.contains("link")) {
-                    var context = item.dataset["contextSet"];
-                    if (context !== undefined) {
-                        var data = this.element.dataset;
-                        var nodeId = data["nodeId"];
-                        var node: Node;
-                        if (nodeId !== undefined && (node = this.app.world.findNodeById(+nodeId)) != null) {
-                            this.app.context.setContextNode(context, node);
-                        } else {
-                            this.app.context.setContextLocation(context, new Vec2(+data["posX"], +data["posY"]));
-                        }
-                    } else {
-                        context = item.dataset["contextUnset"];
-                        if (context !== undefined) {
-                            this.app.context.clearContext(context);
-                        }
-                    }
-                    this.hide();
-                }
-            };
+        private pos: Vec2;
+        private node: Node;
 
-            this.app.addChangeListener(ChangeReason.ClearMenus, () => this.hide());
+        constructor(private app: Application) {
+            this.menu = new Menu(app, false);
+
+            this.links = [
+                MenuItem.separator,
+                new MenuItem("Navigate from here", () => this.setContext("source")),
+                new MenuItem("Navigate to here", () => this.setContext("destination")),
+                new MenuItem("Set Mark here", () => this.setContext("mark"))
+            ];
+            this.unmarkLink = new MenuItem("Remove mark", () => this.app.context.clearContext("mark"));
+        }
+
+        private setContext(context: string) {
+            if (this.node != null) {
+                this.app.context.setContextNode(context, this.node);
+            } else {
+                this.app.context.setContextLocation(context, this.pos);
+            }
         }
 
         openNode(node: Node) {
             this.open(node.pos, node);
         }
-
         open(pos: Vec2, node: Node) {
             // remove node if neither it or its reference are permanent
             if (node != null && !node.permanent) {
@@ -71,36 +66,22 @@
                 lines.push(region + " Region");
             }
 
-            var separator = this.element.getElementsByClassName("separator")[0];
-            var child: Element;
-            while ((child = this.element.firstElementChild) !== separator) {
-                this.element.removeChild(child);
-            }
+            this.pos = pos;
+            this.node = node;
 
-            lines.forEach(l => {
-                var item = document.createElement("li");
-                item.textContent = l;
-                this.element.insertBefore(item, separator);
-            });
+            var items = lines.map(l => new MenuItem(l)).concat(this.links);
+            if (this.app.context.markNode != null)
+                items.push(this.unmarkLink);
+            this.menu.setData(items);
+            this.menu.open();
 
-            this.element.style.left = pos.x + "px";
-            this.element.style.top = pos.y + "px";
+            var menuStyle = this.menu.getStyle();
+            menuStyle.left = pos.x + "px";
+            menuStyle.top = pos.y + "px";
 
-            var data = this.element.dataset;
-            if (node != null) {
-                data["nodeId"] = node.id + "";
-                delete data["posX"];
-                delete data["posY"];
-            } else {
-                data["posX"] = pos.x + "";
-                data["posY"] = pos.y + "";
-                delete data["nodeId"];
-            }
-
-            this.element.style.display = "inherit";
-
-            var scrollX = pageXOffset, scrollY = pageYOffset;
-            var rect = this.element.getBoundingClientRect();
+            var scrollX = pageXOffset;
+            var scrollY = pageYOffset;
+            var rect = this.menu.element.getBoundingClientRect();
             if (rect.left < 10) {
                 scrollX = pageXOffset + rect.left - 10;
             } else if (rect.right > innerWidth - 27) {
@@ -115,14 +96,9 @@
 
             if (scrollX !== pageXOffset || scrollY !== pageYOffset)
                 scroll(scrollX, scrollY);
-
-            this.isOpen = true;
         }
         hide() {
-            if (this.isOpen) {
-                this.element.style.display = "none";
-                this.isOpen = false;
-            }
+            this.menu.hide();
         }
     }
 }

@@ -18,7 +18,7 @@
         ClearMenus = 0x20,
         Any = 0x3f
     }
-    class ChangeListener {
+    export class ChangeListener {
         constructor(public reasons: ChangeReason, public func: ChangeListenerFunc) { }
 
         trigger(reason: ChangeReason) {
@@ -30,6 +30,7 @@
     /** Core TESPathfinder application */
     export class Application {
         loaded: Promise<Application>;
+        element: HTMLElement;
         context: Context;
         features: IFeatureList;
         world: World;
@@ -40,6 +41,7 @@
         private listeners: ChangeListener[] = [];
 
         constructor() {
+            this.element = document.body;
             this.loaded = window.fetch("data/data.json")
                 .then(res => res.json())
                 .then(data => {
@@ -48,7 +50,7 @@
                     this.world = new World(this, <IWorldSource><any>data);
                     this.map = new Map(this, document.getElementById("map"));
                     this.controls = new Controls(this, document.getElementById("controls"));
-                    this.menu = new ContextMenu(this, document.getElementById("context-menu"));
+                    this.menu = new ContextMenu(this);
 
                     document.body.onmousedown = document.body.oncontextmenu = () => this.triggerChange(ChangeReason.ClearMenus);
                     this.toggleBodyClass("loading", false);
@@ -57,8 +59,16 @@
         }
 
         /** Listen for application level changes */
-        addChangeListener(reasons: ChangeReason, func: ChangeListenerFunc) {
-            this.listeners.push(new ChangeListener(reasons, func));
+        addChangeListener(reasons: ChangeReason, func: ChangeListenerFunc): ChangeListener {
+            var listener = new ChangeListener(reasons, func);
+            this.listeners.push(listener);
+            return listener;
+        }
+        /** Remove a previously added listener */
+        removeChangeListener(listener: ChangeListener) {
+            var ix = this.listeners.indexOf(listener);
+            if (ix > -1)
+                this.listeners.splice(ix, 1);
         }
         /** Inform all listeners about a new change */
         triggerChange(reason: ChangeReason) {

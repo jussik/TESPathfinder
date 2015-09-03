@@ -44,6 +44,7 @@
     <TypeScriptCompile Include="ts\features.ts" />
     <TypeScriptCompile Include="ts\map.ts" />
     <TypeScriptCompile Include="ts\controls.ts" />
+    <TypeScriptCompile Include="ts\menu.ts" />
     <TypeScriptCompile Include="ts\path.ts" />
     <TypeScriptCompile Include="ts\common.ts" />
     <TypeScriptCompile Include="ts\world.ts" />
