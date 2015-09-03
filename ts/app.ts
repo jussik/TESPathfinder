@@ -1,6 +1,24 @@
 ﻿module Tesp {
-    export type ChangeListener = (reason: ChangeReason) => void;
-    export enum ChangeReason { SourceChange, DestinationChange, MarkChange, FeatureChange, PathUpdate }
+    export type ChangeListenerFunc = (reason: ChangeReason) => void;
+    export enum ChangeReason {
+        None = 0x0,
+        SourceChange = 0x1,
+        DestinationChange = 0x2,
+        MarkChange = 0x4,
+        ContextChange = SourceChange | DestinationChange | MarkChange,
+        FeatureChange = 0x8,
+        PathUpdate = 0x10,
+        ClearMenus = 0x20,
+        All = 0x3f
+    }
+    class ChangeListener {
+        constructor(public reasons: ChangeReason, public func: ChangeListenerFunc) { }
+
+        trigger(reason: ChangeReason) {
+            if ((this.reasons & reason) !== 0)
+                this.func(reason);
+        }
+    }
 
     /** Core TESPathfinder application */
     export class Application {
@@ -25,23 +43,19 @@
                     this.controls = new Controls(this, document.getElementById("controls"));
                     this.menu = new ContextMenu(this, document.getElementById("context-menu"));
 
-                    document.body.onmousedown = document.body.oncontextmenu = () => {
-                        // TODO: refactor into their respective classes
-                        this.menu.hide();
-                        this.controls.clearSearch();
-                    }
+                    document.body.onmousedown = document.body.oncontextmenu = () => this.triggerChange(ChangeReason.ClearMenus);
                     this.toggleBodyClass("loading", false);
                     return this;
                 });
         }
 
         /** Listen for application level changes */
-        addChangeListener(listener: ChangeListener) {
-            this.listeners.push(listener);
+        addChangeListener(reasons: ChangeReason, func: ChangeListenerFunc) {
+            this.listeners.push(new ChangeListener(reasons, func));
         }
         /** Inform all listeners about a new change */
         triggerChange(reason: ChangeReason) {
-            this.listeners.forEach(fn => fn(reason));
+            this.listeners.forEach(l => l.trigger(reason));
         }
 
         /** Toggle a class attribute name in the document body */

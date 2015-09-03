@@ -7,14 +7,9 @@
         pathEnd: PathNode;
 
         constructor(private app: Application) {
-            this.app.addChangeListener(reason => {
-                if (reason === ChangeReason.SourceChange
-                    || reason === ChangeReason.DestinationChange
-                    || reason === ChangeReason.FeatureChange) {
-                    this.findPath();
-                }
+            this.app.addChangeListener(ChangeReason.ContextChange|ChangeReason.MarkChange, reason => {
+                this.findPath();
                 if (reason === ChangeReason.MarkChange) {
-                    this.findPath();
                     this.app.toggleBodyClass("has-mark", this.markNode != null);
                 }
             });

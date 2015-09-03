@@ -7,16 +7,10 @@
         private searchBox: HTMLElement;
 
         constructor(private app: Application, private element: HTMLElement) {
-            this.app.addChangeListener(reason => {
-                if (reason === ChangeReason.PathUpdate)
-                    this.updatePath();
-                else if (reason === ChangeReason.SourceChange)
-                    this.updateNodeInfo(".control-source-info", this.app.context.sourceNode);
-                else if (reason === ChangeReason.DestinationChange)
-                    this.updateNodeInfo(".control-destination-info", this.app.context.destNode);
-                else if (reason === ChangeReason.MarkChange)
-                    this.updateNodeInfo(".control-mark-info", this.app.context.markNode);
-            });
+            this.app.addChangeListener(ChangeReason.SourceChange, () => this.updateNodeInfo(".control-source-info", this.app.context.sourceNode));
+            this.app.addChangeListener(ChangeReason.DestinationChange, () => this.updateNodeInfo(".control-destination-info", this.app.context.destNode));
+            this.app.addChangeListener(ChangeReason.MarkChange, () => this.updateNodeInfo(".control-mark-info", this.app.context.markNode));
+            this.app.addChangeListener(ChangeReason.PathUpdate, () => this.updatePath());
 
             this.pathContainer = <HTMLElement>element.querySelector(".path-container");
             this.featuresContainer = <HTMLElement>element.querySelector(".features-container");
@@ -102,6 +96,8 @@
                 this.searchBox.style.top = (input.top + input.height) + "px";
                 this.searchBox.style.left = input.left + "px";
             }
+
+            this.app.addChangeListener(ChangeReason.ClearMenus, () => this.clearSearch());
         }
 
         clearSearch() {

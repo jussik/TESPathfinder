@@ -11,18 +11,11 @@
         private markElem: HTMLElement;
 
         constructor(private app: Application, private element: HTMLElement) {
-            this.app.addChangeListener(reason => {
-                if (reason === ChangeReason.PathUpdate)
-                    this.renderPath();
-                else if (reason === ChangeReason.SourceChange)
-                    this.renderSource();
-                else if (reason === ChangeReason.DestinationChange)
-                    this.renderDestination();
-                else if (reason === ChangeReason.MarkChange)
-                    this.renderMark();
-                else if (reason === ChangeReason.FeatureChange)
-                    this.updateFeatures();
-            });
+            this.app.addChangeListener(ChangeReason.SourceChange, () => this.renderSource());
+            this.app.addChangeListener(ChangeReason.DestinationChange, () => this.renderDestination());
+            this.app.addChangeListener(ChangeReason.MarkChange, () => this.renderMark());
+            this.app.addChangeListener(ChangeReason.PathUpdate, () => this.renderPath());
+            this.app.addChangeListener(ChangeReason.FeatureChange, () => this.updateFeatures());
 
             element.onclick = ev => {
                 var node = this.getEventNode(ev);

@@ -28,6 +28,8 @@
                     this.hide();
                 }
             };
+
+            this.app.addChangeListener(ChangeReason.ClearMenus, () => this.hide());
         }
 
         openNode(node: Node) {
