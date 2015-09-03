@@ -50,7 +50,7 @@
         }
 
         private triggerContextMenu(ev: MouseEvent, node?: Node) {
-            this.app.menu.open(new Vec2(ev.pageX, ev.pageY), node || this.getEventNode(ev));
+            this.app.ctxMenu.open(new Vec2(ev.pageX, ev.pageY), node || this.getEventNode(ev));
         }
 
         private initDragScroll() {

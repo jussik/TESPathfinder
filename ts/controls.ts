@@ -106,7 +106,7 @@
 
                 this.searchMenu.setData(results.map(n =>
                     new MenuItem(n.terms.join(", "), () => {
-                        this.app.menu.openNode(n.node);
+                        this.app.ctxMenu.openNode(n.node);
                         this.clearSearch();
                     })));
                 this.searchMenu.open();
@@ -126,7 +126,7 @@
             var el = <HTMLElement>this.element.querySelector(selector);
             if (node != null) {
                 el.textContent = node.longName;
-                el.onclick = () => this.app.menu.openNode(node);
+                el.onclick = () => this.app.ctxMenu.openNode(node);
             } else {
                 el.textContent = "";
                 el.onclick = null;
@@ -188,7 +188,7 @@
 
             var a = document.createElement("a");
             a.textContent = linkText;
-            a.onclick = () => this.app.menu.openNode(node);
+            a.onclick = () => this.app.ctxMenu.openNode(node);
             el.appendChild(a);
 
             return el;

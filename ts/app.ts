@@ -36,7 +36,7 @@
         world: World;
         controls: Controls;
         map: Map;
-        menu: ContextMenu;
+        ctxMenu: ContextMenu;
 
         private listeners: ChangeListener[] = [];
 
@@ -50,7 +50,7 @@
                     this.world = new World(this, <IWorldSource><any>data);
                     this.map = new Map(this, document.getElementById("map"));
                     this.controls = new Controls(this, document.getElementById("controls"));
-                    this.menu = new ContextMenu(this);
+                    this.ctxMenu = new ContextMenu(this);
 
                     document.body.onmousedown = document.body.oncontextmenu = () => this.triggerChange(ChangeReason.ClearMenus);
                     this.toggleBodyClass("loading", false);
