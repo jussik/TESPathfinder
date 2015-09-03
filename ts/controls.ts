@@ -29,16 +29,30 @@
                 .concat(this.app.world.landmarks.map(a => a.target))
                 .map(n => {
                     var feat = this.app.features.byName[n.type];
-                    var featName = feat != null ? feat.location || feat.name : null
+                    var featName = feat != null ? feat.location || feat.name : null;
+                    var terms = [n.name];
+                    if (featName != null)
+                        terms.push(featName);
+                    var landmark = this.app.world.getLandmarkName(n.pos);
+                    if (landmark && landmark !== n.name)
+                        terms.push(landmark);
+
                     return {
-                        name: prepTerm(n.name),
-                        location: prepTerm(featName),
-                        node: n,
-                        feature: featName
+                        terms: terms,
+                        searchTerms: terms.map(t => prepTerm(t)),
+                        node: n
                     };
                 })
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .sort((a, b) => (a.location || "").localeCompare(b.location || ""));
+                .sort((a, b) => {
+                    var at = a.searchTerms, bt = b.searchTerms;
+                    var ml = Math.max(at.length, bt.length);
+                    for (var i = 0; i < ml; i++) {
+                        var d = (at[i]||"").localeCompare(bt[i]||"");
+                        if (d !== 0)
+                            return d;
+                    }
+                    return 0;
+                });
 
             this.drawFeatures();
 
@@ -73,7 +87,7 @@
                     .filter(n => {
                         var c = 0;
                         return terms.some(t => {
-                            if (n.name.indexOf(t) === 0 || n.location != null && n.location.indexOf(t) === 0)
+                            if(n.searchTerms.some(st => st.indexOf(t) === 0))
                                 c++;
                             return c >= starts.length;
                         });
@@ -83,7 +97,7 @@
                 results.forEach(n => {
                     var item = document.createElement("li");
                     item.className = "link";
-                    item.textContent = n.feature ? `${n.node.name}, ${n.feature}` : n.node.name;
+                    item.textContent = n.terms.join(", ");
                     item.onclick = () => {
                         this.app.menu.openNode(n.node);
                         this.clearSearch();
