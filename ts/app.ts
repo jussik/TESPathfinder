@@ -2,14 +2,21 @@
     export type ChangeListenerFunc = (reason: ChangeReason) => void;
     export enum ChangeReason {
         None = 0x0,
+        /** The selected source node has changed */
         SourceChange = 0x1,
+        /** The selected destination node has changed */
         DestinationChange = 0x2,
+        /** The mark node location has changed */
         MarkChange = 0x4,
+        /** The either the source, destination or mark location has changed */
         ContextChange = SourceChange | DestinationChange | MarkChange,
+        /** The enabled state or visibility of a feature has changed */
         FeatureChange = 0x8,
+        /** A new path has been calculated */
         PathUpdate = 0x10,
+        /** An input event has triggered menus to close */
         ClearMenus = 0x20,
-        All = 0x3f
+        Any = 0x3f
     }
     class ChangeListener {
         constructor(public reasons: ChangeReason, public func: ChangeListenerFunc) { }
