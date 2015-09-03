@@ -61,7 +61,8 @@
         open() {
             if (this.disposed) return;
             this.app.triggerChange(ChangeReason.ClearMenus);
-            this.element.style.display = "inherit";
+            if(this.element.firstElementChild != null)
+                this.element.style.display = "inherit";
         }
         hide() {
             if (this.disposed) return;

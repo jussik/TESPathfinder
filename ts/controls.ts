@@ -70,10 +70,6 @@
 
             this.searchInput.oninput = () => {
                 var search = this.searchInput.value.toLowerCase();
-                if (search === "") {
-                    this.searchMenu.hide();
-                    return;
-                }
 
                 var starts: number[] = [];
                 var terms: string[] = [];
@@ -114,7 +110,7 @@
 
             this.app.addChangeListener(ChangeReason.ClearMenus, () => {
                 if (document.activeElement !== this.searchInput)
-                    return this.clearSearch();
+                    this.clearSearch();
             });
         }
         clearSearch() {
