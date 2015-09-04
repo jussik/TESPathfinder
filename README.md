@@ -4,11 +4,10 @@ A web application for finding the quickest way to travel around Vvardenfell in _
 
 ## Todo
 
-1. Better search, datalist isn't cutting it
-1. Relative font sizes for mobile
+1. Better features UI
+1. Make scrolling work on IE
+1. Make it all work better on mobile
 1. Ability to save options in localStorage
-1. Snazzy UX!
-1. Buzzwords!
 
 ## Build
 
