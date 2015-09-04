@@ -12,9 +12,13 @@ A web application for finding the quickest way to travel around Vvardenfell in _
 
 ## Build
 
-Includes Visual Studio 2015 solution but works just as well without it. (TODO: add gulpfile)
+You'll need `npm`,  for example from [Node.js](https://nodejs.org/en/download/).
 
-Compile ts/*.ts into js/ (e.g. with tsc, TODO: instructions).
+Install gulp globally from a terminal: `npm i -g gulp`  
+Install build dependencies: `npm i`  
+Build app: `gulp`
+
+If you don't have a web server, run `npm i -g http-server` and start it using `http-server`.
 
 ## Acknowledgements
 
