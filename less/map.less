@@ -37,11 +37,17 @@
     .map-@{name} { background: @color; }
 }
 .feature-type-area(@name, @color) {
+    .feature-type-area(@name, @color, @color);
+}
+.feature-type-area(@name, @color, @edge-color) {
     .feature-type(@name, @color);
     .map-edge.map-@{name} {
-        background: repeating-linear-gradient(45deg, transparent, transparent 4px, @color 4px, @color 6px);
+        background: repeating-linear-gradient(45deg, transparent, transparent 4px, @edge-color 4px, @edge-color 6px);
     }
 }
+
+.map-path { background: white; z-index: 3; }
+.map-region, .map-landmark { background: white; z-index: 1; }
 
 .feature-type(transport-edge);
 .feature-type(node);
@@ -55,15 +61,18 @@
 .feature-type(gondola, olivedrab);
 .feature-type-area(divine, magenta);
 .feature-type-area(almsivi, yellow);
-.feature-type-area(mark, black);
+.feature-type-area(mark, black, white);
 
-.map-path { background: white; z-index: 3; }
-.map-region, .map-landmark { background: white; z-index: 1; }
+.map-source, .map-destination {
+    background: white;
 
-.map-source, .map-destination { background: white; }
-.hide-node {
-    .map-source, .map-destination {  display: block; }
+    .hide-node & {
+        display: block;
+    }
 }
+/*.hide-node {
+    .map-source, .map-destination { display: block; }
+}*/
 
 .map-grid {
     position: absolute;
