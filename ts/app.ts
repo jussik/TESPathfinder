@@ -1,4 +1,6 @@
-﻿module Tesp {
+﻿/// <reference path="d/es6-promise/es6-promise.d.ts"/>
+/// <reference path="d/whatwg-fetch/whatwg-fetch.d.ts"/>
+module Tesp {
     export type ChangeListenerFunc = (reason: ChangeReason) => void;
     export enum ChangeReason {
         None = 0x0,
