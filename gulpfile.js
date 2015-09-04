@@ -7,6 +7,7 @@ var ts = require("gulp-typescript");
 var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
 var del = require("del");
+var util = require("gulp-util");
 
 gulp.task("default", ["less", "ts"]);
 
@@ -20,11 +21,8 @@ gulp.task("less", function () {
         .pipe(maps.init())
         .pipe(less())
         .on("error", function(err) {
-            console.error("Error:" + err.message);
-            if (err.extract != null) {
-                err.extract.forEach(function (l) { console.log("> " + l); });
-            }
-            this.emit('end');
+            util.log('Error:', util.colors.red(err.message));
+            this.emit("end");
         })
         .pipe(concat("all.css"))
         .pipe(mincss())
