@@ -41,20 +41,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="ts\app.ts" />
-    <TypeScriptCompile Include="ts\context.ts" />
-    <TypeScriptCompile Include="ts\contextmenu.ts" />
-    <TypeScriptCompile Include="ts\d\es6-promise\es6-promise.d.ts" />
-    <TypeScriptCompile Include="ts\d\whatwg-fetch\whatwg-fetch.d.ts" />
-    <TypeScriptCompile Include="ts\features.ts" />
-    <TypeScriptCompile Include="ts\map.ts" />
-    <TypeScriptCompile Include="ts\controls.ts" />
-    <TypeScriptCompile Include="ts\menu.ts" />
-    <TypeScriptCompile Include="ts\path.ts" />
-    <TypeScriptCompile Include="ts\common.ts" />
-    <TypeScriptCompile Include="ts\world.ts" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="data\data.json" />
     <Content Include="README.md" />
     <Content Include="fonts\fontawesome-webfont.eot" />
@@ -63,6 +49,20 @@
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
     <Content Include="package.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="ts\app.ts" />
+    <TypeScriptCompile Include="ts\common.ts" />
+    <TypeScriptCompile Include="ts\context.ts" />
+    <TypeScriptCompile Include="ts\contextmenu.ts" />
+    <TypeScriptCompile Include="ts\controls.ts" />
+    <TypeScriptCompile Include="ts\d\es6-promise\es6-promise.d.ts" />
+    <TypeScriptCompile Include="ts\d\whatwg-fetch\whatwg-fetch.d.ts" />
+    <TypeScriptCompile Include="ts\features.ts" />
+    <TypeScriptCompile Include="ts\map.ts" />
+    <TypeScriptCompile Include="ts\menu.ts" />
+    <TypeScriptCompile Include="ts\path.ts" />
+    <TypeScriptCompile Include="ts\world.ts" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

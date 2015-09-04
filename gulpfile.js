@@ -5,6 +5,7 @@ var mincss = require("gulp-minify-css");
 var concat = require("gulp-concat");
 var ts = require("gulp-typescript");
 var uglify = require("gulp-uglify");
+var rename = require("gulp-rename");
 var del = require("del");
 
 gulp.task("default", ["less", "ts"]);
@@ -18,7 +19,7 @@ gulp.task("watch", function() {
     });
 });
 
-gulp.task("less", ["clean:css"], function () {
+gulp.task("less", function () {
     return gulp.src("less/*.less")
         .pipe(maps.init())
         .pipe(less())
@@ -28,18 +29,22 @@ gulp.task("less", ["clean:css"], function () {
         .pipe(gulp.dest("css"));
 });
 
-gulp.task("ts", ["clean:js"], function() {
+gulp.task("ts", function() {
     return gulp.src("ts/*.ts")
         .pipe(maps.init())
         .pipe(ts({
-            out: "all.js",
+            out: "ts.js",
             noImplicitAny: true,
             target: "es5",
             removeComments: true
         })).js
-        .pipe(uglify({ mangle: true }))
-        .pipe(maps.write(".", { sourceRoot: "../ts" }))
-        .pipe(gulp.dest("js"));
+        .pipe(maps.write({ sourceRoot: "../ts" }))
+        .pipe(gulp.dest("js")) // write ts.js with inline source map
+        .pipe(maps.init({ loadMaps: true }))
+        .pipe(uglify({ mangle: false })) // mangle breaks debugging in chrome
+        .pipe(rename("all.js"))
+        .pipe(maps.write(".", { sourceRoot: "." }))
+        .pipe(gulp.dest("js")); // write all.js and all.js.map
 });
 
 gulp.task("clean:js", function() {
