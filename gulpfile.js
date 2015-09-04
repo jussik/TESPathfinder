@@ -1,4 +1,5 @@
-﻿var gulp = require("gulp");
+/// <binding Clean='clean' ProjectOpened='watch' />
+var gulp = require("gulp");
 var less = require("gulp-less");
 var maps = require("gulp-sourcemaps");
 var mincss = require("gulp-minify-css");
