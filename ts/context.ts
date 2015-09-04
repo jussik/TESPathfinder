@@ -7,7 +7,7 @@
         pathEnd: PathNode;
 
         constructor(private app: Application) {
-            this.app.addChangeListener(ChangeReason.ContextChange|ChangeReason.MarkChange, reason => {
+            this.app.addChangeListener(ChangeReason.ContextChange | ChangeReason.MarkChange | ChangeReason.FeatureChange, reason => {
                 this.findPath();
                 if (reason === ChangeReason.MarkChange) {
                     this.app.toggleBodyClass("has-mark", this.markNode != null);

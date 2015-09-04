@@ -41,7 +41,7 @@
             // explicit edges (services)
             nodes.forEach(n =>
                 n.edges = n.node.edges
-                    .filter(e => !feats[e.srcNode.type].disabled)
+                    .filter(e => !feats[e.destNode.type].disabled)
                     .map(e => new PathEdge(nodeMap[(e.srcNode === n.node ? e.destNode : e.srcNode).id], e.cost, n.node.type)));
 
             // implicit edges (walking)
