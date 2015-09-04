@@ -4,6 +4,7 @@ A web application for finding the quickest way to travel around Vvardenfell in _
 
 ## Todo
 
+1. Arrow keys functionality for context menu/search results
 1. Better features UI
 1. Make scrolling work on IE
 1. Make it all work better on mobile
