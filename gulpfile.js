@@ -26,8 +26,8 @@ gulp.task("less", function () {
             }
             this.emit('end');
         })
-        .pipe(mincss())
         .pipe(concat("all.css"))
+        .pipe(mincss())
         .pipe(maps.write(".", { sourceRoot: "../less" }))
         .pipe(gulp.dest("css"));
 });
