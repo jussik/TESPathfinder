@@ -25,7 +25,7 @@
                 { name: "Gondola", type: "gondola", icon: "ship" },
                 { name: "Divine Intervention", location: "Imperial Cult Shrine", type: "divine", icon: "bolt" },
                 { name: "Almsivi Intervention", location: "Tribunal Temple", type: "almsivi", icon: "bolt" },
-                { name: "Transport lines", type: "edge", visualOnly: true },
+                { name: "Transport lines", type: "transport-edge", visualOnly: true },
                 { name: "Locations", type: "node", visualOnly: true },
                 { name: "Intervention area border", type: "area", visualOnly: true },
                 { name: "Gridlines", type: "grid", visualOnly: true }
@@ -33,7 +33,7 @@
             features.byName = {};
             var fIdx = features.byName;
             features.forEach(f => fIdx[f.type] = f);
-            fIdx["edge"].hidden = fIdx["area"].hidden = fIdx["grid"].hidden = true;
+            fIdx["transport-edge"].hidden = fIdx["area"].hidden = fIdx["grid"].hidden = true;
             return features;
         }
     }

@@ -25,9 +25,11 @@
             };
 
             element.oncontextmenu = ev => {
-                ev.preventDefault();
-                ev.stopPropagation();
-                this.triggerContextMenu(ev);
+                if (!ev.shiftKey) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    this.triggerContextMenu(ev);
+                }
             }
 
             this.renderNodes();

@@ -1,88 +1,83 @@
-﻿#map {
+﻿@import "common.less";
+
+#map {
     position: absolute;
     left: 0;
     top: 0;
     z-index: 1;
-
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    .prefix(user-select, none);
 }
 
+@node-radius: 5px;
 .map-node {
     position: absolute;
     z-index: 5;
 
-    margin-left: -6px;
-    margin-top: -6px;
-    width: 10px;
-    height: 10px;
-    border-radius: 6px;
+    margin-left: -@node-radius;
+    margin-top: -@node-radius;
+    width: @node-radius * 2;
+    height: @node-radius * 2;
+    border-radius: @node-radius;
     border: 1px solid white;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .map-edge {
     position: absolute;
     z-index: 2;
-
     height: 2px;
 }
 
+.feature-type(@name) {
+    .hide-@{name} .map-@{name} { display: none; }
+}
+.feature-type(@name, @color) {
+    .feature-type(@name);
+    .map-@{name} { background: @color; }
+}
+.feature-type-area(@name, @color) {
+    .feature-type(@name, @color);
+    .map-edge.map-@{name} {
+        background: repeating-linear-gradient(45deg, transparent, transparent 4px, @color 4px, @color 6px);
+    }
+}
+
+.feature-type(transport-edge);
+.feature-type(node);
+.feature-type(area);
+.feature-type(grid);
+.feature-type(mages-guild, red);
+.feature-type(silt-strider, orange);
+.feature-type(boat, skyblue);
+.feature-type(holamayan, aquamarine);
+.feature-type(propylon, lime);
+.feature-type(gondola, olivedrab);
+.feature-type-area(divine, magenta);
+.feature-type-area(almsivi, yellow);
+.feature-type-area(mark, black);
+
 .map-path { background: white; z-index: 3; }
-.map-mark { background: black; }
-.map-mages-guild { background: red; }
-.map-silt-strider { background: orange; }
-.map-boat { background: skyblue; }
-.map-holamayan { background: aquamarine; }
-.map-propylon { background: lime; }
-.map-gondola { background: olivedrab; }
-.map-divine { background: magenta; }
-.map-almsivi { background: yellow; }
 .map-region, .map-landmark { background: white; z-index: 1; }
 
-.hide-mark .map-mark { display: none; }
-.hide-mages-guild .map-mages-guild { display: none; }
-.hide-silt-strider .map-silt-strider { display: none; }
-.hide-boat .map-boat { display: none; }
-.hide-holamayan .map-holamayan { display: none; }
-.hide-propylon .map-propylon { display: none; }
-.hide-gondola .map-gondola { display: none; }
-.hide-divine .map-divine { display: none; }
-.hide-almsivi .map-almsivi { display: none; }
-.hide-edge .map-transport-edge { display: none; }
-.hide-node .map-node { display: none; }
-.hide-area .map-area { display: none; }
-.hide-grid .map-grid { display: none; }
-
-.map-source, .map-destination {
-    background: white;
-    display: block;
-}
-
-.map-edge.map-divine {
-    background: repeating-linear-gradient(45deg, transparent, transparent 4px, magenta 4px, magenta 6px);
-}
-.map-edge.map-almsivi {
-    background: repeating-linear-gradient(-45deg, transparent, transparent 4px, yellow 4px, yellow 6px);
-}
-.map-edge.map-mark {
-    background: repeating-linear-gradient(-45deg, transparent, transparent 4px, white 4px, white 6px);
+.map-source, .map-destination { background: white; }
+.hide-node {
+    .map-source, .map-destination {  display: block; }
 }
 
 .map-grid {
     position: absolute;
     background: rgba(255,255,255,0.25);
     z-index: 1;
-}
-.map-grid.map-grid-v {
-    top: 0;
-    height: 1900px;
-    width: 1px;
-}
-.map-grid.map-grid-h {
-    left: 0;
-    height: 1px;
-    width: 1650px;
+    
+    &.map-grid-v {
+        top: 0;
+        height: @map-height;
+        width: 1px;
+    }
+    &.map-grid-h {
+        left: 0;
+        height: 1px;
+        width: @map-width;
+    }
 }

@@ -11,18 +11,21 @@ var del = require("del");
 gulp.task("default", ["less", "ts"]);
 
 gulp.task("watch", function() {
-    gulp.watch("ts/*", function() {
-        gulp.run("ts");
-    });
-    gulp.watch("less/*", function() {
-        gulp.run("less");
-    });
+    gulp.watch("ts/*", ["ts"]);
+    gulp.watch("less/*", ["less"]);
 });
 
 gulp.task("less", function () {
     return gulp.src("less/*.less")
         .pipe(maps.init())
         .pipe(less())
+        .on("error", function(err) {
+            console.error("Error:" + err.message);
+            if (err.extract != null) {
+                err.extract.forEach(function (l) { console.log("> " + l); });
+            }
+            this.emit('end');
+        })
         .pipe(mincss())
         .pipe(concat("all.css"))
         .pipe(maps.write(".", { sourceRoot: "../less" }))
@@ -36,7 +39,8 @@ gulp.task("ts", function() {
             out: "ts.js",
             noImplicitAny: true,
             target: "es5",
-            removeComments: true
+            removeComments: true,
+            noEmitOnError: true
         })).js
         .pipe(maps.write({ sourceRoot: "../ts" }))
         .pipe(gulp.dest("js")) // write ts.js with inline source map

@@ -1,24 +1,29 @@
-﻿body {
+﻿@import "common.less";
+
+body {
+    background: @bg-base;
+    color: @fg-primary;
+
     margin: 0;
-    background: #233;
     font: 9pt sans-serif;
     line-height: 16px;
 }
 
 a {
-    color: #08a;
+    color: @fg-link;
     cursor: pointer;
-}
-a:hover {
-    text-decoration: underline;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 #spinner {
     display: none;
 
     position: fixed;
-    left: 10px;
-    top: 51px;
+    left: @ui-padding;
+    top: @ui-padding + @ui-nav-height;
     z-index: 10;
     font-size: 20px;
 

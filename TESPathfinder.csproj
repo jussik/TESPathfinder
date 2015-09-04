@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="less\app.less" />
+    <Content Include="less\common.less" />
     <None Include="less\controls.less" />
     <None Include="less\map.less" />
     <None Include="less\menu.less" />

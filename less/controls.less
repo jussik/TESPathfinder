@@ -1,17 +1,19 @@
-﻿.control-container {
+﻿@import "common.less";
+
+.control-container {
     position: fixed;
     top: 0;
     z-index: 11;
 
-    padding: 10px;
-    background: white;
-    border-bottom: 1px solid #bbb;
+    padding: @ui-padding;
+    background: @ui-bg;
+    border-bottom: @ui-border;
 }
 
 .search-container {
     left: 0;
     right: 0;
-    height: 41px;
+    height: @ui-nav-height;
     box-sizing: border-box;
     overflow: hidden;
     white-space: nowrap;
@@ -24,33 +26,37 @@
 .search-area {
     text-align: right;
 }
-.search-area > input {
-    width: 200px;
-}
 .search-input {
+    width: 200px;
     box-sizing: border-box;
 }
 
+@search-width: 200px;
 .path-container {
     left: 0;
-    top: 40px;
-    min-width: 200px;
+    top: @ui-nav-height - 1;
+    min-width: @search-width;
     box-sizing: border-box;
-    border-right: 1px solid #bbb;
+    border-right: @ui-border;
     padding-top: 0;
     display: none;
 }
+.menu.search-results {
+    position: fixed;
+    width: @search-width;
+}
+
 .path-icon {
     width: 18px;
     line-height: 20px;
     text-align: center;
-    color: #056;
+    color: @fg-icon;
     font-size: 12pt;
     vertical-align: -1px;
 }
 
 .settings-icon {
-    color: #056;
+    color: @fg-icon;
     font-size: 20px;
     vertical-align: -2px;
     margin: 0 8px 0 5px;
@@ -58,8 +64,8 @@
 }
 .features-container {
     right: 0;
-    top: 40px;
-    border-left: 1px solid #bbb;
+    top: @ui-nav-height - 1;
+    border-left: @ui-border;
     display: none;
 }
 

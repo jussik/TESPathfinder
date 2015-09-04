@@ -1,41 +1,31 @@
-﻿.menu {
+﻿@import "common.less";
+
+.menu {
+    &.fixed { position: fixed; }
+
     display: none;
     position: absolute;
-    background: white;
-    border: 1px solid #bbb;
+    background: @ui-bg;
+    border: @ui-border;
     z-index: 12;
     box-sizing: border-box;
-
     padding: 3px;
     margin: 0;
-}
-.menu.fixed {
-    position: fixed;
-}
-.menu.search-results {
-    position: fixed;
-    width: 200px;
-}
-.menu > li {
-    list-style: none;
-    padding: 3px 7px 3px 5px;
-    white-space: nowrap;
-    overflow: hidden;
-}
-.menu > li.link {
-    cursor: pointer;
-}
-.menu > li.link:hover {
-    background: #ddd;
-}
-.menu > li.separator {
-    border-bottom: 1px solid #bbb;
-    padding: 0;
-    margin: 5px 2px 5px 2px;
-}
-.menu > li.unset-mark {
-    display: none;
-}
-body.has-mark .menu > li.unset-mark {
-    display: inherit;
+
+    & > li {
+        list-style: none;
+        padding: 3px 7px 3px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+
+        &.link {
+            cursor: pointer;
+            &:hover { background: desaturate(lighten(@fg-link, 50%), 90%); }
+        }
+        &.separator {
+            border-bottom: @ui-border;
+            padding: 0;
+            margin: 5px 2px 5px 2px;
+        }
+    }
 }

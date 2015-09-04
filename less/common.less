@@ -1,0 +1,20 @@
+﻿@bg-base: #233;
+
+@map-width: image-width("img/map.jpg");
+@map-height: image-height("img/map.jpg");
+
+@fg-primary: #000;
+@fg-link: #08a;
+@fg-icon: darken(@fg-link, 10%);
+
+@ui-bg: #fff;
+@ui-padding: 10px;
+@ui-nav-height: 41px;
+@ui-border: 1px solid #bbb;
+
+.prefix(@property, @value) {
+    -webkit-@{property}: @value;
+    -moz-@{property}: @value;
+    -ms-@{property}: @value;
+    @{property}: @value;
+}
