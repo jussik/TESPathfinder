@@ -18,7 +18,7 @@
             this.searchInput = <HTMLInputElement>element.querySelector(".search-input");
 
             var featuresVisible = false;
-            (<HTMLElement>element.querySelector(".settings-icon")).onclick = () => 
+            (<HTMLElement>element.querySelector(".features-icon")).onclick = () => 
                 this.featuresContainer.style.display = (featuresVisible = !featuresVisible) ? "block" : "none";
 
             this.initSearch();
@@ -193,28 +193,50 @@
         private drawFeatures() {
             this.app.features.forEach(f => {
                 var el = document.createElement("div");
+                el.className = "feature-row";
                 el.textContent = f.name + ":";
 
-                el.appendChild(this.drawCheckbox(val => {
+                var container = document.createElement("div");
+                container.className = "feature-toggle-container";
+                el.appendChild(container);
+
+                container.appendChild(this.drawCheckbox(val => {
                     f.hidden = !val;
                     this.app.triggerChange(ChangeReason.FeatureChange);
-                }, !f.hidden));
-                if (!f.visualOnly)
-                    el.appendChild(this.drawCheckbox(val => {
+                }, !f.hidden, "fa-eye", "fa-eye-slash"));
+                if (!f.visualOnly) {
+                    container.appendChild(this.drawCheckbox(val => {
                         f.disabled = !val;
                         this.app.triggerChange(ChangeReason.FeatureChange);
-                    }, !f.disabled));
+                    }, !f.disabled, "fa-check-circle-o", "fa-circle-o"));
+                } else {
+                    var i = document.createElement("i");
+                    i.className = "fa fa-icon fa-circle-o feature-toggle hidden";
+                    container.appendChild(i);
+                }
 
                 this.featuresContainer.appendChild(el);
             });
         }
 
-        private drawCheckbox(onchange: (value: boolean) => void, initial: boolean): HTMLElement {
-            var input = document.createElement("input");
-            input.type = "checkbox";
-            input.onchange = () => onchange(input.checked);
-            input.checked = initial;
-            return input;
+        private drawCheckbox(onchange: (value: boolean) => void, initial: boolean, classOn: string, classOff: string): HTMLElement {
+            var checked = initial;
+            var i = document.createElement("i");
+            i.className = "fa fa-icon feature-toggle";
+            i.classList.add(checked ? classOn : classOff);
+            i.onclick = ev => {
+                ev.stopPropagation();
+                checked = !checked;
+                if (checked) {
+                    i.classList.remove(classOff);
+                    i.classList.add(classOn);
+                } else {
+                    i.classList.remove(classOn);
+                    i.classList.add(classOff);
+                }
+                onchange(checked);
+            }
+            return i;
         }
     }
 }

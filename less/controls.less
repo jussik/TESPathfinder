@@ -55,7 +55,7 @@
     vertical-align: -1px;
 }
 
-.settings-icon {
+.features-icon {
     color: @fg-icon;
     font-size: 20px;
     vertical-align: -2px;
@@ -68,5 +68,20 @@
     border-left: @ui-border;
     display: none;
 }
-
-
+.feature-row {
+    position: relative;
+    padding-right: 45px;
+    line-height: 18px;
+}
+.feature-toggle-container {
+    position:absolute;
+    top: 0;
+    right: 0;
+}
+.feature-toggle {
+    font-size: 18px;
+    color: @fg-icon;
+    margin-left: 5px;
+    cursor: pointer;
+    &.hidden { visibility: hidden; }
+}
