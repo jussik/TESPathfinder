@@ -19,8 +19,8 @@ gulp.task("watch", function() {
     reload.listen();
     gulp.watch("ts/*", ["ts"]);
     gulp.watch("less/*", ["less"]);
-    gulp.watch("data/*", function () {
-        return gulp.src(".").pipe(reload());
+    gulp.watch(["index.html", "data/*"], function (w) {
+        return gulp.src(w.path).pipe(reload());
     });
 });
 
