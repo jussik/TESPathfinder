@@ -32,7 +32,7 @@ module Tesp {
                 { name: "Intervention area border", type: "area", visualOnly: true },
                 { name: "Gridlines", type: "grid", visualOnly: true }
             ];
-            features.nodeOverhead = 5;
+            features.nodeOverhead = 15;
             features.byName = {};
             var fIdx = features.byName;
             features.forEach(f => fIdx[f.type] = f);
