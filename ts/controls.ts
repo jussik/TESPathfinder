@@ -1,4 +1,5 @@
-﻿module Tesp {
+﻿/// <reference path="_refs.ts"/>
+module Tesp {
     /** UI controls for search and navigation */
     export class Controls {
         private pathContainer: HTMLElement;
@@ -11,11 +12,17 @@
             this.app.addChangeListener(ChangeReason.SourceChange, () => this.updateNodeInfo(".control-source-info", this.app.context.sourceNode));
             this.app.addChangeListener(ChangeReason.DestinationChange, () => this.updateNodeInfo(".control-destination-info", this.app.context.destNode));
             this.app.addChangeListener(ChangeReason.MarkChange, () => this.updateNodeInfo(".control-mark-info", this.app.context.markNode));
-            this.app.addChangeListener(ChangeReason.PathUpdate, () => this.updatePath());
+            this.app.addChangeListener(ChangeReason.PathUpdate, (reason, pathNode) => this.updatePath(<IPathNode>pathNode));
 
             this.pathContainer = <HTMLElement>element.querySelector(".path-container");
             this.featuresContainer = <HTMLElement>element.querySelector(".features-container");
             this.searchInput = <HTMLInputElement>element.querySelector(".search-input");
+            var overheadInput = <HTMLInputElement>element.querySelector(".feature-overhead input");
+            overheadInput.value = Math.pow(app.features.nodeOverhead, 1 / 1.5) + "";
+            overheadInput.oninput = () => {
+                this.app.features.nodeOverhead = Math.pow(+overheadInput.value, 1.5);
+                this.app.triggerChange(ChangeReason.FeatureChange);
+            };
 
             var featuresVisible = false;
             (<HTMLElement>element.querySelector(".features-icon")).onclick = () => 
@@ -26,7 +33,7 @@
 
         initSearch() {
             var searchContainer = <HTMLInputElement>this.element.querySelector(".search-container");
-            this.searchMenu = new Menu(app, true);
+            this.searchMenu = new Menu(this.app, true);
             var menuStyle = this.searchMenu.getStyle();
             var input = this.searchInput.getBoundingClientRect();
             menuStyle.minWidth = "200px";
@@ -129,13 +136,12 @@
             }
         }
 
-        private updatePath() {
+        private updatePath(pathNode: IPathNode) {
             var child: Element;
             while ((child = this.pathContainer.firstElementChild)) {
                 this.pathContainer.removeChild(child);
             }
 
-            var pathNode: PathNode = this.app.context.pathEnd;
             this.pathContainer.style.display = pathNode ? "block" : "none";
             while (pathNode) {
                 this.pathContainer.insertBefore(this.drawPathNode(pathNode), this.pathContainer.firstElementChild);
@@ -144,7 +150,7 @@
 
         }
 
-        private drawPathNode(pathNode: PathNode): HTMLElement {
+        private drawPathNode(pathNode: IPathNode): HTMLElement {
             var el = document.createElement("div");
 
             var icon: string, text: string, linkText: string;

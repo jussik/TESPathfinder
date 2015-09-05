@@ -1,4 +1,5 @@
-﻿module Tesp {
+﻿/// <reference path="_refs.ts"/>
+module Tesp {
     export class Feature {
         name: string;
         verb: string;
@@ -10,6 +11,7 @@
         visualOnly: boolean;
     }
     export interface IFeatureList extends Array<Feature> {
+        nodeOverhead: number;
         byName: { [key: string]: Feature };
     }
 
@@ -30,6 +32,7 @@
                 { name: "Intervention area border", type: "area", visualOnly: true },
                 { name: "Gridlines", type: "grid", visualOnly: true }
             ];
+            features.nodeOverhead = 5;
             features.byName = {};
             var fIdx = features.byName;
             features.forEach(f => fIdx[f.type] = f);

@@ -1,12 +1,13 @@
-﻿module Tesp {
+﻿/// <reference path="_refs.ts"/>
+module Tesp {
     /** Manages the context menu of the map */
     export class ContextMenu {
         private menu: Menu;
         private links: MenuItem[];
         private unmarkLink: MenuItem;
 
-        private pos: Vec2;
-        private node: Node;
+        private pos: IVec2;
+        private node: INode;
 
         constructor(private app: Application) {
             this.menu = new Menu(app, false);
@@ -28,10 +29,10 @@
             }
         }
 
-        openNode(node: Node) {
+        openNode(node: INode) {
             this.open(node.pos, node);
         }
-        open(pos: Vec2, node: Node) {
+        open(pos: IVec2, node: INode) {
             // remove node if neither it or its reference are permanent
             if (node != null && !node.permanent) {
                 if (node.referenceId == null) {

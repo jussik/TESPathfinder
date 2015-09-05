@@ -63,6 +63,8 @@
     <TypeScriptCompile Include="ts\map.ts" />
     <TypeScriptCompile Include="ts\menu.ts" />
     <TypeScriptCompile Include="ts\path.ts" />
+    <TypeScriptCompile Include="ts\_refs.ts" />
+    <TypeScriptCompile Include="ts\workers\path.worker.ts" />
     <TypeScriptCompile Include="ts\world.ts" />
   </ItemGroup>
   <PropertyGroup>

@@ -1,4 +1,5 @@
-﻿module Tesp {
+﻿/// <reference path="_refs.ts"/>
+module Tesp {
     export type TransportSource = { [key: string]: INodeSource[] };
     export interface IWorldSource {
         transport: TransportSource;
@@ -23,7 +24,7 @@
         regions: Area[];
         landmarks: Area[];
 
-        private nodesById: { [key: number]: Node } = {};
+        private nodesById: { [key: number]: INode } = {};
         private static transportCost: number = 10;
 
         constructor(private app: Application, data: IWorldSource) {
@@ -95,17 +96,17 @@
             return this.nodesById[id] || null;
         }
 
-        getRegionName(pos: Vec2): string {
+        getRegionName(pos: IVec2): string {
             var area = World.getAreaByCell(this.regions, Cell.fromPosition(pos));
             return area != null ? area.target.name : null;
         }
-        getLandmarkName(pos: Vec2): string {
+        getLandmarkName(pos: IVec2): string {
             var area = World.getAreaByCell(this.landmarks, Cell.fromPosition(pos));
             return area != null ? area.target.name : null;
         }
-        private static getAreaByCell(source: Area[], cell: Vec2): Area {
+        private static getAreaByCell(source: Area[], cell: IVec2): Area {
             var area: Area;
-            if (source.some(r => r.containsCell(cell) && (area = r) != null))
+            if (source.some(r => Area.containsCell(r, cell) && (area = r) != null))
                 return area;
             return null;
         }

@@ -1,4 +1,4 @@
-/// <binding Clean='clean' ProjectOpened='watch, server, open' />
+/// <binding Clean='clean' ProjectOpened='watch, server' />
 var gulp = require("gulp");
 var less = require("gulp-less");
 var maps = require("gulp-sourcemaps");
@@ -11,6 +11,7 @@ var del = require("del");
 var util = require("gulp-util");
 var server = require("gulp-webserver");
 var reload = require("gulp-livereload");
+var flatten = require("gulp-flatten");
 var open = require("open");
 
 gulp.task("default", ["less", "ts"]);
@@ -18,6 +19,7 @@ gulp.task("default", ["less", "ts"]);
 gulp.task("watch", function() {
     reload.listen();
     gulp.watch("ts/*", ["ts"]);
+    gulp.watch(["ts/common.ts", "ts/workers/*.ts"], ["ts:workers"]);
     gulp.watch("less/*", ["less"]);
     gulp.watch(["index.html", "data/*"], function (w) {
         return gulp.src(w.path).pipe(reload());
@@ -63,6 +65,21 @@ gulp.task("ts", function() {
         .pipe(rename("all.js"))
         .pipe(maps.write(".", { sourceRoot: "." }))
         .pipe(gulp.dest("js")) // write all.js and all.js.map
+        .pipe(reload());
+});
+gulp.task("ts:workers", function() {
+    return gulp.src(["ts/common.ts", "ts/workers/*.ts"], { base: "ts" })
+        .pipe(maps.init())
+        .pipe(ts({
+            noImplicitAny: true,
+            target: "es5",
+            removeComments: true,
+            noEmitOnError: true
+        })).js
+        .pipe(uglify({ mangle: false })) // mangle breaks debugging in chrome
+        .pipe(flatten())
+        .pipe(maps.write(".", { sourceRoot: "../ts" }))
+        .pipe(gulp.dest("js"))
         .pipe(reload());
 });
 

@@ -1,4 +1,5 @@
-﻿module Tesp {
+﻿/// <reference path="_refs.ts"/>
+module Tesp {
     /** The map UI */
     export class Map {
         private edgeContainer: HTMLElement;
@@ -14,7 +15,7 @@
             this.app.addChangeListener(ChangeReason.SourceChange, () => this.renderSource());
             this.app.addChangeListener(ChangeReason.DestinationChange, () => this.renderDestination());
             this.app.addChangeListener(ChangeReason.MarkChange, () => this.renderMark());
-            this.app.addChangeListener(ChangeReason.PathUpdate, () => this.renderPath());
+            this.app.addChangeListener(ChangeReason.PathUpdate, (reason, pathNode) => this.renderPath(<IPathNode>pathNode));
             this.app.addChangeListener(ChangeReason.FeatureChange, () => this.updateFeatures());
 
             element.onclick = ev => {
@@ -33,7 +34,6 @@
             }
 
             this.renderNodes();
-            this.renderPath();
             this.renderMark();
             this.renderGrid();
             this.updateFeatures();
@@ -148,11 +148,10 @@
             return this.drawEdge(Vec2.fromCell(x1, y1), Vec2.fromCell(x2, y2), type, "map-area");
         }
 
-        private renderPath() {
+        private renderPath(pathNode: IPathNode) {
             if (this.pathContainer != null)
                 this.pathContainer.parentElement.removeChild(this.pathContainer);
 
-            var pathNode: PathNode = this.app.context.pathEnd;
             if (pathNode == null) {
                 this.pathContainer = null;
                 return;
@@ -176,7 +175,7 @@
             this.destElem = this.addOrUpdateNodeElem(this.app.context.destNode, this.destElem);
         }
 
-        private addOrUpdateNodeElem(node: Node, elem: HTMLElement): HTMLElement {
+        private addOrUpdateNodeElem(node: INode, elem: HTMLElement): HTMLElement {
             if (elem)
                 elem.parentElement.removeChild(elem);
             return node != null
@@ -229,7 +228,7 @@
             });
         }
 
-        private drawNode(node: Node): HTMLElement  {
+        private drawNode(node: INode): HTMLElement  {
             var element = document.createElement("div");
             element.classList.add("map-node");
             element.classList.add("map-" + node.type);
@@ -239,13 +238,13 @@
             return element;
         }
 
-        private drawEdge(n1: Vec2, n2: Vec2, type: string, subtype?: string): HTMLElement {
+        private drawEdge(n1: IVec2, n2: IVec2, type: string, subtype?: string): HTMLElement {
             var element = document.createElement("div");
             element.classList.add("map-edge");
             element.classList.add("map-" + type);
             if (subtype)
                 element.classList.add(subtype);
-            var length = n1.distance(n2);
+            var length = Vec2.distance(n1, n2);
             element.style.left = ((n1.x + n2.x) / 2) - (length / 2) + "px";
             element.style.top = ((n1.y + n2.y) / 2) - 1 + "px";
             element.style.width = length + "px";

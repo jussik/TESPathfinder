@@ -1,4 +1,5 @@
-﻿module Tesp {
+﻿/// <reference path="_refs.ts"/>
+module Tesp {
     export class MenuItem {
         static separator = new MenuItem("");
 

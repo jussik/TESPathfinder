@@ -1,21 +1,18 @@
-﻿module Tesp {
+﻿/// <reference path="_refs.ts"/>
+module Tesp {
     /** The current mutable state of the application */
     export class Context {
-        sourceNode: Node;
-        destNode: Node;
-        markNode: Node;
-        pathEnd: PathNode;
+        sourceNode: INode;
+        destNode: INode;
+        markNode: INode;
 
         constructor(private app: Application) {
-            this.app.addChangeListener(ChangeReason.ContextChange | ChangeReason.MarkChange | ChangeReason.FeatureChange, reason => {
-                this.findPath();
-                if (reason === ChangeReason.MarkChange) {
-                    this.app.toggleBodyClass("has-mark", this.markNode != null);
-                }
+            this.app.addChangeListener(ChangeReason.MarkChange, () => {
+                this.app.toggleBodyClass("has-mark", this.markNode != null);
             });
         }
 
-        setContextLocation(context: string, pos: Vec2) {
+        setContextLocation(context: string, pos: IVec2) {
             var name = this.app.world.getLandmarkName(pos) || this.app.world.getRegionName(pos);
             if (context === "source") {
                 name = name || "You";
@@ -28,7 +25,7 @@
                 this.app.triggerChange(ChangeReason.MarkChange);
             }
         }
-        setContextNode(context: string, node: Node) {
+        setContextNode(context: string, node: INode) {
             if (context === "source") {
                 this.sourceNode = node;
                 this.app.triggerChange(ChangeReason.SourceChange);
@@ -53,13 +50,6 @@
                 this.markNode = null;
                 this.app.triggerChange(ChangeReason.MarkChange);
             }
-        }
-
-        findPath() {
-            this.pathEnd = this.sourceNode != null && this.destNode != null && this.sourceNode !== this.destNode
-                ? Path.findPath(this.app)
-                : null;
-            this.app.triggerChange(ChangeReason.PathUpdate);
         }
     }
 }

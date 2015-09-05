@@ -1,124 +1,81 @@
-﻿module Tesp {
-    export class PathEdge {
-        constructor(public target: PathNode, public cost: number, public type: string) { }
+﻿/// <reference path="_refs.ts"/>
+module Tesp {
+    export interface IPathEdge {
+        target: IPathNode;
+        cost: number;
+        type: string;
     }
-    export class PathNode {
+    export interface IPathNode {
+        node: INode;
         dist: number;
-        prev: PathNode;
-        prevEdge: PathEdge;
-        edges: PathEdge[];
-
-        constructor(public node: Node) {
-            this.dist = Infinity;
-        }
+        prev: IPathNode;
+        prevEdge: IPathEdge;
+        edges: IPathEdge[];
     }
 
+    export interface IPathWorkerData {
+        nodes: INode[];
+        areas: IArea[];
+        source: INode;
+        destination: INode;
+        mark: INode;
+        features: IFeatureList;
+    }
+    /** Calculates the best path in the current context */
     export class Path {
-        private static spellCost: number = 5;
+        private worker: Worker;
+        private working: Promise<IPathNode>;
+        private queue: Promise<IPathNode>;
 
-        static findPath(app: Application) {
-            var world = app.world;
-            var context = app.context;
-
-            // create nodes
-            var nodeMap: { [key: number]: PathNode } = {};
-            var feats = app.features.byName;
-            var nodes: PathNode[] = world.nodes
-                .filter(n => !feats[n.type].disabled && n !== context.sourceNode && n !== context.destNode)
-                .map(n => nodeMap[n.id] = new PathNode(n));
-
-            var source = new PathNode(context.sourceNode);
-            source.dist = 0;
-            nodes.push(source);
-            nodeMap[context.sourceNode.id] = source;
-
-            var dest = new PathNode(context.destNode);
-            nodes.push(dest);
-            nodeMap[context.destNode.id] = dest;
-
-            var maxCost = context.sourceNode.pos.distance(context.destNode.pos);
-
-            // explicit edges (services)
-            nodes.forEach(n =>
-                n.edges = n.node.edges
-                    .filter(e => !feats[e.destNode.type].disabled)
-                    .map(e => new PathEdge(nodeMap[(e.srcNode === n.node ? e.destNode : e.srcNode).id], e.cost, n.node.type)));
-
-            // implicit edges (walking)
-            nodes.forEach(n =>
-                n.edges = n.edges.concat(nodes
-                    .filter(n2 => n2 !== n && !n.edges.some(e => e.target === n2))
-                    .map(n2 => new PathEdge(n2, n.node.pos.distance(n2.node.pos), "walk"))
-                    .filter(e => e.cost <= maxCost)));
-
-            // mark
-            if (context.markNode != null && !feats["mark"].disabled) {
-                var mn = new PathNode(context.markNode);
-                mn.edges = nodes.filter(n => n !== source)
-                    .map(n => new PathEdge(n, mn.node.pos.distance(n.node.pos), "walk"))
-                    .filter(e => e.cost < maxCost);
-                source.edges.push(new PathEdge(mn, Path.spellCost, "mark"));
-                nodes.push(mn);
-            }
-
-            // intervention
-            nodes.forEach(n => {
-                var cell = Cell.fromPosition(n.node.pos);
-                world.areas.forEach(a => {
-                    if (!feats[a.target.type].disabled) {
-                        if (a.containsCell(cell)) {
-                            // node inside area, teleport to temple/shrine
-                            n.edges.push(new PathEdge(nodeMap[a.target.id], Path.spellCost, a.target.type));
-                        } else {
-                            // node outside area, walk to edge
-                            var dist: number = Infinity;
-                            var closest: Vec2;
-                            a.rows.forEach(r => {
-                                // v is closest point (in cell units) from node to row
-                                var v = new Vec2(
-                                    Math.max(Math.min(cell.x, r.x1 + r.width), r.x1),
-                                    Math.max(Math.min(cell.y, r.y + 1), r.y));
-                                var alt = cell.distance(v);
-                                if (alt < dist) {
-                                    dist = alt;
-                                    closest = v;
-                                }
-                            });
-                            var pos = Vec2.fromCell(closest.x, closest.y);
-                            var cost = n.node.pos.distance(pos);
-                            if (cost < maxCost) {
-                                // new node to allow us to teleport once we're in the area
-                                var feat = app.features.byName[a.target.type];
-                                var name = `${feat.name} range of ${a.target.name}`;
-                                var an = new PathNode(new Node(name, name, pos, "area"));
-                                an.edges = [new PathEdge(nodeMap[a.target.id], Path.spellCost, a.target.type)];
-                                nodes.push(an);
-                                n.edges.push(new PathEdge(an, cost, "walk"));
-                            }
-                        }
-                    }
-                });
+        constructor(private app: Application) {
+            this.app.addChangeListener(ChangeReason.ContextChange | ChangeReason.MarkChange | ChangeReason.FeatureChange, () => {
+                this.findPath();
             });
+        }
 
-            var q: PathNode[] = nodes.slice();
-
-            while (q.length > 0) {
-                q.sort((a, b) => b.dist - a.dist);
-                var u = q.pop();
-
-                for (var i = 0; i < u.edges.length; i++) {
-                    var e = u.edges[i];
-                    var v = e.target;
-                    var alt = u.dist + e.cost;
-                    if (alt < v.dist) {
-                        v.dist = alt;
-                        v.prev = u;
-                        v.prevEdge = e;
-                    }
-                }
+        private findPath(): Promise<IPathNode> {
+            if (this.queue) {
+                return this.queue;
+            }
+            if (this.working) {
+                return this.queue = <Promise<IPathNode>><any>this.working.then(() => this.findPath());
             }
 
-            return dest;
+            var context = this.app.context;
+            var source = context.sourceNode;
+            var destination = context.destNode;
+            if (source == null || destination == null || source === destination) {
+                this.app.triggerChange(ChangeReason.PathUpdate);
+                return Promise.reject(new Error("Invalid source and destination configuration"));
+            }
+
+            var world = this.app.world;
+            var data: IPathWorkerData = {
+                nodes: world.nodes,
+                areas: world.areas,
+                source: source,
+                destination: destination,
+                mark: context.markNode,
+                features: this.app.features
+            };
+
+            return this.working = new Promise<IPathNode>((resolve, reject) => {
+                if (this.worker == null) {
+                    this.worker = new Worker("js/path.worker.js");
+                }
+
+                this.worker.onmessage = ev => {
+                    this.queue = this.working = null;
+                    this.app.triggerChange(ChangeReason.PathUpdate, ev.data);
+                    resolve(ev.data);
+                };
+                this.worker.onerror = ev => {
+                    this.queue = this.working = null;
+                    this.app.triggerChange(ChangeReason.PathUpdate);
+                    reject(ev);
+                };
+                this.worker.postMessage(data);
+            });
         }
     }
 }

@@ -1,7 +1,6 @@
-﻿/// <reference path="d/es6-promise/es6-promise.d.ts"/>
-/// <reference path="d/whatwg-fetch/whatwg-fetch.d.ts"/>
+﻿/// <reference path="_refs.ts"/>
 module Tesp {
-    export type ChangeListenerFunc = (reason: ChangeReason) => void;
+    export type ChangeListenerFunc = (reason: ChangeReason, data: any) => void;
     export enum ChangeReason {
         None = 0x0,
         /** The selected source node has changed */
@@ -23,9 +22,10 @@ module Tesp {
     export class ChangeListener {
         constructor(public reasons: ChangeReason, public func: ChangeListenerFunc) { }
 
-        trigger(reason: ChangeReason) {
-            if ((this.reasons & reason) !== 0)
-                this.func(reason);
+        trigger(reason: ChangeReason, data: any) {
+            if ((this.reasons & reason) !== 0) {
+                this.func(reason, data);
+            }
         }
     }
 
@@ -35,6 +35,7 @@ module Tesp {
         element: HTMLElement;
         context: Context;
         features: IFeatureList;
+        path: Path;
         world: World;
         controls: Controls;
         map: Map;
@@ -49,6 +50,7 @@ module Tesp {
                 .then(data => {
                     this.context = new Context(this);
                     this.features = Features.init();
+                    this.path = new Path(this);
                     this.world = new World(this, <IWorldSource><any>data);
                     this.map = new Map(this, document.getElementById("map"));
                     this.controls = new Controls(this, document.getElementById("controls"));
@@ -73,8 +75,8 @@ module Tesp {
                 this.listeners.splice(ix, 1);
         }
         /** Inform all listeners about a new change */
-        triggerChange(reason: ChangeReason) {
-            this.listeners.forEach(l => l.trigger(reason));
+        triggerChange(reason: ChangeReason, data?: any) {
+            this.listeners.forEach(l => l.trigger(reason, data));
         }
 
         /** Toggle a class attribute name in the document body */
@@ -88,5 +90,5 @@ module Tesp {
     }
 
     /** The current instance of the application, for debugging purposes only */
-    export var app = new Application();
+    export var appInstance = new Application();
 }
