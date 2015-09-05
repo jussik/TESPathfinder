@@ -1,4 +1,4 @@
-/// <binding Clean='clean' ProjectOpened='watch, server' />
+/// <binding Clean='clean' ProjectOpened='watch, server, open' />
 var gulp = require("gulp");
 var less = require("gulp-less");
 var maps = require("gulp-sourcemaps");
@@ -10,6 +10,7 @@ var rename = require("gulp-rename");
 var del = require("del");
 var util = require("gulp-util");
 var server = require("gulp-webserver");
+var open = require("open");
 
 gulp.task("default", ["less", "ts"]);
 
@@ -22,6 +23,9 @@ gulp.task("server", function() {
     gulp.src(".").pipe(server({
         livereload: true
     }));
+});
+gulp.task("open", function () {
+    open("http://localhost:8000");
 });
 
 gulp.task("less", function () {
