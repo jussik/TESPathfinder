@@ -10,19 +10,22 @@ var rename = require("gulp-rename");
 var del = require("del");
 var util = require("gulp-util");
 var server = require("gulp-webserver");
+var reload = require("gulp-livereload");
 var open = require("open");
 
 gulp.task("default", ["less", "ts"]);
 
 gulp.task("watch", function() {
+    reload.listen();
     gulp.watch("ts/*", ["ts"]);
     gulp.watch("less/*", ["less"]);
+    gulp.watch("data/*", function () {
+        return gulp.src(".").pipe(reload());
+    });
 });
 
-gulp.task("server", function() {
-    gulp.src(".").pipe(server({
-        livereload: true
-    }));
+gulp.task("server", function () {
+    gulp.src(".").pipe(server());
 });
 gulp.task("open", function () {
     open("http://localhost:8000");
@@ -39,7 +42,8 @@ gulp.task("less", function () {
         .pipe(concat("all.css"))
         .pipe(mincss())
         .pipe(maps.write(".", { sourceRoot: "../less" }))
-        .pipe(gulp.dest("css"));
+        .pipe(gulp.dest("css"))
+        .pipe(reload());
 });
 
 gulp.task("ts", function() {
@@ -58,7 +62,8 @@ gulp.task("ts", function() {
         .pipe(uglify({ mangle: false })) // mangle breaks debugging in chrome
         .pipe(rename("all.js"))
         .pipe(maps.write(".", { sourceRoot: "." }))
-        .pipe(gulp.dest("js")); // write all.js and all.js.map
+        .pipe(gulp.dest("js")) // write all.js and all.js.map
+        .pipe(reload());
 });
 
 gulp.task("clean:js", function() {
