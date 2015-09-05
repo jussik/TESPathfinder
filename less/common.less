@@ -5,12 +5,19 @@
 
 @fg-primary: #000;
 @fg-link: #08a;
-@fg-icon: darken(@fg-link, 10%);
-
 @ui-bg: #fff;
+
+// night mode:
+/*@fg-primary: #efe4d4;
+@fg-link: #d0b978;
+@ui-bg: #2a2725;*/
+
+@ui-bg-focus: desaturate(mix(@ui-bg, @fg-link, 80%), 90%);
+@fg-icon: mix(@fg-link, @fg-primary, 75%);
 @ui-padding: 10px;
 @ui-nav-height: 41px;
-@ui-border: 1px solid #bbb;
+@ui-border-color: mix(@ui-bg, #888, 50%);
+@ui-border: 1px solid @ui-border-color;
 
 .prefix(@property, @value) {
     -webkit-@{property}: @value;
