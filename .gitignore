@@ -1,5 +1,7 @@
+*.sln
 *.suo
 *.user
+*.DotSettings
 [Bb]in/
 [Oo]bj/
 .vs/
