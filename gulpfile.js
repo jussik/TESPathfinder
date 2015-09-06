@@ -14,7 +14,7 @@ var reload = require("gulp-livereload");
 var flatten = require("gulp-flatten");
 var open = require("open");
 
-gulp.task("default", ["less", "ts", "ts:workers"]);
+gulp.task("default", ["less", "ts", "ts:workers", "lib"]);
 
 gulp.task("watch", function() {
     reload.listen();
@@ -81,6 +81,28 @@ gulp.task("ts:workers", function() {
         .pipe(maps.write(".", { sourceRoot: "../ts" }))
         .pipe(gulp.dest("js"))
         .pipe(reload());
+});
+
+function copy(root, obj) {
+    for (var key in obj) {
+        var target = obj[key];
+        var path = root + "/" + key;
+        if (typeof (target) === "string") {
+            gulp.src(path).pipe(gulp.dest(target));
+        } else {
+            copy(path, target);
+        }
+    }
+}
+gulp.task("libs", function () {
+    copy("bower_components", {
+        "font-awesome": {
+            "css/font-awesome.min.css": "lib/css",
+            "fonts/*": "lib/fonts"
+        },
+        "es6-promise/promise.min.js": "lib",
+        "fetch/fetch.js": "lib"
+    });
 });
 
 gulp.task("clean:js", function() {

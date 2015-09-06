@@ -23,20 +23,17 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="bower.json" />
     <None Include="less\app.less" />
     <Content Include="less\common.less" />
     <None Include="less\controls.less" />
     <None Include="less\map.less" />
     <None Include="less\menu.less" />
-    <Content Include="lib\font-awesome.min.css" />
     <Content Include="favicon.ico" />
-    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="gulpfile.js" />
     <Content Include="img\map.jpg" />
     <Content Include="index.html" />
-    <Content Include="lib\es6-promise.js" />
-    <Content Include="lib\fetch.js" />
-    <Content Include="lib\html5-dataset.js" />
     <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -44,11 +41,6 @@
   <ItemGroup>
     <Content Include="data\data.json" />
     <Content Include="README.md" />
-    <Content Include="fonts\fontawesome-webfont.eot" />
-    <Content Include="fonts\fontawesome-webfont.ttf" />
-    <Content Include="fonts\fontawesome-webfont.woff" />
-    <Content Include="fonts\fontawesome-webfont.woff2" />
-    <Content Include="fonts\FontAwesome.otf" />
     <Content Include="package.json" />
   </ItemGroup>
   <ItemGroup>

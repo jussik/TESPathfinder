@@ -43,7 +43,7 @@ module Tesp {
         private getEventNode(event: MouseEvent) {
             var target = <HTMLElement>event.target;
             if (target.classList.contains("map-node")) {
-                var id = target.dataset["nodeId"];
+                var id = target.getAttribute("data-node-id");
                 if (id !== undefined) {
                     return this.app.world.findNodeById(+id);
                 }
@@ -234,7 +234,7 @@ module Tesp {
             element.classList.add("map-" + node.type);
             element.style.left = node.pos.x + "px";
             element.style.top = node.pos.y + "px";
-            element.dataset["nodeId"] = (node.referenceId || node.id) + "";
+            element.setAttribute("data-node-id", (node.referenceId || node.id) + "");
             return element;
         }
 
