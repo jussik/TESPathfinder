@@ -52,7 +52,7 @@ module Tesp {
     export class Cell {
         static width: number = 44.5;
         static height: number = 44.6;
-        static widthOffset: number = 20;
+        static widthOffset: number = 12;
         static heightOffset: number = 35;
         static fromPosition(pos: IVec2): Vec2 {
             return new Vec2((pos.x - Cell.widthOffset) / Cell.width, (pos.y - Cell.heightOffset) / Cell.height);
