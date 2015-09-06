@@ -103,6 +103,8 @@ module Tesp {
             if (this.disposed) return;
             var elem = <HTMLElement>this.element.querySelector(".link");
             if (elem != null) {
+                // focus sometimes does weird things with scrolling, make sure we stay where we are
+                var x = scrollX, y = scrollY;
                 if (index === 0) {
                     elem.focus();
                 } else {
@@ -110,6 +112,7 @@ module Tesp {
                     var idx = ((index % len) + len) % len;
                     this.links[idx].focus();
                 }
+                scrollTo(x, y);
             }
         }
     }
