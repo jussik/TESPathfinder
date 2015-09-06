@@ -111,7 +111,8 @@ module Tesp {
                 var e = u.edges[i];
                 var v = e.target;
                 var alt = u.dist + e.cost + overhead;
-                if (alt < v.dist) {
+                // id check when dist values are equal is to ensure same path each time
+                if (alt < v.dist || (alt === v.dist && u.node.id < v.prev.node.id)) {
                     v.dist = alt;
                     v.prev = u;
                     v.prevEdge = e;
