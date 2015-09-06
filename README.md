@@ -18,7 +18,7 @@ Install gulp globally from a terminal: `npm i -g gulp`
 Install build dependencies: `npm i`  
 Build app: `gulp`
 
-If you don't have a web server, run `npm i -g http-server` and start it using `http-server`.
+Run `gulp server` for a minimal development server.
 
 ## Acknowledgements
 
