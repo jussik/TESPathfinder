@@ -84,7 +84,7 @@ module Tesp {
                 return true;
             };
             this.searchInput.oninput = () => {
-                var search = this.searchInput.value.toLowerCase();
+                var search = prepTerm(this.searchInput.value);
 
                 var starts: number[] = [];
                 var terms: string[] = [];
