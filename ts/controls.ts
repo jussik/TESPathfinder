@@ -75,6 +75,14 @@ module Tesp {
 
             this.drawFeatures();
 
+            this.searchInput.onkeydown = (ev) => {
+                if ((ev.which === 40 || ev.which === 38 || ev.which === 13) && this.searchMenu.isOpen()) {
+                    this.searchMenu.focus(ev.which === 38 ? -1 : 0);
+                    ev.stopPropagation();
+                    return false;
+                }
+                return true;
+            };
             this.searchInput.oninput = () => {
                 var search = this.searchInput.value.toLowerCase();
 
@@ -114,11 +122,6 @@ module Tesp {
                     })));
                 this.searchMenu.open();
             }
-
-            this.app.addChangeListener(ChangeReason.ClearMenus, () => {
-                if (document.activeElement !== this.searchInput)
-                    this.clearSearch();
-            });
         }
         clearSearch() {
             this.searchInput.value = "";

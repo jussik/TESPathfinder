@@ -75,6 +75,7 @@ module Tesp {
                 items.push(this.unmarkLink);
             this.menu.setData(items);
             this.menu.open();
+            this.menu.focus();
 
             var menuStyle = this.menu.getStyle();
             menuStyle.left = pos.x + "px";

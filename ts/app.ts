@@ -57,6 +57,10 @@ module Tesp {
                     this.ctxMenu = new ContextMenu(this);
 
                     document.body.onmousedown = document.body.oncontextmenu = () => this.triggerChange(ChangeReason.ClearMenus);
+                    document.body.onkeydown = ev => {
+                        if (ev.which === 27)
+                            this.triggerChange(ChangeReason.ClearMenus);
+                    }
                     this.toggleBodyClass("loading", false);
                     return this;
                 });
