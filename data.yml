@@ -210,7 +210,7 @@ landmarks:
 - name: "Rotheran"
   top: 7
   cells: 
-  - [21]
+  - [21,21]
 - name: "Ashurnabitashpi"
   top: 7
   cells: 
