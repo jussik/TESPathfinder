@@ -74,6 +74,14 @@ module Tesp {
                             ev.stopPropagation();
                             return false;
                         }
+                        li.onmouseenter = ev => {
+                            li.focus();
+                        }
+                        li.onmouseout = ev => {
+                            if (li === document.activeElement) {
+                                li.blur();
+                            }
+                        }
                     }
                 }
             });
