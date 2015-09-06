@@ -1,5 +1,6 @@
 /// <binding Clean='clean' ProjectOpened='watch, server' />
 var gulp = require("gulp");
+var bower = require("gulp-bower");
 var less = require("gulp-less");
 var maps = require("gulp-sourcemaps");
 var mincss = require("gulp-minify-css");
@@ -15,7 +16,7 @@ var flatten = require("gulp-flatten");
 var open = require("open");
 var merge = require("merge-stream");
 
-gulp.task("default", ["less", "ts", "ts:workers", "lib"]);
+gulp.task("default", ["less", "ts", "ts:workers", "libs"]);
 
 gulp.task("watch", function() {
     reload.listen();
@@ -95,7 +96,7 @@ function copy(root, obj) {
     }
     return stream;
 }
-gulp.task("libs", function () {
+gulp.task("libs", ["bower"], function () {
     return copy("bower_components", {
         "font-awesome": {
             "css/font-awesome.min.css": "lib/css",
@@ -105,6 +106,9 @@ gulp.task("libs", function () {
         "fetch/fetch.js": "lib"
     });
 });
+gulp.task("bower", function() {
+    return bower();
+});
 
 gulp.task("clean:js", function() {
     return del("js");
@@ -112,4 +116,7 @@ gulp.task("clean:js", function() {
 gulp.task("clean:css", function() {
     return del("css");
 });
-gulp.task("clean", ["clean:js", "clean:css"]);
+gulp.task("clean:libs", function() {
+    return del(["lib", "bower_components"]);
+});
+gulp.task("clean", ["clean:js", "clean:css", "clean:libs"]);
