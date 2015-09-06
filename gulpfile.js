@@ -14,7 +14,7 @@ var reload = require("gulp-livereload");
 var flatten = require("gulp-flatten");
 var open = require("open");
 
-gulp.task("default", ["less", "ts"]);
+gulp.task("default", ["less", "ts", "ts:workers"]);
 
 gulp.task("watch", function() {
     reload.listen();
