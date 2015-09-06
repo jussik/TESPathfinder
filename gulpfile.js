@@ -13,17 +13,19 @@ var util = require("gulp-util");
 var server = require("gulp-webserver");
 var reload = require("gulp-livereload");
 var flatten = require("gulp-flatten");
+var yaml = require("gulp-yaml");
 var open = require("open");
 var merge = require("merge-stream");
 
-gulp.task("default", ["less", "ts", "ts:workers", "libs"]);
+gulp.task("default", ["less", "ts", "ts:workers", "libs", "data"]);
 
 gulp.task("watch", function() {
     reload.listen();
     gulp.watch("ts/*", ["ts"]);
     gulp.watch(["ts/common.ts", "ts/workers/*.ts"], ["ts:workers"]);
     gulp.watch("less/*", ["less"]);
-    gulp.watch(["index.html", "data/*"], function (w) {
+    gulp.watch("data.yml", ["data"]);
+    gulp.watch("index.html", function (w) {
         return gulp.src(w.path).pipe(reload());
     });
 });
@@ -110,6 +112,13 @@ gulp.task("bower", function() {
     return bower();
 });
 
+gulp.task("data", function() {
+    return gulp.src("data.yml")
+        .pipe(yaml())
+        .pipe(gulp.dest("data"))
+        .pipe(reload());
+});
+
 gulp.task("clean:js", function() {
     return del("js");
 });
@@ -119,4 +128,7 @@ gulp.task("clean:css", function() {
 gulp.task("clean:libs", function() {
     return del(["lib", "bower_components"]);
 });
-gulp.task("clean", ["clean:js", "clean:css", "clean:libs"]);
+gulp.task("clean:data", function() {
+    return del("data");
+})
+gulp.task("clean", ["clean:js", "clean:css", "clean:libs", "clean:data"]);

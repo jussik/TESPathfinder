@@ -8,5 +8,6 @@
 js/
 css/
 lib/
+data/
 node_modules/
 bower_components/
