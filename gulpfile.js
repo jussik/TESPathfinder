@@ -115,6 +115,10 @@ gulp.task("bower", function() {
 gulp.task("data", function() {
     return gulp.src("data.yml")
         .pipe(yaml())
+        .on("error", function (err) {
+            util.log('Error:', util.colors.red(err.message));
+            this.emit("end");
+        })
         .pipe(gulp.dest("data"))
         .pipe(reload());
 });
