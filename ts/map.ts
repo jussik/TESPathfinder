@@ -81,7 +81,7 @@ module Tesp {
                 }
             }
             img.onmousemove = ev => {
-                if (!mousedown && ev.which === 1) {
+                if (!mousedown && (ev.buttons & 1) > 0) {
                     start(ev);
                 }
                 if (mousedown) {
