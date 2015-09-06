@@ -6,6 +6,7 @@
     "gulp": "^3.9.0",
     "less": "^2.5.1",
     "del": "^2.0.1",
+    "merge-stream": "^1.0.0",
     "gulp-less": "^3.0.3",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-minify-css": "^1.2.1",

@@ -13,6 +13,7 @@ var server = require("gulp-webserver");
 var reload = require("gulp-livereload");
 var flatten = require("gulp-flatten");
 var open = require("open");
+var merge = require("merge-stream");
 
 gulp.task("default", ["less", "ts", "ts:workers", "lib"]);
 
@@ -84,18 +85,18 @@ gulp.task("ts:workers", function() {
 });
 
 function copy(root, obj) {
+    var stream = merge();
     for (var key in obj) {
         var target = obj[key];
         var path = root + "/" + key;
-        if (typeof (target) === "string") {
-            gulp.src(path).pipe(gulp.dest(target));
-        } else {
-            copy(path, target);
-        }
+        stream.add(typeof (target) === "string"
+            ? gulp.src(path).pipe(gulp.dest(target))
+            : copy(path, target));
     }
+    return stream;
 }
 gulp.task("libs", function () {
-    copy("bower_components", {
+    return copy("bower_components", {
         "font-awesome": {
             "css/font-awesome.min.css": "lib/css",
             "fonts/*": "lib/fonts"
